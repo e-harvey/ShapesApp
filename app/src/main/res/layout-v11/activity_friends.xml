@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    android:background="@color/Background"
+    tools:context="fthomas.hello_world.MyActivity">
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="@string/Friends_title"
+        android:id="@+id/FriendsTitle"
+        android:textSize="32dp"
+        android:layout_marginTop="48dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
+
+    <Button
+        android:layout_width="@dimen/Friend_Button_Width"
+        android:layout_height="@dimen/Friend_Button_Height"
+        android:text="@string/add_friends"
+        android:id="@+id/Add_Friend"
+        android:layout_marginBottom="50dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignStart="@+id/radioGroup"
+        android:onClick="Acknowledge" />
+
+    <Button
+        android:layout_width="@dimen/Friend_Button_Width"
+        android:layout_height="@dimen/Friend_Button_Height"
+        android:text="@string/Play"
+        android:id="@+id/Play_Friends"
+        android:layout_alignTop="@+id/Add_Friend"
+        android:layout_alignEnd="@+id/radioGroup"
+        android:onClick="Play" />
+
+    <RadioGroup
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/FriendsTitle"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="100dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:id="@+id/radioGroup">
+
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/fake_friend"
+            android:id="@+id/radioButton5"
+            android:layout_gravity="center_horizontal"
+            android:checked="false"
+            android:textSize="28dp" />
+
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/fake_friend"
+            android:id="@+id/radioButton6"
+            android:layout_gravity="center_horizontal"
+            android:checked="false"
+            android:textSize="28dp" />
+
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/fake_friend"
+            android:id="@+id/radioButton7"
+            android:layout_gravity="center_horizontal"
+            android:checked="false"
+            android:textSize="28dp" />
+
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/fake_friend"
+            android:id="@+id/radioButton8"
+            android:layout_gravity="center_horizontal"
+            android:checked="false"
+            android:textSize="28dp" />
+    </RadioGroup>
+
+</RelativeLayout>

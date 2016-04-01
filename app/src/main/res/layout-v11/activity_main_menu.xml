@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    android:background="@color/Background"
+    tools:context="fthomas.hello_world.MyActivity">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/app_name"
+        android:id="@+id/Title"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="90dp"
+        android:textSize="64sp" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/Play"
+        android:id="@+id/Play"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:textSize="24sp"
+        android:onClick="Play_Menu"
+        style="?android:attr/borderlessButtonStyle"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/Multiplayer"
+        android:id="@+id/Multiplayer"
+        android:textSize="24sp"
+        android:background="@color/Background"
+        android:layout_below="@+id/Play"
+        android:layout_centerHorizontal="true"
+        android:onClick="Friends_Menu"
+        style="?android:attr/borderlessButtonStyle"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/Scores"
+        android:id="@+id/Scores"
+        android:textSize="24sp"
+        android:layout_below="@+id/Multiplayer"
+        android:layout_centerHorizontal="true"
+        android:onClick="Scores_Menu"
+        style="?android:attr/borderlessButtonStyle"/>
+
+    <ImageButton
+        android:layout_width="@dimen/help_width"
+        android:layout_height="@dimen/help_height"
+        android:id="@+id/Help"
+        android:src="@drawable/help_icon"
+        android:onClick="acknowledge"
+        android:contentDescription="@string/help_description"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        style="?android:attr/borderlessButtonStyle"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="10dp" />
+
+    <ImageButton
+        android:layout_width="@dimen/setting_width"
+        android:layout_height="@dimen/setting_height"
+        android:id="@+id/Settings"
+        android:src="@drawable/settings_icon"
+        android:onClick="acknowledge"
+        android:contentDescription="@string/settings_description"
+        style="?android:attr/borderlessButtonStyle"
+        android:layout_marginRight="10dp"
+        android:layout_alignBottom="@+id/Help"
+        android:layout_toEndOf="@+id/Multiplayer" />
+
+</RelativeLayout>

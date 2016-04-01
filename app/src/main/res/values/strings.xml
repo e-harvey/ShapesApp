@@ -1,0 +1,23 @@
+<resources>
+    <string name="app_name">Shapes</string>
+    <string name="action_settings">Settings</string>
+
+    <!--Main Menu Strings-->
+    <string name="Play">Play</string>
+    <string name="Multiplayer">Play With Friends</string>
+    <string name="Scores">Scores</string>
+    <string name="help_description">Help Button</string>
+    <string name="settings_description">Settings Button</string>
+
+    <!-- Play Menu Strings-->
+    <string name="Not_implemented">This feature not yet implemented :(</string>
+
+    <!-- Scores Strings-->
+    <string name="High_Score">High Score:</string>
+    <string name="Placeholder_number">123456</string>
+    <string name="Friends_Scores">Your Friends\' Scores:</string>
+    <!-- Friends menu strings-->
+    <string name="Friends_title">Friends</string>
+    <string name="add_friends">Add Friends</string>
+    <string name="fake_friend">Fake Friend</string>
+</resources>
