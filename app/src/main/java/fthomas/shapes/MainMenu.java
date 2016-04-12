@@ -1,6 +1,7 @@
 package fthomas.shapes;
 
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -10,6 +11,7 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainMenu extends AppCompatActivity {
@@ -18,6 +20,20 @@ public class MainMenu extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_menu);
+        Typeface importedTypeface = Typeface.createFromAsset(getAssets(), "Arcade.ttf");
+        TextView titleTypeface = (TextView)findViewById(R.id.Title);
+        titleTypeface.setTypeface(importedTypeface);
+        /** http://www.webpagepublicity.com/free-fonts-a4.html#FreeFonts */
+
+        Typeface alltextTypeface = Typeface.createFromAsset(getAssets(), "Beeb Mode One.ttf");
+        TextView playTypeface = (TextView)findViewById(R.id.Play);
+        playTypeface.setTypeface(alltextTypeface);
+        TextView multiplayerTypeface = (TextView)findViewById(R.id.Multiplayer);
+        multiplayerTypeface.setTypeface(alltextTypeface);
+        TextView scoresTypeface = (TextView)findViewById(R.id.Scores);
+        scoresTypeface.setTypeface(alltextTypeface);
+
+
     }
 
     public void acknowledge(View v) {
