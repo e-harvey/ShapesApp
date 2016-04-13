@@ -20,4 +20,5 @@
     <string name="Friends_title">Friends</string>
     <string name="add_friends">Add Friends</string>
     <string name="fake_friend">Fake Friend</string>
+    <string name="title_activity_main">MainActivity</string>
 </resources>
