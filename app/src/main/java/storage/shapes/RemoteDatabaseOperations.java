@@ -1,77 +1,242 @@
 package storage.shapes;
 
 import java.sql.*;
+import java.util.concurrent.TimeUnit;
 
 
-/**
- * Created by Fritz on 4/7/2016.
- */
 class RemoteDatabaseOperations extends SharedDatabaseOperations implements RemoteDbOperations {
-    private boolean connected = false;
+    final String JDBC_DRIVER = "org.mariadb.jdbc.Driver";
+    private Connection connection = null;
+    private Statement statement = null;
+    private ResultSet resultSet = null;
+    private boolean hashMatch = false;
+    private String sqlCmd = null;
 
+    private enum RemoteConnectionStatus {Success,
+        ClientNotConnected, ServerNotResponding, InvalidDBCredentials,
+        JdbcDriverNotFound, Unknown}
+
+    private int errCode = -1;
+    private int max_retries = 5;
+
+    /* Begin constructors */
     RemoteDatabaseOperations() {
-        this.connect();
+        persistentConnect();
     }
+    /* End constructors */
 
+    /* Begin setters and getters */
+    /* End setters and getters */
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    // remote methods
+    /* Begin Private methods */
 
-    // return the login status of remote user
-    public boolean getLoginStatus(String username) {
-        return getLoginStatus(username);
-    }
-
-    public int getBlockSeed(String username) {
-        return 0;
-    }
-
-    public void setBlockSeed(String username, int seed) { }
-
-    public boolean connect() {
-        final String JDBC_DRIVER = "org.mariadb.jdbc.Driver";
+    /**
+     * This method attempts to connect to the remote database at DB_URL using the
+     * dbuser and password and credentials.  If the connection is esablished successfully,
+     * then a statement is instantiated; otheriwse an error code is returned.
+     *
+     * @return Success:              upon sucessfully connecting to the database
+     *         ClientNotConnected:   if the client has connectivity issues
+     *         ServerNotResponding:  if the server has connectivity issues
+     *         InvalidDBCredentials: if the applicaiton provides the incorrect credentials
+     *         JdbcDriverNotFound:   if the database driver cannot be found on the local machine
+     *         Unknown:              upon encountering and unknown connection error.
+     *
+     */
+    private RemoteConnectionStatus connect()
+    {
         final String DB_URL = "jdbc:mariadb://www.evanharvey.net:3306/shapes";
         final String dbuser = "";
         final String password = "";
-        Connection connection = null;
-        Statement statement = null;
 
         try {
+            // Point to the databse driver
             Class.forName(JDBC_DRIVER);
 
+            // Attempt to establish the connection
             connection = DriverManager.getConnection(DB_URL, dbuser, password);
 
-            String test_query = "select * from user where username = 'testUser'";
+            // Create the statement object for querying / updating the database
             statement = connection.createStatement();
-
-            ResultSet resultSet = statement.executeQuery(test_query);
-            if (resultSet.next()) {
-                int hs = resultSet.getInt("highScore");
-                String username = resultSet.getString("username");
-                boolean status = resultSet.getBoolean("status");
-                System.out.println(hs + " " + username + " " + status);
-            }
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
-            return false;
-        }
-    catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-        return true;
-    }
-    ///////////////////////////////////////////////////////////////////////////////////////////////
-    // begin extended methods. these should be complete already
+            errCode = -1;
 
-    // add user to database. returns false if username is already taken
-    public boolean addUser(String username, String password) {
-        return addUser(username, password);
+            return RemoteConnectionStatus.JdbcDriverNotFound;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            errCode = e.getErrorCode();
+            System.out.println(errCode);
+        } //finally {
+            //printStatus();
+        //}
+
+        return RemoteConnectionStatus.Success;
+    }
+
+    /**
+     * This method attempts to connect to the database max_retires times and
+     * then prints the status of the connection.
+     */
+    private void persistentConnect()
+    {
+        int count = 0;
+        RemoteConnectionStatus ret = RemoteConnectionStatus.Unknown;
+
+        while (ret != RemoteConnectionStatus.Success && ++count < max_retries) {
+            try {
+                TimeUnit.SECONDS.sleep(1);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            ret = connect();
+        }
+        printStatus(ret);
+    }
+
+    /**
+     * This method prints out the connection status information based on the
+     * value of remoteConnectionStatus.
+     *
+     * @param remoteConnectionStatus the status of the remote connection.
+     * todo: Print messages to the user's screen.  Send admStatus to the admin email address.
+     */
+    private void printStatus(RemoteConnectionStatus remoteConnectionStatus)
+    {
+        String userStatus = null, admStatus = null;
+
+        switch(remoteConnectionStatus) {
+            case Success:
+                userStatus = "You have successfully connected to the database!";
+                admStatus = null;
+                break;
+
+            case ClientNotConnected:
+                userStatus = "Please check your local network connection.";
+                admStatus = null;
+                break;
+
+            case ServerNotResponding:
+                userStatus = "The server is not responding, the administrator has been notified.";
+                admStatus = "error: The server is not responding with error code: " + errCode;
+                break;
+
+            case InvalidDBCredentials:
+                userStatus = "The server is not responding, the administrator has been notified.";
+                admStatus = "error: The client is providing the incorrect credentials with error code: " + errCode;
+                break;
+
+            case JdbcDriverNotFound:
+                userStatus = "The server is not responding, the administrator has been notified.";
+                admStatus = "error: The client cannot find the jdbc driver with error code " + errCode;
+                break;
+
+            case Unknown:
+                userStatus = "The server is not responding, the administrator has been notified.";
+                admStatus = "error: Unknown error with error code " + errCode;
+                break;
+        }
+        System.out.println(userStatus);
+        System.out.println(admStatus);
+    }
+    /* End private methods */
+
+
+    /* Begin RemoteDbOperation methods */
+    public boolean getLoginStatus(String username)
+    {
+        try {
+            // Check if connection is valid and open, try for max_retires seconds
+            if (connection.isValid(max_retries)) {
+                // If the provided password passed in login, then true.
+                return hashMatch;
+            } else {
+                hashMatch = false;
+                return false;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            connect();
+            return false;
+        }
+    }
+
+    public long getBlockSeed(String username)
+    {
+        long seed = -1;
+        sqlCmd = "select seed from blockseed where username = '" + username + "'";
+
+        try {
+            resultSet = statement.executeQuery(sqlCmd);
+            if (resultSet.next()) {
+                seed = resultSet.getLong("seed");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return seed;
+    }
+
+    public void setBlockSeed(String username, long seed)
+    {
+        sqlCmd = "update blockseed set seed = '" + seed + "' where username = '" +
+                username + "'";
+        try {
+            // try updating the blockseed table, if it fails create the initial blockseed for the given user.
+            if (statement.executeUpdate(sqlCmd) == 0) {
+                System.out.println("Couldn't update user '" + username + "'" +
+                        " in blockseed table, creating initial blockseed instead");
+
+                sqlCmd = "insert into blockseed values ('" + username + "', '" + seed + "')";
+                statement.executeUpdate(sqlCmd);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            connect();
+        }
+    }
+    /* End RemoteDbOperation methods */
+
+    /* Begin SharedDatabaseOperations methods */
+    public boolean addUser(String username, String password)
+    {
+        String status = null;
+        boolean ret = false;
+
+        sqlCmd = "select username, passwdhash from user where username = '" +
+                username + "' AND passwdhash = '" + password + "'";
+
+        try {
+            resultSet = statement.executeQuery(sqlCmd);
+
+            if (resultSet.next()) {
+                status = "That username has already been taken.";
+            } else { // add the user
+                sqlCmd = "insert into user values ('" + username + "', '" +
+                        password + "', '0')";
+
+                if (statement.executeUpdate(sqlCmd) == 0) {
+                    status = "Failed to add user, but username doesn't exist!";
+                } else
+                    ret = true;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println(status);
+        return ret;
     }
 
     // log user out of database
-    public void logout(String username) {
-        logout(username);
+    public void logout(String username)
+    {
+        try {
+            connection.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        hashMatch = false;
     }
 
     // set high score for user in database
@@ -86,6 +251,9 @@ class RemoteDatabaseOperations extends SharedDatabaseOperations implements Remot
 
     // logs a user into database
     public boolean login(String username, String password) {
+//        String hash = resultSet.getString("passwdhash");
+  //      hashMatch = hashMatch.equals(password);
+
         return login(username, password);
     }
 
@@ -99,5 +267,5 @@ class RemoteDatabaseOperations extends SharedDatabaseOperations implements Remot
     public boolean deleteUser(String username, String password) {
         return deleteUser(username, password);
     }
-
+    /* End SharedDatabaseOperations metods */
 }
