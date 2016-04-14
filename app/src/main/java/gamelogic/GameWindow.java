@@ -1,6 +1,7 @@
 package gamelogic;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.view.MotionEvent;
@@ -14,7 +15,6 @@ import fthomas.shapes.R;
  */
 public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
 {
-
     private GameThread gameThread;
     private Block[][] grid;
     private final int XBlocks = 8; //blocks on x axis
@@ -25,7 +25,7 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
         super(context);
         grid = new Block[XBlocks][YBlocks];
         //TODO: fill array with new Blocks here
-        grid[0][0] = new Block(Block.BlockType.WEDGE, 100, 100);
+        //grid[0][0] = new Block(Block.BlockType.WEDGE, 20, 20);
 
         getHolder().addCallback(this);
         gameThread = new GameThread(getHolder(), this);
@@ -69,10 +69,12 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
     {
         if(event.getAction() == MotionEvent.ACTION_DOWN) {
             //get the block and rotate it
+            System.out.println("press at " + event.getX() + "," + event.getY());
             return true; // VERY IMPORTANT
         }
         if(event.getAction() == MotionEvent.ACTION_UP) {
             //probably don't need anything here
+            System.out.println("stopped pressing");
             return true; // VERY IMPORTANT
         }
 
@@ -83,24 +85,35 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
     {
         //update stuff
         //this is where we check for shapes being created, etc
+        //grid[0][0].update();
     }
 
     @Override
     public void draw(Canvas canvas)
     {
-        super.draw(canvas);
+        //super.draw(canvas);
         //need to scale by the number of blocks on the screen
-        final float scaleFactorX = getWidth() / (float)1;//WIDTH;
-        //final float scaleFactorY = getHeight() / (float)HEIGHT;
-        //should probably scale the same as X
+        final Bitmap bg = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.shapes_background_test),
+                canvas.getWidth(), (int) (canvas.getWidth() * ((float)YBlocks / (float)XBlocks)), false);
+
+        //Bitmap b = BitmapFactory.decodeResource(getResources(), R.drawable.wedge);
+        //b = Bitmap.createScaledBitmap(b, canvas.getWidth() / XBlocks, canvas.getHeight() / YBlocks, false);
+        //b = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.wedge), bg.getWidth() / 8, bg.getHeight() / 10, false);
+        final Block testBlock = new Block(Block.BlockType.WEDGE,
+                Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.wedge),
+                bg.getWidth() / XBlocks, bg.getHeight() / YBlocks, false), 0, 0);
+
+        //final float scaleFactorX = canvas.getWidth() / (float)bg.getWidth();
 
         if(canvas != null) {
             final int savedState = canvas.save();
-            canvas.scale(scaleFactorX, scaleFactorX); //scale Y by same as x? keep square shape?
-            grid[0][0].draw(canvas);
-            //bg.draw(canvas); //draw background
-            //player.draw(canvas); //draw blocks
-            canvas.restoreToCount(savedState); // return to original scaled state (won't keep scaling)
+            //canvas.scale(scaleFactorX, scaleFactorX); //scale Y by same as x? keep square shape?
+
+            canvas.drawBitmap(bg, 0, 0, null);
+            //grid[0][0].draw(canvas);
+            testBlock.draw(canvas);
+
+            //canvas.restoreToCount(savedState); // return to original scaled state (won't keep scaling)
         }
     }
 }

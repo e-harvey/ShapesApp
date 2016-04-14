@@ -22,26 +22,26 @@ public class Block
     //private int color;
     private int x, y; //coordinates for drawing if needed
 
-    public Block()
+    public Block(Bitmap image)
     {
-        this(BlockType.EMPTY, 0, 0, true);
+        this(BlockType.EMPTY, image, 0, 0, true);
     }
 
-    public Block(BlockType type, int x, int y)
+    public Block(BlockType type, Bitmap image, int x, int y)
     {
-        this(type, x, y, true);
+        this(type, image, x, y, true);
     }
 
-    public Block(BlockType type, int x, int y, boolean removable)
+    public Block(BlockType type, Bitmap image, int x, int y, boolean removable)
     {
         this.type = type;
+        this.image = image;
         //assign images, rotation, activeSides here
         switch (type) {
             case EMPTY:
                 break;
             case WEDGE:
-                System.out.println("got to wedge");
-                image = BitmapFactory.decodeResource(Resources.getSystem(), R.drawable.wedge);
+                //image = BitmapFactory.decodeResource(Resources.getSystem(), R.drawable.wedge);
                 break;
             case DIAGONAL:
                 break;
@@ -74,7 +74,12 @@ public class Block
 
     public void draw(Canvas canvas)
     {
+        //System.out.println("block dimentions: " + image.getWidth() + "," + image.getHeight());
         canvas.drawBitmap(image, x, y, null);
+    }
+
+    public Bitmap getImage() {
+        return image;
     }
 
     public boolean isRemovable() {
@@ -83,5 +88,13 @@ public class Block
 
     public boolean isActive() {
         return active;
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
     }
 }
