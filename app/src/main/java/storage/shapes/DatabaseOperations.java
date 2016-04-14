@@ -43,7 +43,7 @@ public class DatabaseOperations  {
     }
 
     // return high score for user. returns integer high score
-    public int getHighScore(String username){
+    public long getHighScore(String username){
         return local.getHighScore(username);
 
     }

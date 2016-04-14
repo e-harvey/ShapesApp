@@ -8,6 +8,7 @@ import java.util.ArrayList;
  * Created by Fritz on 4/6/2016.
  */
 interface RemoteDbOperations {
+
     /**
      * Return the block seed for the given user.
      *
