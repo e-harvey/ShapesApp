@@ -15,11 +15,10 @@ public class RemoteDatabaseTest {
         RemoteDatabaseOperations remoteDatabaseOperations = new RemoteDatabaseOperations();
         assertNotEquals(null, remoteDatabaseOperations);
 
-        remoteDatabaseOperations.setPassword("testuser", "password", "testhash");
+        ret = remoteDatabaseOperations.addUser("testuser", "password");
+        assertEquals(true, ret);
 
-        remoteDatabaseOperations.login("testuser", "testhash");
-
-        ret = remoteDatabaseOperations.getLoginStatus("testuser");
+        ret = remoteDatabaseOperations.login("testuser", "password");
         assertEquals(true, ret);
 
         remoteDatabaseOperations.logout("testuser");
@@ -27,7 +26,19 @@ public class RemoteDatabaseTest {
         ret = remoteDatabaseOperations.getLoginStatus("testuser");
         assertEquals(false, ret);
 
-        remoteDatabaseOperations.login("testuser", "testhash");
+        ret = remoteDatabaseOperations.login("testuser", "password");
+        assertEquals(true, ret);
+
+        ret = remoteDatabaseOperations.setPassword("testuser", "password", "password2");
+        assertEquals(true, ret);
+
+        remoteDatabaseOperations.logout("testuser");
+
+        ret = remoteDatabaseOperations.getLoginStatus("testuser");
+        assertEquals(false, ret);
+
+        ret = remoteDatabaseOperations.login("testuser", "password2");
+        assertEquals(true, ret);
 
         /******************************************************************************************/
         /******************************************************************************************/
@@ -63,23 +74,6 @@ public class RemoteDatabaseTest {
         remoteDatabaseOperations.setHighScore("testuser", 0);
 
         /******************************************************************************************/
-
-        ret = remoteDatabaseOperations.setPassword("testuser", "testhash", "password");
-        assertEquals(true, ret);
-
-        remoteDatabaseOperations.logout("testuser");
-
-        ret = remoteDatabaseOperations.login("testuser", "password");
-        assertEquals(false, ret);
-
-        ret = remoteDatabaseOperations.login("testuser", "password");
-        assertEquals(true, ret);
-
-        ret = remoteDatabaseOperations.setPassword("testuser", "dummy", "dummy");
-        assertEquals(false, ret);
-
-        ret = remoteDatabaseOperations.setPassword("testuser", "password", "testhash");
-        assertEquals(true, ret);
 
         remoteDatabaseOperations.logout("testuser");
     }
