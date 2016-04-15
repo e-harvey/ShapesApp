@@ -4,6 +4,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Matrix;
 
 import fthomas.shapes.R;
 
@@ -19,8 +20,14 @@ public class Block
     private int[] activeSides;
     private boolean removable;
     private boolean active;
+    private boolean changed;
     //private int color;
     private int x, y; //coordinates for drawing if needed
+    final static Matrix rotate90 = new Matrix();
+
+    public Block() {
+        this(BlockType.EMPTY, null, 0, 0, true);
+    }
 
     public Block(Bitmap image)
     {
@@ -57,13 +64,18 @@ public class Block
         this.x = x;
         this.y = y;
         this.removable = removable;
+        rotate90.postRotate(90);
+        //this.changed = true;
     }
 
     public void rotate()
     {
+        //TODO:
         //rotate 90 degrees
         //rotate image
         //update activeSides
+        rotate90.postRotate(90);
+        image = Bitmap.createBitmap(image, 0, 0, image.getWidth(), image.getHeight(), rotate90, true);
     }
 
     public void update()
@@ -74,8 +86,9 @@ public class Block
 
     public void draw(Canvas canvas)
     {
-        //System.out.println("block dimentions: " + image.getWidth() + "," + image.getHeight());
-        canvas.drawBitmap(image, x, y, null);
+        if(image != null){
+            canvas.drawBitmap(image, x, y, null);
+        }
     }
 
     public Bitmap getImage() {
@@ -88,6 +101,18 @@ public class Block
 
     public boolean isActive() {
         return active;
+    }
+
+    public boolean isChanged() {
+        return changed;
+    }
+
+    public void setChanged(boolean changed) {
+        this.changed = changed;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
 
     public int getX() {
