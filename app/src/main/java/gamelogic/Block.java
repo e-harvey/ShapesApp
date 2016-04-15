@@ -23,7 +23,8 @@ public class Block
     private boolean changed;
     //private int color;
     private int x, y; //coordinates for drawing if needed
-    final static Matrix rotate90 = new Matrix();
+    final Matrix rotate90 = new Matrix();
+
 
     public Block() {
         this(BlockType.EMPTY, null, 0, 0, true);
@@ -74,7 +75,6 @@ public class Block
         //rotate 90 degrees
         //rotate image
         //update activeSides
-        rotate90.postRotate(90);
         image = Bitmap.createBitmap(image, 0, 0, image.getWidth(), image.getHeight(), rotate90, true);
     }
 
