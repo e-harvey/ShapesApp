@@ -53,8 +53,10 @@ public class Block
         this.activeSides = new boolean[4];
         this.removable = removable;
         this.active = true;
+        this.changed = true;
         this.x = x;
         this.y = y;
+        rotate90.postRotate(90);
 
         //assign images, rotation, activeSides here
         switch (type) {
@@ -77,18 +79,20 @@ public class Block
                 System.out.println("Block(): bad type given");
                 break;
         }
-
-        rotate90.postRotate(90);
-        //this.changed = true;
     }
 
     public void rotate()
     {
         //TODO:
-        //rotate 90 degrees
-        //rotate image
         //update activeSides
-        image = Bitmap.createBitmap(image, 0, 0, image.getWidth(), image.getHeight(), rotate90, true);
+        if(active) {
+            image = Bitmap.createBitmap(image, 0, 0, image.getWidth(), image.getHeight(), rotate90, true);
+        }
+        boolean tmp[] = new boolean[4];
+        System.arraycopy(activeSides, 0, tmp, 0, 4);
+        for(int i = 0; i < 4; i++) {
+            activeSides[(i + 1) % 4] = tmp[i];
+        }
     }
 
     public void update()
@@ -127,6 +131,14 @@ public class Block
                 activeSides = new boolean[]{true, true, true, true};
                 break;
         }
+
+        for(; rotation > 0; rotation--) {
+            this.rotate();
+        }
+    }
+
+    public BlockType getType() {
+        return type;
     }
 
     public Bitmap getImage() {
@@ -137,16 +149,12 @@ public class Block
         return removable;
     }
 
+    public void setRemovable(boolean removable) {
+        this.removable = removable;
+    }
+
     public boolean isActive() {
         return active;
-    }
-
-    public boolean isChanged() {
-        return changed;
-    }
-
-    public void setChanged(boolean changed) {
-        this.changed = changed;
     }
 
     public void setActive(boolean active) {

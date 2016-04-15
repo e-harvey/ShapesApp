@@ -20,8 +20,8 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
 {
     private GameThread gameThread;
     private Block[][] grid;
-    private final int XBlocks = 6; //blocks on x axis
-    private final int YBlocks = 8; //blocks on y axis
+    private final int XBlocks = 7; //blocks on x axis
+    private final int YBlocks = 10; //blocks on y axis
     private int gridWidth;
     private int gridHeight;
     private int blockWidth;
@@ -43,13 +43,7 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
         blockImages.add(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.cleft), blockWidth, blockWidth, false));
         blockImages.add(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.square), blockWidth, blockWidth, false));
 
-        //init blocks at the right coordinates
-        //TODO: remove random image thing
-        for(int x = 0; x < XBlocks; x++) {
-            for(int y = 0; y < YBlocks; y++) {
-                grid[x][y] = new Block(Block.BlockType.EMPTY, blockImages.get((int)(Math.random() * 100) % 5), x * blockWidth, y * blockWidth);
-            }
-        }
+        initBlocks();
 
         getHolder().addCallback(this);
         gameThread = new GameThread(getHolder(), this);
@@ -92,18 +86,16 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
     public boolean onTouchEvent(MotionEvent event)
     {
         if(event.getAction() == MotionEvent.ACTION_DOWN) {
-
-            return true; // VERY IMPORTANT
-        }
-        if(event.getAction() == MotionEvent.ACTION_UP) {
             //get the block and rotate it
             int x = (int)(event.getX() / blockWidth);
             int y = (int)(event.getY() / blockWidth);
             System.out.println("press up at " + x + "," + y);
             grid[x][y].rotate();
-            //grid[x][y].setChanged(true);
 
-            //probably don't need anything here
+            return true; // VERY IMPORTANT
+        }
+        if(event.getAction() == MotionEvent.ACTION_UP) {
+
             return true; // VERY IMPORTANT
         }
 
@@ -114,7 +106,59 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
     {
         //update stuff
         //this is where we check for shapes being created, etc
-        //grid[0][0].update();
+        //TODO: change this so there's a list of empty blocks that it goes through
+        for(int x = 1; x < XBlocks - 1; x++) {
+            for(int y = 1; y < YBlocks - 1; y++) {
+                if(grid[x][y].getType() == Block.BlockType.EMPTY) {
+                    if((Math.random() * 100) < 5) {
+                        int typeNum = ((int)(Math.random() * 100) % 4) + 1;
+                        Bitmap image = blockImages.get(typeNum);
+                        Block.BlockType type;
+                        switch (typeNum) {
+                            case 1:
+                                type = Block.BlockType.WEDGE;
+                                break;
+                            case 2:
+                                type = Block.BlockType.DIAGONAL;
+                                break;
+                            case 3:
+                                type = Block.BlockType.CLEFT;
+                                break;
+                            case 4:
+                                type = Block.BlockType.SQUARE;
+                                break;
+                            default:
+                                type = Block.BlockType.WEDGE;
+                        }
+                        grid[x][y].changeType(type, image, ((int)(Math.random() * 100) % 4));
+                        /*if(typeNum < 40) {
+                            type = Block.BlockType.WEDGE;
+                            image = blockImages.get(typeNum);
+                        }
+                        else if(typeNum < 70) {
+                            type = Block.BlockType.DIAGONAL;
+                            image = blockImages.get(typeNum);
+                        }
+                        else if(typeNum < 90) {
+                            type = Block.BlockType.CLEFT;
+                            image = blockImages.get(typeNum);
+                        }
+                        else if(typeNum < 100) {
+                            type = Block.BlockType.SQUARE;
+                            image = blockImages.get(typeNum);
+                        }
+                        else {
+                            type = Block.BlockType.WEDGE;
+                            image = blockImages.get(typeNum);
+                        }*/
+                    }
+                } else {
+                    //TODO: check for shapes that have been made here
+                }
+            }
+        }
+
+
     }
 
     @Override
@@ -123,12 +167,46 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
         if(canvas != null) {
             for(int x = 0; x < XBlocks; x++) {
                 for(int y = 0; y < YBlocks; y++) {
-                    //if(grid[x][y].isChanged()) {
-                        grid[x][y].draw(canvas);
-                        //grid[x][y].setChanged(false);
-                    //}
+                    grid[x][y].draw(canvas);
                 }
             }
+        }
+    }
+
+    private void initBlocks()
+    {
+        // init all blocks to empty
+        for(int x = 0; x < XBlocks; x++) {
+            for(int y = 0; y < YBlocks; y++) {
+                grid[x][y] = new Block(Block.BlockType.EMPTY, blockImages.get(0), x * blockWidth, y * blockWidth);
+            }
+        }
+
+        //set corners as not changeable
+        grid[0][0].setActive(false);                    grid[0][0].setRemovable(false);
+        grid[0][YBlocks-1].setActive(false);            grid[0][YBlocks-1].setRemovable(false);
+        grid[XBlocks-1][0].setActive(false);            grid[XBlocks-1][0].setRemovable(false);
+        grid[XBlocks-1][YBlocks-1].setActive(false);    grid[XBlocks-1][YBlocks-1].setRemovable(false);
+        //init walls
+        for(int x = 0, y = 1; y < YBlocks - 1; y++) { // left wall
+            grid[x][y].changeType(Block.BlockType.WEDGE, blockImages.get(1), 3);
+            grid[x][y].setActive(false);
+            grid[x][y].setRemovable(false);
+        }
+        for(int x = XBlocks - 1, y = 1; y < YBlocks - 1; y++) { // right wall
+            grid[x][y].changeType(Block.BlockType.WEDGE, blockImages.get(1), 1);
+            grid[x][y].setActive(false);
+            grid[x][y].setRemovable(false);
+        }
+        for(int x = 1, y = 0; x < XBlocks - 1; x++) { // top wall
+            grid[x][y].changeType(Block.BlockType.WEDGE, blockImages.get(1), 0);
+            grid[x][y].setActive(false);
+            grid[x][y].setRemovable(false);
+        }
+        for(int x = 1, y = YBlocks - 1; x < XBlocks - 1; x++) { // bottom wall
+            grid[x][y].changeType(Block.BlockType.WEDGE, blockImages.get(1), 2);
+            grid[x][y].setActive(false);
+            grid[x][y].setRemovable(false);
         }
     }
 }
