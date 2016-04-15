@@ -99,8 +99,9 @@ public class Block
 
     public void draw(Canvas canvas)
     {
-        if(image != null){
+        if(image != null) {
             canvas.drawBitmap(image, x, y, null);
+        }
     }
 
     public void changeType(BlockType type, Bitmap image, int rotation) {
@@ -125,8 +126,6 @@ public class Block
             case SQUARE:
                 activeSides = new boolean[]{true, true, true, true};
                 break;
-        }
-        
         }
     }
 
