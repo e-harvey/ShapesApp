@@ -1,11 +1,13 @@
 /**
  * Remote storage method implementations.
- * TODO: Test the rest of the implemented methods.  Update all methods involving password
- * to use the same hash function that local storage does.
  */
 
 package storage.shapes;
 
+import java.nio.ByteBuffer;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.sql.*;
 import java.util.concurrent.TimeUnit;
 
@@ -18,6 +20,8 @@ class RemoteDatabaseOperations implements RemoteDbOperations, SharedDbOperations
     private String sqlCmd = null;
     private boolean status = false;
     private int max_retries = 5;
+    private SecureRandom secureRandom = null;
+    private MessageDigest messageDigest = null;
 
     private enum RemoteConnectionStatus {
         Success, Failure
@@ -26,6 +30,13 @@ class RemoteDatabaseOperations implements RemoteDbOperations, SharedDbOperations
     /* Begin constructors */
     RemoteDatabaseOperations() {
         persistentConnect();
+        secureRandom = new SecureRandom();
+        try {
+
+            messageDigest = MessageDigest.getInstance("sha-256");
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
     }
     /* End constructors */
 
@@ -49,6 +60,10 @@ class RemoteDatabaseOperations implements RemoteDbOperations, SharedDbOperations
         RemoteConnectionStatus remoteConnectionStatus = RemoteConnectionStatus.Success;
 
         try {
+            // Just return success if we are already connected.
+            if (connection != null && connection.isValid(max_retries))
+                return remoteConnectionStatus;
+
             // Point to the database driver
             Class.forName(JDBC_DRIVER);
 
@@ -143,39 +158,97 @@ class RemoteDatabaseOperations implements RemoteDbOperations, SharedDbOperations
     }
 
     /**
-     * Thie method checks the provided password against the password hash
-     * stored in the database.
+     * Set the hash for the given password.
+     *
+     * @param password the user's password
+     * @return true if the hash was set; otherwise false.
+     */
+    private boolean setHash(String username, String password)
+    {
+        byte[] salt, passwd, saltedPasswd, hash;
+        salt = passwd = saltedPasswd = hash = null;
+        int saltInt;
+        String hashStr;
+
+        secureRandom.setSeed(System.currentTimeMillis());
+
+        saltInt = Math.abs(secureRandom.nextInt());
+        salt = ByteBuffer.allocate(4).putInt(saltInt).array();
+        passwd = password.getBytes();
+        saltedPasswd = new byte[salt.length + passwd.length];
+
+        try {
+            System.arraycopy(salt, 0, saltedPasswd, 0, salt.length);
+            System.arraycopy(passwd, 0, saltedPasswd, salt.length, passwd.length);
+
+            hash = messageDigest.digest(saltedPasswd);
+
+            // Remove control character "'" from hash and backslash because reasons
+            hashStr = new String(hash).replaceAll("(\\\\|')+", "0");
+
+            sqlCmd = "update user set passwdhash = '" + hashStr +
+                    "', salt = '" + saltInt + "' where username = '" +
+                    username + "'";
+
+            if (statement.executeUpdate(sqlCmd) == 0) {
+                System.out.println("Couldn't update hash and salt for user '" + username + "'" +
+                " in user table");
+                return false;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            connect();
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Determine whether the given password matches the stored hash.
      *
      * @param username the user's username
-     * @param password the password associated with the given username
-     * @return true if the password matches the stored password; otherwise false
+     * @param password the associated password
+     * @return true if the password matches; otherwise false.
      */
-    private boolean getHashMatch(String username, String password)
+    private boolean cmpHash(String username, String password)
     {
-        boolean hashMatch = false;
-        sqlCmd = "select passwdhash from user where username = '" + username + "'";
+        String passwdhash = null;
+        byte[] hash = null, salt, passwd;
+        byte[] saltedPw;
+        int saltInt;
+        String hashStr;
+
+        sqlCmd = "select salt, passwdhash from user where username = '" + username + "'";
 
         try {
             resultSet = statement.executeQuery(sqlCmd);
 
             if (resultSet.next()) {
-                String hash = resultSet.getString("passwdhash");
-                hashMatch = hash.equals(password);
-
-
+                saltInt = resultSet.getInt("salt");
+                passwdhash = resultSet.getString("passwdhash");
             } else {
-                System.out.println("error: RemoteDatabaseOperations.login could not find username '" +
-                        username + "in the remote database.");
+                System.out.println("error: RemoteDatabaseOperations.cmpHash: " +
+                        "no salt or password hash found for user '" + username + "'");
+                return false;
             }
+
+            salt = ByteBuffer.allocate(4).putInt(saltInt).array();
+            passwd = password.getBytes();
+            saltedPw = new byte[salt.length + passwd.length];
+            System.arraycopy(salt, 0, saltedPw, 0, salt.length);
+            System.arraycopy(passwd, 0, saltedPw, salt.length, passwd.length);
+
+            hash = messageDigest.digest(saltedPw);
+
+            // Remove control character "'" from hash and backslash because reasons
+            hashStr = new String(hash).replaceAll("(\\\\|')+", "0");
+
+            return passwdhash.equals(hashStr);
         } catch (SQLException e) {
             e.printStackTrace();
-
-            System.out.println("error: RemoteDatabaseOperations.login: " +
-                    "attempting to reconnect to remote database.");
             connect();
         }
-
-        return hashMatch;
+        return false;
     }
     /* End private methods */
 
@@ -214,6 +287,9 @@ class RemoteDatabaseOperations implements RemoteDbOperations, SharedDbOperations
                 resultSet = statement.executeQuery(sqlCmd);
                 if (resultSet.next()) {
                     seed = resultSet.getLong("seed");
+                } else {
+                    System.out.println("error: RemoteDatabaseOperations.getBlockSeed: no seed found" +
+                            " for user '" + username + "'");
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -262,18 +338,34 @@ class RemoteDatabaseOperations implements RemoteDbOperations, SharedDbOperations
     {
         String status = "Successfully added user: '" + username + "'";
         boolean ret = false;
+        byte[] salt, passwd, saltedPasswd, hash;
+        int saltInt;
+        String hashStr;
+        salt = passwd = saltedPasswd = hash = null;
 
-        sqlCmd = "select username, passwdhash from user where username = '" +
-                username + "' AND passwdhash = '" + password + "'";
+        secureRandom.setSeed(System.currentTimeMillis());
+        saltInt = Math.abs(secureRandom.nextInt());
+
+        salt = ByteBuffer.allocate(4).putInt(saltInt).array();
+        passwd = password.getBytes();
+        saltedPasswd = new byte[salt.length + passwd.length];
+
+        System.arraycopy(salt, 0, saltedPasswd, 0, salt.length);
+        System.arraycopy(passwd, 0, saltedPasswd, salt.length, passwd.length);
+        hash = messageDigest.digest(saltedPasswd);
+
+        // Remove control character "'" from hash and backslash because reasons
+        hashStr = new String(hash).replaceAll("(\\\\|')+", "0");
+
+        sqlCmd = "select username from user where username = '" + username + "'";
 
         try {
             resultSet = statement.executeQuery(sqlCmd);
-
             if (resultSet.next()) {
                 status = "That username has already been taken.";
             } else { // add the user
-                sqlCmd = "insert into user values ('" + username + "', '" +
-                        password + "', '0', '0')";
+                sqlCmd = "insert into user values ('" + username + "', '0', '0', +'" + saltInt + "', '" +
+                        hashStr + "')";
 
                 if (statement.executeUpdate(sqlCmd) == 0) {
                     status = "Failed to add user, but username doesn't exist!";
@@ -289,7 +381,6 @@ class RemoteDatabaseOperations implements RemoteDbOperations, SharedDbOperations
             connect();
         }
 
-        System.out.println(status);
         return ret;
     }
 
@@ -378,7 +469,7 @@ class RemoteDatabaseOperations implements RemoteDbOperations, SharedDbOperations
     {
         boolean hashMatch = false;
 
-        if ((hashMatch = getHashMatch(username, password))) {
+        if ((hashMatch = cmpHash(username, password))) {
             sqlCmd = "update user set status = '1' where username = '" +
                     username + "'";
 
@@ -395,6 +486,8 @@ class RemoteDatabaseOperations implements RemoteDbOperations, SharedDbOperations
                 connect();
 
             }
+        } else {
+            System.out.println("error: RemoteDatabaseOperations.login: hash match failed");
         }
         return hashMatch;
     }
@@ -412,30 +505,13 @@ class RemoteDatabaseOperations implements RemoteDbOperations, SharedDbOperations
             connection.close();
         } catch (SQLException e) {
             e.printStackTrace();
+            connect();
         }
     }
 
     public boolean setPassword(String username, String oldPassword, String newPassword) {
         if (login(username, oldPassword)) {
-            sqlCmd = "update user set passwdhash = '" + newPassword + "' where username = '" +
-                    username + "'";
-            try {
-                // try updating the user table, if it fails print an error.
-                if (statement.executeUpdate(sqlCmd) == 0) {
-                    System.out.println("error: RemoteDatabaseOperations.setHighScore: username '"
-                            + username + "' does not exist in the database.");
-                    return false;
-                }
-                System.out.println("Password for user '" + username + "' updated.");
-                return true;
-            } catch (SQLException e) {
-                e.printStackTrace();
-
-                // Connection failed, attempt to reconnect.
-                System.out.println("error: RemoteDatabaseOperations.setPassword: " +
-                        "attempting to reconnect to remote database.");
-                connect();
-            }
+            return setHash(username, newPassword);
         }
         return false;
     }
