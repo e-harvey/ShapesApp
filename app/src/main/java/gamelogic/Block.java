@@ -115,7 +115,7 @@ public class Block
         }
         this.type = type;
         this.image = image;
-        this.rotation = rotation;
+        this.rotation = 0;
 
         //set correct active sides
         switch (type) {
@@ -147,6 +147,10 @@ public class Block
 
     public Bitmap getImage() {
         return image;
+    }
+
+    public int getRotation() {
+        return rotation;
     }
 
     public boolean[] getActiveSides() {

@@ -58,11 +58,18 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
 
         // initialize bitmaps
         // 0 empty, 1 wedge, 2 diagonal, 3 cleft, 4 square
+        // 5 wedge_green, 6 diagonal_green, 7 cleft_green, 8 square_green
         blockImages.add(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.empty), blockWidth, blockWidth, false));
         blockImages.add(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.wedge), blockWidth, blockWidth, false));
         blockImages.add(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.diagonal), blockWidth, blockWidth, false));
         blockImages.add(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.cleft), blockWidth, blockWidth, false));
         blockImages.add(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.square), blockWidth, blockWidth, false));
+        blockImages.add(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.wedge_green), blockWidth, blockWidth, false));
+        blockImages.add(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.diagonal_green), blockWidth, blockWidth, false));
+        blockImages.add(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.cleft_green), blockWidth, blockWidth, false));
+        blockImages.add(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.square_green), blockWidth, blockWidth, false));
+
+
 
         initBlocks();
 
@@ -136,8 +143,27 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
                     //change every block in the shape to empty
                     if(shapeBlocks != null) {
                         //TODO: update score here
+
+                        //Change block image to green to show shape has been made
                         for(ShapeData block : shapeBlocks) {
-                            grid[block.x][block.y].changeType(Block.BlockType.EMPTY, blockImages.get(0), 0);
+                            Block tmpBlock = grid[block.x][block.y];
+                            switch (tmpBlock.getType()) {
+                                case WEDGE:
+                                    tmpBlock.changeType(Block.BlockType.WEDGE, blockImages.get(5), tmpBlock.getRotation());
+                                    break;
+                                case DIAGONAL:
+                                    tmpBlock.changeType(Block.BlockType.DIAGONAL, blockImages.get(6), tmpBlock.getRotation());
+                                    break;
+                                case CLEFT:
+                                    tmpBlock.changeType(Block.BlockType.CLEFT, blockImages.get(7), tmpBlock.getRotation());
+                                    break;
+                                case SQUARE:
+                                    tmpBlock.changeType(Block.BlockType.SQUARE, blockImages.get(8), tmpBlock.getRotation());
+                                    break;
+                            }
+                            //TODO: change this permanent stop into some animation that disappears after a bit
+                            grid[block.x][block.y].setActive(false);
+                            grid[block.x][block.y].setRemovable(false);
                         }
                     }
                     grid[x][y].setChanged(false);
@@ -183,9 +209,6 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
 
         //Got a shape!
         ArrayList<ShapeData> shapeBlocks = new ArrayList<ShapeData>(shape.values());
-        for(ShapeData i : shapeBlocks) {
-            System.out.println(i.x + "," + i.y);
-        }
         return shapeBlocks;
     }
 
@@ -199,15 +222,15 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
                     Bitmap image;
                     Block.BlockType type;
                     //TODO: adjust probabilities as needed
-                    if(typeNum < 40) {
+                    if(typeNum < 50) {
                         type = Block.BlockType.WEDGE;
                         image = blockImages.get(1);
                     }
-                    else if(typeNum < 70) {
+                    else if(typeNum < 80) {
                         type = Block.BlockType.DIAGONAL;
                         image = blockImages.get(2);
                     }
-                    else if(typeNum < 90) {
+                    else if(typeNum < 92) {
                         type = Block.BlockType.CLEFT;
                         image = blockImages.get(3);
                     }
@@ -255,22 +278,22 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
         grid[XBlocks-1][YBlocks-1].setActive(false);    grid[XBlocks-1][YBlocks-1].setRemovable(false);
         //init walls
         for(int x = 0, y = 1; y < YBlocks - 1; y++) { // left wall
-            grid[x][y].changeType(Block.BlockType.WEDGE, blockImages.get(1), 3);
+            grid[x][y].changeType(Block.BlockType.WEDGE, blockImages.get(5), 3);
             grid[x][y].setActive(false);
             grid[x][y].setRemovable(false);
         }
         for(int x = XBlocks - 1, y = 1; y < YBlocks - 1; y++) { // right wall
-            grid[x][y].changeType(Block.BlockType.WEDGE, blockImages.get(1), 1);
+            grid[x][y].changeType(Block.BlockType.WEDGE, blockImages.get(5), 1);
             grid[x][y].setActive(false);
             grid[x][y].setRemovable(false);
         }
         for(int x = 1, y = 0; x < XBlocks - 1; x++) { // top wall
-            grid[x][y].changeType(Block.BlockType.WEDGE, blockImages.get(1), 0);
+            grid[x][y].changeType(Block.BlockType.WEDGE, blockImages.get(5), 0);
             grid[x][y].setActive(false);
             grid[x][y].setRemovable(false);
         }
         for(int x = 1, y = YBlocks - 1; x < XBlocks - 1; x++) { // bottom wall
-            grid[x][y].changeType(Block.BlockType.WEDGE, blockImages.get(1), 2);
+            grid[x][y].changeType(Block.BlockType.WEDGE, blockImages.get(5), 2);
             grid[x][y].setActive(false);
             grid[x][y].setRemovable(false);
         }
