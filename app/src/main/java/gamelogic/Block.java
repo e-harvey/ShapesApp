@@ -53,7 +53,7 @@ public class Block
         this.activeSides = new boolean[4];
         this.removable = removable;
         this.active = true;
-        this.changed = true;
+        this.changed = false; //TODO: check this
         this.x = x;
         this.y = y;
         rotate90.postRotate(90);
@@ -83,15 +83,16 @@ public class Block
 
     public void rotate()
     {
-        //TODO:
-        //update activeSides
         if(active) {
+            //rotate bitmap
             image = Bitmap.createBitmap(image, 0, 0, image.getWidth(), image.getHeight(), rotate90, true);
-        }
-        boolean tmp[] = new boolean[4];
-        System.arraycopy(activeSides, 0, tmp, 0, 4);
-        for(int i = 0; i < 4; i++) {
-            activeSides[(i + 1) % 4] = tmp[i];
+            rotation = (rotation + 1) % 4;
+            //update active sides
+            boolean tmp[] = new boolean[4];
+            System.arraycopy(activeSides, 0, tmp, 0, 4);
+            for(int i = 0; i < 4; i++) {
+                activeSides[(i + 1) % 4] = tmp[i];
+            }
         }
     }
 
@@ -109,11 +110,14 @@ public class Block
     }
 
     public void changeType(BlockType type, Bitmap image, int rotation) {
+        if(!removable) {
+            return;
+        }
         this.type = type;
         this.image = image;
         this.rotation = rotation;
 
-        //TODO: set correct active sides, rotate bitmap, etc
+        //set correct active sides
         switch (type) {
             case EMPTY:
                 activeSides = new boolean[]{false, false, false, false};
@@ -131,7 +135,7 @@ public class Block
                 activeSides = new boolean[]{true, true, true, true};
                 break;
         }
-
+        //rotate bitmap
         for(; rotation > 0; rotation--) {
             this.rotate();
         }
@@ -143,6 +147,10 @@ public class Block
 
     public Bitmap getImage() {
         return image;
+    }
+
+    public boolean[] getActiveSides() {
+        return activeSides;
     }
 
     public boolean isRemovable() {
@@ -159,6 +167,14 @@ public class Block
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    public void setChanged(boolean changed) {
+        this.changed = changed;
+    }
+
+    public boolean isChanged() {
+        return changed;
     }
 
     public int getX() {

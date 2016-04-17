@@ -4,12 +4,19 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.support.annotation.NonNull;
 import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
 
 import fthomas.shapes.R;
 
@@ -27,6 +34,19 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
     private int blockWidth;
     private ArrayList<Bitmap> blockImages = new ArrayList<Bitmap>();
 
+    private class ShapeData {
+        public boolean active = false;
+        public boolean sides[];
+        public int x;
+        public int y;
+        public ShapeData(boolean[] sides, int x, int y) {
+            this.sides = new boolean[4];
+            System.arraycopy(sides, 0, this.sides, 0, 4);;
+            this.x = x;
+            this.y = y;
+        }
+    }
+
     public GameWindow(Context context)
     {
         super(context);
@@ -36,6 +56,7 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
         gridHeight = (int)(metrics.widthPixels * ((float)YBlocks / XBlocks));
         blockWidth = gridWidth / XBlocks;
 
+        // initialize bitmaps
         // 0 empty, 1 wedge, 2 diagonal, 3 cleft, 4 square
         blockImages.add(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.empty), blockWidth, blockWidth, false));
         blockImages.add(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.wedge), blockWidth, blockWidth, false));
@@ -75,9 +96,6 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
     @Override
     public void surfaceCreated(SurfaceHolder holder)
     {
-        // set up background and blocks
-        //bg = new Background(BitmapFactory.decodeResource(getResources(), R.drawable.grid_image));
-
         //we can safely start the game loop
         gameThread.setRunning(true);
         gameThread.start();
@@ -89,8 +107,13 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
             //get the block and rotate it
             int x = (int)(event.getX() / blockWidth);
             int y = (int)(event.getY() / blockWidth);
-            System.out.println("press up at " + x + "," + y);
-            grid[x][y].rotate();
+            System.out.println("press at " + x + "," + y);
+            if(grid[x][y].getType() == Block.BlockType.EMPTY) {
+                fill_empty_block(x, y);
+            } else {
+                grid[x][y].rotate();
+            }
+            grid[x][y].setChanged(true);
 
             return true; // VERY IMPORTANT
         }
@@ -104,61 +127,104 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
 
     public void update()
     {
-        //update stuff
+        //TODO: change so it has a list of changed blocks
         //this is where we check for shapes being created, etc
-        //TODO: change this so there's a list of empty blocks that it goes through
-        for(int x = 1; x < XBlocks - 1; x++) {
-            for(int y = 1; y < YBlocks - 1; y++) {
-                if(grid[x][y].getType() == Block.BlockType.EMPTY) {
-                    if((Math.random() * 100) < 5) {
-                        int typeNum = ((int)(Math.random() * 100) % 4) + 1;
-                        Bitmap image = blockImages.get(typeNum);
-                        Block.BlockType type;
-                        switch (typeNum) {
-                            case 1:
-                                type = Block.BlockType.WEDGE;
-                                break;
-                            case 2:
-                                type = Block.BlockType.DIAGONAL;
-                                break;
-                            case 3:
-                                type = Block.BlockType.CLEFT;
-                                break;
-                            case 4:
-                                type = Block.BlockType.SQUARE;
-                                break;
-                            default:
-                                type = Block.BlockType.WEDGE;
+        for(int x = 0; x < XBlocks; x++) {
+            for(int y = 0; y < YBlocks; y++) {
+                if(grid[x][y].isChanged()) {
+                    ArrayList<ShapeData> shapeBlocks = check_shape(x, y);
+                    //change every block in the shape to empty
+                    if(shapeBlocks != null) {
+                        //TODO: update score here
+                        for(ShapeData block : shapeBlocks) {
+                            grid[block.x][block.y].changeType(Block.BlockType.EMPTY, blockImages.get(0), 0);
                         }
-                        grid[x][y].changeType(type, image, ((int)(Math.random() * 100) % 4));
-                        /*if(typeNum < 40) {
-                            type = Block.BlockType.WEDGE;
-                            image = blockImages.get(typeNum);
-                        }
-                        else if(typeNum < 70) {
-                            type = Block.BlockType.DIAGONAL;
-                            image = blockImages.get(typeNum);
-                        }
-                        else if(typeNum < 90) {
-                            type = Block.BlockType.CLEFT;
-                            image = blockImages.get(typeNum);
-                        }
-                        else if(typeNum < 100) {
-                            type = Block.BlockType.SQUARE;
-                            image = blockImages.get(typeNum);
-                        }
-                        else {
-                            type = Block.BlockType.WEDGE;
-                            image = blockImages.get(typeNum);
-                        }*/
                     }
-                } else {
-                    //TODO: check for shapes that have been made here
+                    grid[x][y].setChanged(false);
+                }
+            }
+        }
+        //fill_empty_block();
+    }
+
+    public ArrayList<ShapeData> check_shape(int startX, int startY)
+    {
+        int[][] adjCoord = {{0, -1},{1, 0},{0, 1},{-1, 0}}; //adjacent grid offsets (top, right, bottom, left)
+        ArrayList<ShapeData> activeBlocks = new ArrayList<ShapeData>();
+        HashMap<String,ShapeData> shape = new HashMap<String, ShapeData>();
+        // init starting block
+        ShapeData start = new ShapeData(grid[startX][startY].getActiveSides(), startX, startY);
+        activeBlocks.add(start);
+        shape.put(start.x + "," + start.y, start);
+
+        while(activeBlocks.size() > 0) {
+            ShapeData block = activeBlocks.remove(0);
+            for(int side = 0; side < 4; side++) {
+                if(block.sides[side]) { //follow active sides
+                    int chX = block.x + adjCoord[side][0];
+                    int chY = block.y + adjCoord[side][1];
+                    if ((chX >= 0 && chX < XBlocks) && (chY >= 0 && chY < YBlocks)) { //on grid
+                        ShapeData newBlock = new ShapeData(grid[chX][chY].getActiveSides(), chX, chY);
+                        if (newBlock.sides[(side + 2) % 4]) {
+                            // is adjacent side on new block connected?
+                            if(!(shape.containsKey(chX + "," + chY))) { //it's new
+                                newBlock.sides[(side + 2) % 4] = false;
+                                activeBlocks.add(newBlock); // add to active list
+                                shape.put(newBlock.x + "," + newBlock.y, newBlock);
+                            }
+                        } else {
+                            // not connected, NO SHAPE
+                            return null;
+                        }
+                    }
                 }
             }
         }
 
+        //Got a shape!
+        ArrayList<ShapeData> shapeBlocks = new ArrayList<ShapeData>(shape.values());
+        for(ShapeData i : shapeBlocks) {
+            System.out.println(i.x + "," + i.y);
+        }
+        return shapeBlocks;
+    }
 
+    public void fill_empty_block(int x, int y)
+    {
+        //TODO: change this so there's a list of empty blocks that it goes through
+        //for(int x = 1; x < XBlocks - 1; x++) {
+        //    for(int y = 1; y < YBlocks - 1; y++) {
+                if(grid[x][y].getType() == Block.BlockType.EMPTY) {
+                    int typeNum = (int)(Math.random() * 100);
+                    Bitmap image;
+                    Block.BlockType type;
+                    //TODO: adjust probabilities as needed
+                    if(typeNum < 40) {
+                        type = Block.BlockType.WEDGE;
+                        image = blockImages.get(1);
+                    }
+                    else if(typeNum < 70) {
+                        type = Block.BlockType.DIAGONAL;
+                        image = blockImages.get(2);
+                    }
+                    else if(typeNum < 90) {
+                        type = Block.BlockType.CLEFT;
+                        image = blockImages.get(3);
+                    }
+                    else if(typeNum < 100) {
+                        type = Block.BlockType.SQUARE;
+                        image = blockImages.get(4);
+                    }
+                    else {
+                        type = Block.BlockType.WEDGE;
+                        image = blockImages.get(1);
+                    }
+
+                    grid[x][y].changeType(type, image, ((int)(Math.random() * 100) % 4));
+                    grid[x][y].setChanged(true);
+                }
+        //    }
+        //}
     }
 
     @Override
