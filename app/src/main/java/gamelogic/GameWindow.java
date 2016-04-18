@@ -32,7 +32,7 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
     private int gridWidth;
     private int gridHeight;
     private int blockWidth;
-    private ArrayList<Bitmap> blockImages = new ArrayList<Bitmap>();
+    static public ArrayList<Bitmap> blockImages = new ArrayList<Bitmap>();
 
     private class ShapeData {
         public boolean active = false;
@@ -144,7 +144,7 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
                     if(shapeBlocks != null) {
                         //TODO: update score here
 
-                        //Change block image to green to show shape has been made
+                        //Change shape blocks to green to show shape has been made
                         for(ShapeData block : shapeBlocks) {
                             Block tmpBlock = grid[block.x][block.y];
                             switch (tmpBlock.getType()) {
@@ -161,15 +161,18 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
                                     tmpBlock.changeType(Block.BlockType.SQUARE, blockImages.get(8), tmpBlock.getRotation());
                                     break;
                             }
-                            //TODO: change this permanent stop into some animation that disappears after a bit
-                            grid[block.x][block.y].setActive(false);
-                            grid[block.x][block.y].setRemovable(false);
+
+                            tmpBlock.setActive(false);
+                            tmpBlock.setPartOfShape(true);
                         }
                     }
                     grid[x][y].setChanged(false);
                 }
+                grid[x][y].update();
+                fill_empty_block(x, y);
             }
         }
+
         //fill_empty_block();
     }
 
@@ -217,7 +220,7 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
         //TODO: change this so there's a list of empty blocks that it goes through
         //for(int x = 1; x < XBlocks - 1; x++) {
         //    for(int y = 1; y < YBlocks - 1; y++) {
-                if(grid[x][y].getType() == Block.BlockType.EMPTY) {
+        if(grid[x][y].getType() == Block.BlockType.EMPTY) {
                     int typeNum = (int)(Math.random() * 100);
                     Bitmap image;
                     Block.BlockType type;

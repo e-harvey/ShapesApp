@@ -13,6 +13,7 @@ import fthomas.shapes.R;
  */
 public class Block
 {
+    final private float SHAPE_SECS = 1.0F;
     public enum BlockType {EMPTY, WEDGE, DIAGONAL, CLEFT, SQUARE};
     private BlockType type;
     private Bitmap image = null;
@@ -21,6 +22,8 @@ public class Block
     private boolean removable;
     private boolean active;
     private boolean changed;
+    private boolean partOfShape;
+    private long shapeTime;
     //private int color;
     private int x, y; //coordinates for drawing if needed
     final Matrix rotate90 = new Matrix();
@@ -54,6 +57,7 @@ public class Block
         this.removable = removable;
         this.active = true;
         this.changed = false; //TODO: check this
+        partOfShape = false;
         this.x = x;
         this.y = y;
         rotate90.postRotate(90);
@@ -100,6 +104,16 @@ public class Block
     {
         //update stuff
         //rotations, animations, movement, etc
+
+        //Shape updating
+        if(partOfShape) {
+            long time = System.nanoTime() - shapeTime;
+            if((float)time / 1000000000 > SHAPE_SECS) {
+                partOfShape = false;
+                active = true;
+                this.changeType(BlockType.EMPTY, GameWindow.blockImages.get(0), 0);
+            }
+        }
     }
 
     public void draw(Canvas canvas)
@@ -110,7 +124,7 @@ public class Block
     }
 
     public void changeType(BlockType type, Bitmap image, int rotation) {
-        if(!removable) {
+        if(!removable || !active) {
             return;
         }
         this.type = type;
@@ -179,6 +193,15 @@ public class Block
 
     public boolean isChanged() {
         return changed;
+    }
+
+    public boolean isPartOfShape() {
+        return partOfShape;
+    }
+
+    public void setPartOfShape(boolean partOfShape) {
+        this.partOfShape = partOfShape;
+        this.shapeTime = System.nanoTime();
     }
 
     public int getX() {
