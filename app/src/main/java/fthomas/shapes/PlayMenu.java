@@ -30,37 +30,4 @@ public class PlayMenu extends Activity {
         //change to gameWindow, when created...
         setContentView(new GameWindow(this));
     }
-
-    //stuff below just to test things
-    /*
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_game, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-        setContentView(R.layout.activity_play_menu);
-
-        Typeface alltextTypeface = Typeface.createFromAsset(getAssets(), "Beeb Mode One.ttf");
-
-        TextView scorelabel = (TextView)findViewById(R.id.ScoreLabel);
-        scorelabel.setTypeface(alltextTypeface);
-        TextView score = (TextView)findViewById(R.id.Score);
-        score.setTypeface(alltextTypeface);
-    }
-    */
 }

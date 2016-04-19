@@ -136,7 +136,7 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
 
     public void update()
     {
-        //TODO: change so it has a list of changed blocks
+        //TODO: change so it has a list of changed blocks, and/or empty blocks
         //this is where we check for shapes being created, etc
         for(int x = 0; x < XBlocks; x++) {
             for(int y = 0; y < YBlocks; y++) {
@@ -174,8 +174,6 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
                 fill_empty_block(x, y);
             }
         }
-
-        //fill_empty_block();
     }
 
     public ArrayList<ShapeData> check_shape(int startX, int startY)
@@ -211,48 +209,41 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
                 }
             }
         }
-
         //Got a shape!
-        ArrayList<ShapeData> shapeBlocks = new ArrayList<ShapeData>(shape.values());
-        return shapeBlocks;
+        return new ArrayList<ShapeData>(shape.values());
     }
 
     public void fill_empty_block(int x, int y)
     {
-        //TODO: change this so there's a list of empty blocks that it goes through
-        //for(int x = 1; x < XBlocks - 1; x++) {
-        //    for(int y = 1; y < YBlocks - 1; y++) {
         if(grid[x][y].getType() == Block.BlockType.EMPTY) {
-                    int typeNum = (int)(Math.random() * 100);
-                    Bitmap image;
-                    Block.BlockType type;
-                    //TODO: adjust probabilities as needed
-                    if(typeNum < 50) {
-                        type = Block.BlockType.WEDGE;
-                        image = blockImages.get(1);
-                    }
-                    else if(typeNum < 80) {
-                        type = Block.BlockType.DIAGONAL;
-                        image = blockImages.get(2);
-                    }
-                    else if(typeNum < 92) {
-                        type = Block.BlockType.CLEFT;
-                        image = blockImages.get(3);
-                    }
-                    else if(typeNum < 100) {
-                        type = Block.BlockType.SQUARE;
-                        image = blockImages.get(4);
-                    }
-                    else {
-                        type = Block.BlockType.WEDGE;
-                        image = blockImages.get(1);
-                    }
+            int typeNum = (int)(Math.random() * 100);
+            Bitmap image;
+            Block.BlockType type;
+            //TODO: adjust probabilities as needed
+            if(typeNum < 50) {
+                type = Block.BlockType.WEDGE;
+                image = blockImages.get(1);
+            }
+            else if(typeNum < 80) {
+                type = Block.BlockType.DIAGONAL;
+                image = blockImages.get(2);
+            }
+            else if(typeNum < 92) {
+                type = Block.BlockType.CLEFT;
+                image = blockImages.get(3);
+            }
+            else if(typeNum < 100) {
+                type = Block.BlockType.SQUARE;
+                image = blockImages.get(4);
+            }
+            else {
+                type = Block.BlockType.WEDGE;
+                image = blockImages.get(1);
+            }
 
-                    grid[x][y].changeType(type, image, ((int)(Math.random() * 100) % 4));
-                    grid[x][y].setChanged(true);
-                }
-        //    }
-        //}
+            grid[x][y].changeType(type, image, ((int)(Math.random() * 100) % 4));
+            grid[x][y].setChanged(true);
+        }
     }
 
     @Override
