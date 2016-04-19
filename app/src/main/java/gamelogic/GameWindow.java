@@ -4,19 +4,14 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.support.annotation.NonNull;
+import android.graphics.Paint;
 import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
 
 import fthomas.shapes.R;
 
@@ -32,16 +27,17 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
     private int gridWidth;
     private int gridHeight;
     private int blockWidth;
-    static public ArrayList<Bitmap> blockImages = new ArrayList<Bitmap>();
+    static public ArrayList<Bitmap> blockImages = new ArrayList<>();
+    private long score = 0;
+    private int windowHeight;
 
     private class ShapeData {
-        public boolean active = false;
         public boolean sides[];
         public int x;
         public int y;
         public ShapeData(boolean[] sides, int x, int y) {
             this.sides = new boolean[4];
-            System.arraycopy(sides, 0, this.sides, 0, 4);;
+            System.arraycopy(sides, 0, this.sides, 0, 4);
             this.x = x;
             this.y = y;
         }
@@ -53,6 +49,7 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
         grid = new Block[XBlocks][YBlocks];
         DisplayMetrics metrics = context.getResources().getDisplayMetrics();
         gridWidth = metrics.widthPixels;
+        windowHeight = metrics.heightPixels;
         gridHeight = (int)(metrics.widthPixels * ((float)YBlocks / XBlocks));
         blockWidth = gridWidth / XBlocks;
 
@@ -83,7 +80,6 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height)
     {
         //needed it for class, ????
-        ;
     }
     @Override
     public void surfaceDestroyed(SurfaceHolder holder)
@@ -104,8 +100,21 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
     public void surfaceCreated(SurfaceHolder holder)
     {
         //we can safely start the game loop
-        gameThread.setRunning(true);
-        gameThread.start();
+        Thread.State state = gameThread.getState();
+        if(state == Thread.State.NEW) {
+            gameThread.setRunning(true);
+            gameThread.start();
+        } else if(state == Thread.State.TERMINATED) {
+            try {
+                gameThread.join();
+            }  catch(InterruptedException e) {
+                e.printStackTrace();
+            }
+            gameThread = new GameThread(getHolder(), this);
+            gameThread.setRunning(true);
+            gameThread.start();
+        }
+        System.out.println(state.toString());
     }
     @Override
     public boolean onTouchEvent(MotionEvent event)
@@ -138,13 +147,14 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
     {
         //TODO: change so it has a list of changed blocks, and/or empty blocks
         //this is where we check for shapes being created, etc
-        for(int x = 0; x < XBlocks; x++) {
-            for(int y = 0; y < YBlocks; y++) {
+        for(int x = 1; x < XBlocks - 1; x++) {
+            for(int y = 1; y < YBlocks - 1; y++) {
                 if(grid[x][y].isChanged()) {
                     ArrayList<ShapeData> shapeBlocks = check_shape(x, y);
                     //change every block in the shape to empty
                     if(shapeBlocks != null) {
                         //TODO: update score here
+                        score += shapeBlocks.size() * shapeBlocks.size();
 
                         //Change shape blocks to green to show shape has been made
                         for(ShapeData block : shapeBlocks) {
@@ -179,8 +189,8 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
     public ArrayList<ShapeData> check_shape(int startX, int startY)
     {
         int[][] adjCoord = {{0, -1},{1, 0},{0, 1},{-1, 0}}; //adjacent grid offsets (top, right, bottom, left)
-        ArrayList<ShapeData> activeBlocks = new ArrayList<ShapeData>();
-        HashMap<String,ShapeData> shape = new HashMap<String, ShapeData>();
+        ArrayList<ShapeData> activeBlocks = new ArrayList<>();
+        HashMap<String,ShapeData> shape = new HashMap<>();
         // init starting block
         ShapeData start = new ShapeData(grid[startX][startY].getActiveSides(), startX, startY);
         activeBlocks.add(start);
@@ -210,7 +220,7 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
             }
         }
         //Got a shape!
-        return new ArrayList<ShapeData>(shape.values());
+        return new ArrayList<>(shape.values());
     }
 
     public void fill_empty_block(int x, int y)
@@ -255,6 +265,17 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
                     grid[x][y].draw(canvas);
                 }
             }
+            //draw score
+            Paint paint = new Paint();
+            paint.setColor(0xFF000000);
+            paint.setStyle(Paint.Style.FILL);
+            canvas.drawRect(0, gridHeight, gridWidth, windowHeight, paint);
+
+            paint = new Paint();
+            paint.setTextSize(100);
+            paint.setColor(0xFFFFFFFF);
+            paint.setTextAlign(Paint.Align.CENTER);
+            canvas.drawText(score + "", gridWidth / 2, gridHeight + 100, paint);
         }
     }
 
