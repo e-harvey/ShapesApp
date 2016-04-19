@@ -87,7 +87,7 @@ public class Block
 
     public void rotate()
     {
-        if(active) {
+        if(active && removable) {
             //rotate bitmap
             image = Bitmap.createBitmap(image, 0, 0, image.getWidth(), image.getHeight(), rotate90, true);
             rotation = (rotation + 1) % 4;
