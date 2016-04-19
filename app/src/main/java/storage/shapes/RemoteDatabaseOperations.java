@@ -4,117 +4,127 @@
 
 package storage.shapes;
 
-import java.nio.ByteBuffer;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
-import java.sql.*;
-import java.util.concurrent.TimeUnit;
+import java.io.BufferedReader;
+import java.io.DataInput;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.ParseException;
+import org.json.simple.parser.JSONParser;
+
+import javax.net.ssl.HttpsURLConnection;
 
 
 class RemoteDatabaseOperations implements RemoteDbOperations, SharedDbOperations  {
-    final String JDBC_DRIVER = "org.mariadb.jdbc.Driver";
-    private Connection connection = null;
-    private Statement statement = null;
-    private ResultSet resultSet = null;
-    private String sqlCmd = null;
-    private boolean status = false;
-    private int max_retries = 5;
-    private SecureRandom secureRandom = null;
-    private MessageDigest messageDigest = null;
+    private final String DB_URL = "https://shapes.evanharvey.net/services";
+    private URL url;
+    private HttpsURLConnection connection;
+    private String charset;
+    private String data, token = null;
 
-    private enum RemoteConnectionStatus {
+    private enum PostRequestStatus {
         Success, Failure
     }
 
     /* Begin constructors */
     RemoteDatabaseOperations() {
-        persistentConnect();
-        secureRandom = new SecureRandom();
-        try {
-
-            messageDigest = MessageDigest.getInstance("sha-256");
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
+        charset = "UTF-8";
     }
     /* End constructors */
 
     /* Begin Private methods */
 
     /**
-     * This method attempts to connect to the remote database at DB_URL using the
-     * dbuser and password and credentials.  If the connection is esablished successfully,
-     * then a statement is instantiated; otheriwse an error code is returned.
+     * This method upacks the params which is of the form [field1,val1,field2,val2,...]
+     * and then send the post request to the given url.
      *
      * @return Success: upon sucessfully connecting to the database.
      *         Failure: upon fauling to connect to the database.
-     *
-     *
      */
-    private RemoteConnectionStatus connect()
-    {
-        final String DB_URL = "jdbc:mariadb://www.evanharvey.net:3306/shapes";
-        final String dbuser = "";
-        final String password = "";
-        RemoteConnectionStatus remoteConnectionStatus = RemoteConnectionStatus.Success;
+    private PostRequestStatus sendPostRequest(ArrayList<String> param) {
+        PostRequestStatus postRequestStatus = PostRequestStatus.Failure;
+        DataOutputStream DataOutputStream;
+        DataInputStream dataInputStream;
+        JSONObject jsonObject;
+
+        String service = null, request = "";
 
         try {
-            // Just return success if we are already connected.
-            if (connection != null && connection.isValid(max_retries))
-                return remoteConnectionStatus;
+            service = DB_URL + "/?" + param.get(0) + "=" + URLEncoder.encode(param.get(1), charset) +
+            "&" + URLEncoder.encode(param.get(2), charset) + "=" + URLEncoder.encode(param.get(3), charset);
 
-            // Point to the database driver
-            Class.forName(JDBC_DRIVER);
+            for (int i = 4; i < param.size() - 1; i += 2) {
+                if (i == 4)
+                    request = request + param.get(i) + "=" + URLEncoder.encode(param.get(i + 1), charset);
+                else
+                    request = request + "&" + param.get(i) + "=" + URLEncoder.encode(param.get(i + 1), charset);
 
-            // Attempt to establish the connection
-            connection = DriverManager.getConnection(DB_URL, dbuser, password);
-
-            // Create the statement object for querying / updating the database
-            statement = connection.createStatement();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-            remoteConnectionStatus = RemoteConnectionStatus.Failure;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            remoteConnectionStatus = RemoteConnectionStatus.Failure;
-        }
-
-        return remoteConnectionStatus;
-    }
-
-    /**
-     * This method attempts to connect to the database max_retires times and
-     * then prints the status of the connection.
-     */
-    private void persistentConnect()
-    {
-        int count = 0;
-        RemoteConnectionStatus remoteConnectionStatus = RemoteConnectionStatus.Failure;
-
-        while (remoteConnectionStatus != RemoteConnectionStatus.Success && ++count < max_retries) {
-            try {
-                TimeUnit.SECONDS.sleep(1);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
             }
-            remoteConnectionStatus = connect();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+            return postRequestStatus;
         }
-        printRemoteConnectionStatus(remoteConnectionStatus);
+
+        System.out.print(service + " ");
+        System.out.println(request);
+
+        try {
+            url = new URL(service);
+            connection = (HttpsURLConnection) url.openConnection();
+            connection.setDoOutput(true);
+            connection.setDoInput(true);
+            connection.setRequestProperty("Accept-Charset", charset);
+            connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded;charset=" + charset);
+
+            DataOutputStream = new DataOutputStream(connection.getOutputStream());
+            DataOutputStream.writeBytes(request);
+            DataOutputStream.close();
+
+            BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+
+            String whatWeGot = br.readLine();
+            System.out.println(whatWeGot);
+            JSONParser jsonParser = new JSONParser();
+            jsonObject = (JSONObject) jsonParser.parse(whatWeGot);
+
+            System.out.println(jsonObject.get("status"));
+            System.out.println(jsonObject.get("data"));
+
+            if ((Boolean)jsonObject.get("status"))
+                postRequestStatus = PostRequestStatus.Success;
+
+            data = (String) jsonObject.get("data");
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        return postRequestStatus;
+
     }
 
     /**
      * This method prints out the connection status information based on the
-     * value of remoteConnectionStatus.
+     * value of postRequestStatus.
      *
-     * @param remoteConnectionStatus the status of the remote connection.
+     * @param postRequestStatus the status of the remote connection.
      * todo: Print messages to the user's screen.
      */
-    private void printRemoteConnectionStatus(RemoteConnectionStatus remoteConnectionStatus)
+    private void printPostRequestStatus(PostRequestStatus postRequestStatus)
     {
         String userStatus = null;
 
-        switch(remoteConnectionStatus) {
+        switch(postRequestStatus) {
             case Success:
                 userStatus = "You have successfully connected to the database!";
                 break;
@@ -125,395 +135,215 @@ class RemoteDatabaseOperations implements RemoteDbOperations, SharedDbOperations
         System.out.println(userStatus);
     }
 
-    /**
-     * Thie method returns true or false, true if the status of the user is online
-     * and false other wise
-     *
-     * @param username the user's username
-     * @return true if online; otherwise false
-     */
-    private boolean getStatus(String username)
-    {
-        sqlCmd = "select status from user where username = '" + username + "'";
-
-        try {
-            resultSet = statement.executeQuery(sqlCmd);
-
-            if (resultSet.next()) {
-                return resultSet.getBoolean("status");
-            } else {
-                    System.out.println("error: RemoteDatabaseOperations.getStatus: " +
-                            "username '" + username + "' not found in remote database.");
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-
-            if (e.getErrorCode() == -1) {
-                    System.out.println("error: RemoteDatabaseOperations.getStatus: " +
-                            "attempting to reconnect to remote database.");
-                    connect();
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Set the hash for the given password.
-     *
-     * @param password the user's password
-     * @return true if the hash was set; otherwise false.
-     */
-    private boolean setHash(String username, String password)
-    {
-        byte[] salt, passwd, saltedPasswd, hash;
-        salt = passwd = saltedPasswd = hash = null;
-        int saltInt;
-        String hashStr;
-
-        secureRandom.setSeed(System.currentTimeMillis());
-
-        saltInt = Math.abs(secureRandom.nextInt());
-        salt = ByteBuffer.allocate(4).putInt(saltInt).array();
-        passwd = password.getBytes();
-        saltedPasswd = new byte[salt.length + passwd.length];
-
-        try {
-            System.arraycopy(salt, 0, saltedPasswd, 0, salt.length);
-            System.arraycopy(passwd, 0, saltedPasswd, salt.length, passwd.length);
-
-            hash = messageDigest.digest(saltedPasswd);
-
-            // Remove control character "'" from hash and backslash because reasons
-            hashStr = new String(hash).replaceAll("(\\\\|')+", "0");
-
-            sqlCmd = "update user set passwdhash = '" + hashStr +
-                    "', salt = '" + saltInt + "' where username = '" +
-                    username + "'";
-
-            if (statement.executeUpdate(sqlCmd) == 0) {
-                System.out.println("Couldn't update hash and salt for user '" + username + "'" +
-                " in user table");
-                return false;
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            connect();
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     * Determine whether the given password matches the stored hash.
-     *
-     * @param username the user's username
-     * @param password the associated password
-     * @return true if the password matches; otherwise false.
-     */
-    private boolean cmpHash(String username, String password)
-    {
-        String passwdhash = null;
-        byte[] hash = null, salt, passwd;
-        byte[] saltedPw;
-        int saltInt;
-        String hashStr;
-
-        sqlCmd = "select salt, passwdhash from user where username = '" + username + "'";
-
-        try {
-            resultSet = statement.executeQuery(sqlCmd);
-
-            if (resultSet.next()) {
-                saltInt = resultSet.getInt("salt");
-                passwdhash = resultSet.getString("passwdhash");
-            } else {
-                System.out.println("error: RemoteDatabaseOperations.cmpHash: " +
-                        "no salt or password hash found for user '" + username + "'");
-                return false;
-            }
-
-            salt = ByteBuffer.allocate(4).putInt(saltInt).array();
-            passwd = password.getBytes();
-            saltedPw = new byte[salt.length + passwd.length];
-            System.arraycopy(salt, 0, saltedPw, 0, salt.length);
-            System.arraycopy(passwd, 0, saltedPw, salt.length, passwd.length);
-
-            hash = messageDigest.digest(saltedPw);
-
-            // Remove control character "'" from hash and backslash because reasons
-            hashStr = new String(hash).replaceAll("(\\\\|')+", "0");
-
-            return passwdhash.equals(hashStr);
-        } catch (SQLException e) {
-            e.printStackTrace();
-            connect();
-        }
-        return false;
-    }
-    /* End private methods */
-
     /* Begin RemoteDbOperation methods */
     public boolean getLoginStatus(String username)
     {
-        try {
-            // Check if connection is valid and open, try for max_retries seconds
-            if (connection.isValid(max_retries)) {
-                return getStatus(username);
-            } else {
-                System.out.println("error: RemoteDatabaseOperations.getLoginStatus: " +
-                        "attempting to reconnect to remote database.");
-                connect();
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
+        ArrayList<String> params = new ArrayList<String>();
 
-            // Connection failed, attempt to reconnect.
-            System.out.println("error: RemoteDatabaseOperations.getLoginStatus: " +
-                    "attempting to reconnect to remote database.");
-            connect();
+        params.add(0, "service");
+        params.add(1, "get");
 
-        }
-        return false;
+        params.add(2, "action");
+        params.add(3, "getLoginstatus");
+
+        params.add(4, "username");
+        params.add(5, username);
+
+        params.add(6, "token");
+        params.add(7, token);
+
+        return sendPostRequest(params) == PostRequestStatus.Success;
     }
 
     public long getBlockSeed(String username)
     {
-        long seed = -1;
+        ArrayList<String> params = new ArrayList<String>();
 
-        if (getStatus(username)) {
-            sqlCmd = "select seed from blockseed where username = '" + username + "'";
+        params.add(0, "service");
+        params.add(1, "get");
 
-            try {
-                resultSet = statement.executeQuery(sqlCmd);
-                if (resultSet.next()) {
-                    seed = resultSet.getLong("seed");
-                } else {
-                    System.out.println("error: RemoteDatabaseOperations.getBlockSeed: no seed found" +
-                            " for user '" + username + "'");
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
+        params.add(2, "action");
+        params.add(3, "getBlockSeed");
 
-                // Connection failed, attempt to reconnect.
-                System.out.println("error: RemoteDatabaseOperations.getBlockSeed: " +
-                        "attempting to reconnect to remote database.");
-                connect();
-            }
-        } else {
-            System.out.println("Hash match failed, please login first.");
-        }
-        return seed;
+        params.add(4, "username");
+        params.add(5, username);
+
+        params.add(6, "token");
+        params.add(7, token);
+
+        data = "0";
+        sendPostRequest(params);
+        return Long.valueOf(data);
     }
 
     public void setBlockSeed(String username, long seed)
     {
-        if (getStatus(username)) {
-            sqlCmd = "update blockseed set seed = '" + seed + "' where username = '" +
-                    username + "'";
-            try {
-                // try updating the blockseed table, if it fails create the initial blockseed for the given user.
-                if (statement.executeUpdate(sqlCmd) == 0) {
-                    System.out.println("Couldn't update user '" + username + "'" +
-                            " in blockseed table, creating initial blockseed instead");
+        ArrayList<String> params = new ArrayList<String>();
 
-                    sqlCmd = "insert into blockseed values ('" + username + "', '" + seed + "')";
-                    statement.executeUpdate(sqlCmd);
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
+        params.add(0, "service");
+        params.add(1, "set");
 
-                // Connection failed, attempt to reconnect.
-                System.out.println("error: RemoteDatabaseOperations.setBlockSeed: " +
-                        "attempting to reconnect to remote database.");
-                connect();
-            }
-        } else {
-            System.out.println("Hash match failed, please login first.");
-        }
+        params.add(2, "action");
+        params.add(3, "setBlockSeed");
+
+        params.add(4, "username");
+        params.add(5, username);
+
+        params.add(6, "token");
+        params.add(7, token);
+
+        params.add(8, "seed");
+        params.add(9, String.valueOf(seed));
+
+        sendPostRequest(params);
     }
     /* End RemoteDbOperation methods */
 
     /* Begin SharedDatabaseOperations methods */
     public boolean addUser(String username, String password)
     {
-        String status = "Successfully added user: '" + username + "'";
-        boolean ret = false;
-        byte[] salt, passwd, saltedPasswd, hash;
-        int saltInt;
-        String hashStr;
-        salt = passwd = saltedPasswd = hash = null;
+        ArrayList<String> params = new ArrayList<String>();
 
-        secureRandom.setSeed(System.currentTimeMillis());
-        saltInt = Math.abs(secureRandom.nextInt());
+        params.add(0, "service");
+        params.add(1, "set");
 
-        salt = ByteBuffer.allocate(4).putInt(saltInt).array();
-        passwd = password.getBytes();
-        saltedPasswd = new byte[salt.length + passwd.length];
+        params.add(2, "action");
+        params.add(3, "addUser");
 
-        System.arraycopy(salt, 0, saltedPasswd, 0, salt.length);
-        System.arraycopy(passwd, 0, saltedPasswd, salt.length, passwd.length);
-        hash = messageDigest.digest(saltedPasswd);
+        params.add(4, "username");
+        params.add(5, username);
 
-        // Remove control character "'" from hash and backslash because reasons
-        hashStr = new String(hash).replaceAll("(\\\\|')+", "0");
+        params.add(6, "password");
+        params.add(7, password);
 
-        sqlCmd = "select username from user where username = '" + username + "'";
-
-        try {
-            resultSet = statement.executeQuery(sqlCmd);
-            if (resultSet.next()) {
-                status = "That username has already been taken.";
-            } else { // add the user
-                sqlCmd = "insert into user values ('" + username + "', '0', '0', +'" + saltInt + "', '" +
-                        hashStr + "')";
-
-                if (statement.executeUpdate(sqlCmd) == 0) {
-                    status = "Failed to add user, but username doesn't exist!";
-                } else
-                    ret = true;
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-
-            // Connection failed, attempt to reconnect.
-            System.out.println("error: RemoteDatabaseOperations.addUser: " +
-                    "attempting to reconnect to remote database.");
-            connect();
-        }
-
-        return ret;
+        return sendPostRequest(params) == PostRequestStatus.Success;
     }
 
     public boolean deleteUser(String username, String password) {
-        if (login(username, password)) {
-            sqlCmd = "delete from user where username = '" + username + "'";
+        ArrayList<String> params = new ArrayList<String>();
 
-            try {
-                // try updating the user table, if it fails print an error.
-                if (statement.executeUpdate(sqlCmd) == 0) {
-                    System.out.println("error: RemoteDatabaseOperations.deleteUser: username '"
-                            + username + "' does not exist in the remote database.");
-                    return false;
-                }
+        params.add(0, "service");
+        params.add(1, "set");
 
-                sqlCmd = "delete from blockseed where username = '" + username + "'";
+        params.add(2, "action");
+        params.add(3, "deleteUser");
 
-                if (statement.executeUpdate(sqlCmd) == 0) {
-                    System.out.println("error: RemoteDatabaseOperations.deleteUser: username '"
-                            + username + "' does not exist in the remote database.");
-                }
-                return true;
-            } catch (SQLException e) {
-                e.printStackTrace();
+        params.add(4, "username");
+        params.add(5, username);
 
-                // Connection failed, attempt to reconnect.
-                System.out.println("error: RemoteDatabaseOperations.deleteUser: " +
-                        "attempting to reconnect to remote database.");
-                connect();
-            }
-        }
-        return false;
+        params.add(6, "password");
+        params.add(7, password);
+
+        return sendPostRequest(params) == PostRequestStatus.Success;
     }
 
-    public void setHighScore(String username, long score) {
-        if (getStatus(username)) {
-            sqlCmd = "update user set highscore = '" + score + "' where username = '" +
-                    username + "'";
-            try {
-                // try updating the user table, if it fails print an error.
-                if (statement.executeUpdate(sqlCmd) == 0) {
-                    System.out.println("error: RemoteDatabaseOperations.setHighScore: username '"
-                            + username + "' does not exist in the database.");
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
+    public void setHighScore(String username, long score)
+    {
+        ArrayList<String> params = new ArrayList<String>();
 
-                // Connection failed, attempt to reconnect.
-                System.out.println("error: RemoteDatabaseOperations.setHighScore: " +
-                        "attempting to reconnect to remote database.");
-                connect();
-            }
-        } else {
-            System.out.println("Hash match failed, please login first.");
-        }
+        params.add(0, "service");
+        params.add(1, "set");
+
+        params.add(2, "action");
+        params.add(3, "setHighScore");
+
+        params.add(4, "username");
+        params.add(5, username);
+
+        params.add(6, "token");
+        params.add(7, token);
+
+        params.add(8, "score");
+        params.add(9, String.valueOf(score));
+
+        sendPostRequest(params);
     }
 
     public long getHighScore(String username)
     {
-        if (getStatus(username)) {
-            sqlCmd = "select highscore from user where username = '" + username + "'";
-            try {
-                resultSet = statement.executeQuery(sqlCmd);
+        ArrayList<String> params = new ArrayList<String>();
 
-                if (resultSet.next()) {
-                    return resultSet.getLong("highscore");
-                } else {
-                    System.out.println("error: RemoteDatabaseOperations.getHighScore could not find username '" +
-                            username + "in the remote database.");
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
+        params.add(0, "service");
+        params.add(1, "get");
 
-                // Connection failed, attempt to reconnect.
-                System.out.println("error: RemoteDatabaseOperations.getHighScore: " +
-                        "attempting to reconnect to remote database.");
-                connect();
-            }
-        } else {
-            System.out.println("Hash match failed, please login first.");
-        }
-        return -1;
+        params.add(2, "action");
+        params.add(3, "getHighScore");
+
+        params.add(4, "username");
+        params.add(5, username);
+
+        params.add(6, "token");
+        params.add(7, token);
+
+        data = "0";
+        sendPostRequest(params);
+        return Long.valueOf(data);
     }
 
     public boolean login(String username, String password)
     {
-        boolean hashMatch = false;
+        boolean ret;
 
-        if ((hashMatch = cmpHash(username, password))) {
-            sqlCmd = "update user set status = '1' where username = '" +
-                    username + "'";
+        ArrayList<String> params = new ArrayList<String>();
 
-            try {
-                if (statement.executeUpdate(sqlCmd) == 0) {
-                    System.out.println("error: RemoteDatabaseOperations.login: username '"
-                            + username + "' does not exist in the remote database.");
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
+        params.add(0, "service");
+        params.add(1, "login");
 
-                System.out.println("error: RemoteDatabaseOperations.login: " +
-                        "attempting to reconnect to remote database.");
-                connect();
+        params.add(2, "action");
+        params.add(3, "login");
 
-            }
-        } else {
-            System.out.println("error: RemoteDatabaseOperations.login: hash match failed");
-        }
-        return hashMatch;
+        params.add(4, "username");
+        params.add(5, username);
+
+        params.add(6, "password");
+        params.add(7, password);
+
+        ret = sendPostRequest(params) == PostRequestStatus.Success;
+
+        token = data;
+
+        return ret;
     }
 
     public void logout(String username)
     {
-        try {
-            sqlCmd = "update user set status = '0' where username = '" +
-                    username + "'";
+        ArrayList<String> params = new ArrayList<String>();
 
-            if (statement.executeUpdate(sqlCmd) == 0) {
-                System.out.println("error: RemoteDatabaseOperations.logout: username '"
-                        + username + "' does not exist in the remote database.");
-            }
-            connection.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            connect();
-        }
+        params.add(0, "service");
+        params.add(1, "login");
+
+        params.add(2, "action");
+        params.add(3, "logout");
+
+        params.add(4, "username");
+        params.add(5, username);
+
+        params.add(6, "token");
+        params.add(7, token);
+
+        sendPostRequest(params);
     }
 
-    public boolean setPassword(String username, String oldPassword, String newPassword) {
-        if (login(username, oldPassword)) {
-            return setHash(username, newPassword);
-        }
-        return false;
+    public boolean setPassword(String username, String oldPassword, String newPassword)
+    {
+        ArrayList<String> params = new ArrayList<String>();
+
+        params.add(0, "service");
+        params.add(1, "set");
+
+        params.add(2, "action");
+        params.add(3, "setPassword");
+
+        params.add(4, "username");
+        params.add(5, username);
+
+        params.add(6, "oldPassword");
+        params.add(7, oldPassword);
+
+        params.add(8, "newPassword");
+        params.add(9, newPassword);
+
+        return sendPostRequest(params) == PostRequestStatus.Success;
     }
     /* End SharedDatabaseOperations methods */
 }

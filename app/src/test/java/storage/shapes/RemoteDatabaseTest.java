@@ -16,66 +16,43 @@ public class RemoteDatabaseTest {
         assertNotEquals(null, remoteDatabaseOperations);
 
         ret = remoteDatabaseOperations.addUser("testuser", "password");
-        assertEquals(true, ret);
-
-        ret = remoteDatabaseOperations.login("testuser", "password");
-        assertEquals(true, ret);
-
-        remoteDatabaseOperations.logout("testuser");
-
-        ret = remoteDatabaseOperations.getLoginStatus("testuser");
         assertEquals(false, ret);
-
-        ret = remoteDatabaseOperations.login("testuser", "password");
-        assertEquals(true, ret);
-
-        ret = remoteDatabaseOperations.setPassword("testuser", "password", "password2");
-        assertEquals(true, ret);
-
-        remoteDatabaseOperations.logout("testuser");
-
-        ret = remoteDatabaseOperations.getLoginStatus("testuser");
-        assertEquals(false, ret);
-
-        ret = remoteDatabaseOperations.login("testuser", "password2");
-        assertEquals(true, ret);
-
-        /******************************************************************************************/
-        /******************************************************************************************/
-
-        remoteDatabaseOperations.setBlockSeed("testuser", 1234);
-
-        seed = remoteDatabaseOperations.getBlockSeed("testuser");
-        assertEquals(1234, seed);
-
-        remoteDatabaseOperations.setBlockSeed("testuser", 4321);
-
-        /******************************************************************************************/
 
         ret = remoteDatabaseOperations.addUser("testuser2", "password");
         assertEquals(true, ret);
 
-        ret = remoteDatabaseOperations.addUser("testuser2", "password");
-        assertEquals(false, ret);
-
-        ret = remoteDatabaseOperations.deleteUser("testuser2", "password");
+        ret = remoteDatabaseOperations.login("testuser2", "password");
         assertEquals(true, ret);
 
-        ret = remoteDatabaseOperations.deleteUser("testuser2", "password");
+        ret = remoteDatabaseOperations.getLoginStatus("testuser2");
+        assertEquals(true, ret);
+
+        ret = remoteDatabaseOperations.setPassword("testuser2", "password2", "password");
         assertEquals(false, ret);
 
-        /******************************************************************************************/
+        ret = remoteDatabaseOperations.setPassword("testuser2", "password", "password2");
+        assertEquals(true, ret);
 
-        remoteDatabaseOperations.setHighScore("testuser", 123456);
+        remoteDatabaseOperations.setBlockSeed("testuser2", 5555);
 
-        score = remoteDatabaseOperations.getHighScore("testuser");
-        assertEquals(123456, score);
+        seed = remoteDatabaseOperations.getBlockSeed("testuser2");
+        assertEquals(seed, 5555);
 
-        remoteDatabaseOperations.setHighScore("testuser", 0);
+        remoteDatabaseOperations.setHighScore("testuser2", 5555);
 
-        /******************************************************************************************/
+        score = remoteDatabaseOperations.getHighScore("testuser2");
+        assertEquals(5555, score);
 
-        remoteDatabaseOperations.logout("testuser");
+        remoteDatabaseOperations.logout("testuser2");
+
+        ret = remoteDatabaseOperations.getLoginStatus("testuser2");
+        assertEquals(false, ret);
+
+        ret = remoteDatabaseOperations.deleteUser("testuser2", "blah");
+        assertEquals(false, ret);
+
+        ret = remoteDatabaseOperations.deleteUser("testuser2", "password2");
+        assertEquals(true, ret);
     }
 
 }

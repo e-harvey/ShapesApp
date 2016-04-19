@@ -4,7 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/ShapesApp.iml" filepath="$PROJECT_DIR$/ShapesApp.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/mariadb-java-client-1.4.2/mariadb-java-client-1.4.2.iml" filepath="$PROJECT_DIR$/mariadb-java-client-1.4.2/mariadb-java-client-1.4.2.iml" />
+      <module fileurl="file://$PROJECT_DIR$/json-simple-1.1.1/json-simple-1.1.1.iml" filepath="$PROJECT_DIR$/json-simple-1.1.1/json-simple-1.1.1.iml" />
     </modules>
   </component>
 </project>
