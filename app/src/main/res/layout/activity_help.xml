@@ -13,37 +13,48 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="@string/Help_title"
         android:id="@+id/HelpTitle"
+        android:textColor="@color/Text"
         android:textSize="32sp"
         android:layout_marginTop="48dp"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true" />
 
-    <Button
+    <!--- instructions 1-->
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/Previous_Button"
-        android:id="@+id/Previous"
-        android:textSize="20sp"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="@string/instruct1"
         android:textColor="@color/Text"
-        android:layout_marginBottom="50dp"
+        android:id="@+id/instruct1"
+        android:textSize="20sp"
+        android:layout_marginTop="10dp"
+        android:layout_below="@id/HelpTitle"
+        android:layout_centerHorizontal="true" />
+
+    <!--- instructions 2-->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="@string/instruct2"
+        android:textColor="@color/Text"
+        android:id="@+id/instruct2"
+        android:textSize="20sp"
+        android:layout_marginBottom="10dp"
         android:layout_alignParentBottom="true"
+        android:textAlignment="center" />
+
+    <!-- actual demo -->
+    <VideoView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/videoView"
+        android:background="@color/Background"
+        android:layout_below="@+id/instruct1"
         android:layout_alignParentStart="true"
-        android:onClick="Acknowledge"
-        style="?android:attr/borderlessButtonStyle"/>
-
-    <!--- Next button leads to the next window of instructions -->
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/Next_Button"
-        android:id="@+id/Next"
-        android:textSize="20sp"
-        android:textColor="@color/Text"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="50dp"
         android:layout_alignParentEnd="true"
-        android:onClick="acknowledge"
-        style="?android:attr/borderlessButtonStyle"/>
-
+        android:layout_above="@+id/instruct2"
+        android:scaleType="fitCenter"/>
 
 </RelativeLayout>

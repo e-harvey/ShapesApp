@@ -30,8 +30,8 @@
     
     <!-- Help screen strings-->
     <string name="Help_title">Help</string>
-    <string name="Previous_Button">Previous</string>
-    <string name="Next_Button">Next</string>
+    <string name="instruct1">Just make shapes man\!</string>
+    <string name="instruct2">Connect every blue edge to another blue edge. It\'s that simple</string>
 
     <!-- Settings screen strings-->
     <string name="Settings_title">Settings</string>
