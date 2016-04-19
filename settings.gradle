@@ -1,1 +1,1 @@
-include ':app', ':mariadb-java-client-1.4.2'
+include ':app', ':json-simple-1.1.1'
