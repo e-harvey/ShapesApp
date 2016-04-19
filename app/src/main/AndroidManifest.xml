@@ -23,8 +23,8 @@
         <activity
             android:name=".PlayMenu"
             android:label="Shapes"
-            android:parentActivityName=".PlayMenu"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar"
+            android:parentActivityName=".MainMenu">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="fthomas.shapes.MainMenu" />
@@ -51,6 +51,22 @@
             android:name="storage.shapes.MainActivity"
             android:label="@string/title_activity_main"
             android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity android:name=".HelpScreen"
+            android:label="Shapes"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:parentActivityName=".MainMenu">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="fthomas.shapes.MainMenu"/>
+        </activity>
+        <activity android:name=".SettingsScreen"
+            android:label="Shapes"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:parentActivityName=".MainMenu">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="fthomas.shapes.MainMenu"/>
+        </activity>
     </application>
 
 </manifest>
