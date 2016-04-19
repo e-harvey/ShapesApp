@@ -1,0 +1,12 @@
+#If you are on you branch
+git status
+git add file1 file2 …
+git commit -m ‘This is new stuff’
+git checkout master
+git pull upstream master
+git checkout mybranch
+git rebase master
+git status
+# IF there is red stuff resolve merge conflicts
+git push -u origin mybranch
+# Open a pull request
