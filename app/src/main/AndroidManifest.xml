@@ -9,14 +9,12 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:scaleType="fitCenter"
-        android:configChanges="orientation"
         android:screenOrientation="portrait">
 
         <activity
             android:name=".MainMenu"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar"
-            android:configChanges="orientation"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -28,7 +26,8 @@
             android:name=".PlayMenu"
             android:label="Shapes"
             android:theme="@style/AppTheme.NoActionBar"
-            android:parentActivityName=".MainMenu">
+            android:parentActivityName=".MainMenu"
+            android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="fthomas.shapes.MainMenu" />
@@ -37,7 +36,8 @@
             android:name=".FriendsMenu"
             android:label="Shapes"
             android:parentActivityName=".MainMenu"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="fthomas.shapes.MainMenu" />
@@ -46,7 +46,8 @@
             android:name=".ScoresMenu"
             android:label="Shapes"
             android:parentActivityName=".MainMenu"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="fthomas.shapes.MainMenu" />
@@ -54,11 +55,13 @@
         <activity
             android:name="storage.shapes.MainActivity"
             android:label="@string/title_activity_main"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait"></activity>
         <activity android:name=".HelpScreen"
             android:label="Shapes"
             android:theme="@style/AppTheme.NoActionBar"
-            android:parentActivityName=".MainMenu">
+            android:parentActivityName=".MainMenu"
+            android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="fthomas.shapes.MainMenu"/>
@@ -66,7 +69,8 @@
         <activity android:name=".SettingsScreen"
             android:label="Shapes"
             android:theme="@style/AppTheme.NoActionBar"
-            android:parentActivityName=".MainMenu">
+            android:parentActivityName=".MainMenu"
+            android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="fthomas.shapes.MainMenu"/>
