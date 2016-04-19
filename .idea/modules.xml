@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Shapes.iml" filepath="$PROJECT_DIR$/Shapes.iml" />
       <module fileurl="file://$PROJECT_DIR$/ShapesApp.iml" filepath="$PROJECT_DIR$/ShapesApp.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/mariadb-java-client-1.4.2/mariadb-java-client-1.4.2.iml" filepath="$PROJECT_DIR$/mariadb-java-client-1.4.2/mariadb-java-client-1.4.2.iml" />
