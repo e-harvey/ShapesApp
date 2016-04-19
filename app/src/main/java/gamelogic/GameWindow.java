@@ -66,9 +66,9 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
         blockImages.add(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.cleft_green), blockWidth, blockWidth, false));
         blockImages.add(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.square_green), blockWidth, blockWidth, false));
 
-
-
+        //TODO: start the blocks offset by half to allow for more blocks on screen at a time
         initBlocks();
+        //TODO: add timer so the game ends
 
         getHolder().addCallback(this);
         gameThread = new GameThread(getHolder(), this);
@@ -123,20 +123,16 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
             //get the block and rotate it
             int x = (int)(event.getX() / blockWidth);
             int y = (int)(event.getY() / blockWidth);
-            if(y < YBlocks) {
+            if(y < YBlocks) { //stop overflow at bottom of screen
                 System.out.println("press at " + x + "," + y);
-                if (grid[x][y].getType() == Block.BlockType.EMPTY) {
-                    fill_empty_block(x, y);
-                } else {
-                    grid[x][y].rotate();
-                }
+                grid[x][y].rotate();
                 grid[x][y].setChanged(true);
 
                 return true; // VERY IMPORTANT
             }
         }
         if(event.getAction() == MotionEvent.ACTION_UP) {
-
+            //TODO: add tap-and-hold to change one block for point cost
             return true; // VERY IMPORTANT
         }
 
@@ -271,11 +267,14 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
             paint.setStyle(Paint.Style.FILL);
             canvas.drawRect(0, gridHeight, gridWidth, windowHeight, paint);
 
+            //TODO: scale to screen resolution
             paint = new Paint();
             paint.setTextSize(100);
             paint.setColor(0xFFFFFFFF);
             paint.setTextAlign(Paint.Align.CENTER);
             canvas.drawText(score + "", gridWidth / 2, gridHeight + 100, paint);
+
+            //TODO: draw timer here
         }
     }
 
