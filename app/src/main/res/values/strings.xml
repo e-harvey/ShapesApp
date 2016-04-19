@@ -6,18 +6,37 @@
     <string name="Play">Play</string>
     <string name="Multiplayer">Play With Friends</string>
     <string name="Scores">Scores</string>
+    <string name="Help">Help</string>
     <string name="help_description">Help Button</string>
+    <string name="Settings">Settings</string>
     <string name="settings_description">Settings Button</string>
 
     <!-- Play Menu Strings-->
-    <string name="Not_implemented">This feature not yet implemented :(</string>
+    <string name="GameArea">Game Playing Area</string>
+    <string name="CurrentScoreLabel">Current Score:   </string>
+    <string name="CurrentScore">  xxxx</string>
 
     <!-- Scores Strings-->
-    <string name="High_Score">High Score:</string>
+    <string name="HighScore_Title">High Scores</string>
+    <string name="HighScore">Your Highest Score:</string>
     <string name="Placeholder_number">123456</string>
     <string name="Friends_Scores">Your Friends\' Scores:</string>
+
     <!-- Friends menu strings-->
     <string name="Friends_title">Friends</string>
     <string name="add_friends">Add Friends</string>
     <string name="fake_friend">Fake Friend</string>
+
+    <!-- Help screen strings-->
+    <string name="Help_title">Help</string>
+    <string name="Previous_Button">Previous</string>
+    <string name="Next_Button">Next</string>
+
+    <!-- Settings screen strings-->
+    <string name="Settings_title">Settings</string>
+    <string name="bgVolume">Background Volume</string>
+    <string name="effVolume">Effects Volume</string>
+    <string name="Clear_Button">Clear Scores</string>
+
+
 </resources>

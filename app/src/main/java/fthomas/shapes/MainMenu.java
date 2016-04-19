@@ -10,29 +10,35 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.R.layout;
 
 public class MainMenu extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Typeface alltextTypeface = Typeface.createFromAsset(getAssets(), "Beeb Mode One.ttf");
+
+
         setContentView(R.layout.activity_main_menu);
+
         Typeface importedTypeface = Typeface.createFromAsset(getAssets(), "Arcade.ttf");
         TextView titleTypeface = (TextView)findViewById(R.id.Title);
         titleTypeface.setTypeface(importedTypeface);
+
         /** http://www.webpagepublicity.com/free-fonts-a4.html#FreeFonts */
 
-        Typeface alltextTypeface = Typeface.createFromAsset(getAssets(), "Beeb Mode One.ttf");
-        TextView playTypeface = (TextView)findViewById(R.id.Play);
+        Button playTypeface = (Button)findViewById(R.id.Play);
         playTypeface.setTypeface(alltextTypeface);
-        TextView multiplayerTypeface = (TextView)findViewById(R.id.Multiplayer);
+        Button multiplayerTypeface = (Button)findViewById(R.id.Multiplayer);
         multiplayerTypeface.setTypeface(alltextTypeface);
-        TextView scoresTypeface = (TextView)findViewById(R.id.Scores);
+        Button scoresTypeface = (Button)findViewById(R.id.Scores);
         scoresTypeface.setTypeface(alltextTypeface);
-
 
     }
 
@@ -53,6 +59,16 @@ public class MainMenu extends AppCompatActivity {
 
     public void Scores_Menu(View v) {
         Intent intent = new Intent(this, ScoresMenu.class);
+        startActivity(intent);
+    }
+
+    public void Help_Screen(View v) {
+        Intent intent = new Intent(this, HelpScreen.class);
+        startActivity(intent);
+    }
+
+    public void Settings_Screen(View v) {
+        Intent intent = new Intent(this, SettingsScreen.class);
         startActivity(intent);
     }
 }

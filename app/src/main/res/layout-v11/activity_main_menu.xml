@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     android:background="@color/Background"
+    android:textColor="@color/Text"
     tools:context="fthomas.hello_world.MyActivity">
 
     <TextView
@@ -16,77 +16,218 @@
         android:id="@+id/Title"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="90dp"
-        android:textSize="100sp"
-        android:textColor="#f8f8ff"
-        android:textStyle="bold"
-        android:typeface="monospace"
-        android:visibility="visible" />
+        android:layout_marginTop="110dp"
+        android:textColor="@color/Text"
+        android:textSize="125sp" />
+
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/Play"
-        android:id="@+id/Play"
-        android:textColor="#f8f8ff"
-        android:layout_centerVertical="true"
+        android:text="@string/Scores"
+        android:id="@+id/Scores"
+        android:textSize="24sp"
+        android:textColor="@color/Text"
+        android:onClick="Scores_Menu"
+        style="?android:attr/borderlessButtonStyle"
+        android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:textSize="20sp"
-        android:onClick="Play_Menu"
-        style="?android:attr/borderlessButtonStyle"/>
+        android:layout_marginBottom="50dp"/>
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/Multiplayer"
-        android:textColor="#f8f8ff"
         android:id="@+id/Multiplayer"
-        android:textSize="20sp"
-        android:background="@color/Background"
-        android:layout_below="@+id/Play"
+        android:textSize="24sp"
+        android:textColor="@color/Text"
+        android:layout_above="@+id/Scores"
         android:layout_centerHorizontal="true"
         android:onClick="Friends_Menu"
         style="?android:attr/borderlessButtonStyle"/>
 
     <Button
         android:layout_width="wrap_content"
-        android:textColor="#f8f8ff"
         android:layout_height="wrap_content"
-        android:text="@string/Scores"
-        android:id="@+id/Scores"
-        android:textSize="20sp"
-        android:layout_below="@+id/Multiplayer"
+        android:textSize="24sp"
+        android:text="@string/Play"
+        android:id="@+id/Play"
+        android:textColor="@color/Text"
+        android:layout_above="@id/Multiplayer"
         android:layout_centerHorizontal="true"
-        android:onClick="Scores_Menu"
+        android:onClick="Play_Menu"
         style="?android:attr/borderlessButtonStyle"/>
 
+    <!--- help button on top Left -->
     <ImageButton
-        android:layout_width="@dimen/help_width"
-        android:layout_height="@dimen/help_height"
+        android:layout_width="@dimen/icon_width"
+        android:layout_height="@dimen/icon_height"
         android:id="@+id/Help"
-        android:src="@drawable/help_icon"
-        android:onClick="acknowledge"
+        android:src="@drawable/simple_help_icon"
+        android:onClick="Help_Screen"
         android:contentDescription="@string/help_description"
         android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         style="?android:attr/borderlessButtonStyle"
-        android:layout_marginLeft="10dp"
-        android:paddingLeft="-5dp"
-        android:scaleType="fitCenter" />
+        android:layout_marginTop="5dp"
+        android:scaleType="fitCenter"/>
 
+    <!--- Settings button on top right -->
     <ImageButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="@dimen/icon_width"
+        android:layout_height="@dimen/icon_height"
         android:id="@+id/Settings"
-        android:src="@drawable/settings_icon"
-        android:onClick="acknowledge"
+        android:src="@drawable/simple_settings_icon"
+        android:onClick="Settings_Screen"
         android:contentDescription="@string/settings_description"
         style="?android:attr/borderlessButtonStyle"
-        android:layout_marginRight="10dp"
-        android:layout_alignBottom="@+id/Help"
-        android:layout_toEndOf="@+id/Multiplayer"
-        android:paddingRight="-5dp"
+        android:layout_alignTop="@+id/Help"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
         android:scaleType="fitCenter"/>
 
 </RelativeLayout>
+
+<!--<?xml version="1.0" encoding="utf-8"?>-->
+<!--<RelativeLayout-->
+    <!--xmlns:android="http://schemas.android.com/apk/res/android"-->
+    <!--xmlns:app="http://schemas.android.com/apk/res-auto"-->
+    <!--xmlns:tools="http://schemas.android.com/tools"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="match_parent"-->
+    <!--android:fitsSystemWindows="true"-->
+    <!--android:background="@color/Background"-->
+    <!--tools:context="fthomas.hello_world.MyActivity">-->
+    <!--&lt;!&ndash;-->
+    <!--&lt;!&ndash;- Main window title SHAPES &ndash;&gt;-->
+    <!--<TextView-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="@string/app_name"-->
+        <!--android:id="@+id/Title"-->
+        <!--android:layout_alignParentTop="true"-->
+        <!--android:layout_centerHorizontal="true"-->
+        <!--android:layout_marginTop="50dp"-->
+        <!--android:textSize="100sp"-->
+        <!--android:textColor="@color/Text"-->
+        <!--android:textStyle="bold"-->
+        <!--android:typeface="monospace"-->
+        <!--android:visibility="visible" />-->
+
+    <!--&lt;!&ndash;- Play image and text &ndash;&gt;-->
+    <!--<ImageButton-->
+        <!--android:layout_width="@dimen/icon_width"-->
+        <!--android:layout_height="@dimen/icon_height"-->
+        <!--android:id="@+id/Play_Icon"-->
+        <!--android:src="@drawable/play_icon"-->
+        <!--android:onClick="Play_Menu"-->
+        <!--style="?android:attr/borderlessButtonStyle"-->
+        <!--android:scaleType="fitCenter"-->
+        <!--android:layout_below="@id/Title"/>-->
+
+    <!--<Button-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="@string/Play"-->
+        <!--android:id="@+id/Play"-->
+        <!--android:textColor="@color/Text"-->
+        <!--android:background="@color/Background"-->
+        <!--android:textSize="20sp"-->
+        <!--android:onClick="Play_Menu"-->
+        <!--style="?android:attr/borderlessButtonStyle"-->
+        <!--android:layout_below="@id/Play_Icon"-->
+        <!--android:layout_marginLeft="50dp"/>-->
+
+
+    <!--&lt;!&ndash;- Multiplayer image and text &ndash;&gt;-->
+    <!--<ImageButton-->
+        <!--android:layout_width="@dimen/icon_width"-->
+        <!--android:layout_height="@dimen/icon_height"-->
+        <!--android:id="@+id/Multiplayer_Icon"-->
+        <!--android:src="@drawable/wfriends_icon"-->
+        <!--android:onClick="Friends_Menu"-->
+        <!--style="?android:attr/borderlessButtonStyle"-->
+        <!--android:scaleType="fitCenter"-->
+        <!--android:layout_below="@id/Title"-->
+        <!--android:layout_alignEnd="@+id/Title"/>-->
+
+    <!--<Button-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="@string/Multiplayer"-->
+        <!--android:id="@+id/Multiplayer"-->
+        <!--android:textSize="20sp"-->
+        <!--android:textColor="@color/Text"-->
+        <!--android:onClick="Friends_Menu"-->
+        <!--style="?android:attr/borderlessButtonStyle"-->
+        <!--android:layout_below="@+id/Multiplayer_Icon"-->
+        <!--android:layout_alignEnd="@+id/Title"-->
+        <!--android:layout_marginRight="30dp"/>-->
+
+
+    <!--&lt;!&ndash;- Scores text &ndash;&gt;-->
+    <!--<Button-->
+        <!--android:id="@+id/Scores"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:textColor="@color/Text"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="@string/Scores"-->
+        <!--android:textSize="20sp"-->
+        <!--android:onClick="Scores_Menu"-->
+        <!--style="?android:attr/borderlessButtonStyle"-->
+        <!--android:layout_below="@id/Play"-->
+        <!--android:layout_centerHorizontal="true"/>-->
+
+    <!--&lt;!&ndash;- Help image and text &ndash;&gt;-->
+    <!--<ImageButton-->
+        <!--android:layout_width="@dimen/icon_width"-->
+        <!--android:layout_height="@dimen/icon_height"-->
+        <!--android:id="@+id/Help_icon"-->
+        <!--android:src="@drawable/help_icon"-->
+        <!--android:onClick="acknowledge"-->
+        <!--android:contentDescription="@string/help_description"-->
+        <!--style="?android:attr/borderlessButtonStyle"-->
+        <!--android:scaleType="fitCenter"-->
+        <!--android:layout_alignTop="@+id/Settings_icon"-->
+        <!--android:layout_alignParentStart="true" />-->
+
+    <!--<Button-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="@string/Help"-->
+        <!--android:id="@+id/Help"-->
+        <!--android:textSize="20sp"-->
+        <!--android:textColor="@color/Text"-->
+        <!--android:onClick="acknowledge"-->
+        <!--style="?android:attr/borderlessButtonStyle"-->
+        <!--android:layout_below="@id/Help_icon"-->
+        <!--android:layout_marginLeft="50dp" />-->
+
+    <!--&lt;!&ndash;- settings image and text &ndash;&gt;-->
+    <!--<ImageButton-->
+        <!--android:layout_width="@dimen/icon_width"-->
+        <!--android:layout_height="@dimen/icon_height"-->
+        <!--android:id="@+id/Settings_icon"-->
+        <!--android:src="@drawable/settings_icon"-->
+        <!--android:onClick="acknowledge"-->
+        <!--android:contentDescription="@string/settings_description"-->
+        <!--style="?android:attr/borderlessButtonStyle"-->
+        <!--android:scaleType="fitCenter"-->
+        <!--android:layout_below="@id/Scores"-->
+        <!--android:layout_alignEnd="@+id/Title" />-->
+
+    <!--<Button-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="@string/Settings"-->
+        <!--android:id="@+id/Settings"-->
+        <!--android:textSize="20sp"-->
+        <!--android:textColor="@color/Text"-->
+        <!--android:background="@color/Background"-->
+        <!--android:onClick="acknowledge"-->
+        <!--style="?android:attr/borderlessButtonStyle"-->
+        <!--android:layout_below="@id/Settings_icon"-->
+        <!--android:layout_alignEnd="@+id/Title"-->
+        <!--android:layout_marginRight="50dp"/>-->
+    <!-- -->
+<!--</RelativeLayout>-->

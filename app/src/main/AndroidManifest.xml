@@ -21,10 +21,11 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".PlayMenu"
+        <activity
+            android:name=".PlayMenu"
             android:label="Shapes"
             android:theme="@style/AppTheme.NoActionBar"
-            android:parentActivityName=".PlayMenu">
+            android:parentActivityName=".MainMenu">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="fthomas.shapes.MainMenu"/>
@@ -41,6 +42,22 @@
         </activity>
 
         <activity android:name=".ScoresMenu"
+            android:label="Shapes"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:parentActivityName=".MainMenu">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="fthomas.shapes.MainMenu"/>
+        </activity>
+        <activity android:name=".HelpScreen"
+            android:label="Shapes"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:parentActivityName=".MainMenu">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="fthomas.shapes.MainMenu"/>
+        </activity>
+        <activity android:name=".SettingsScreen"
             android:label="Shapes"
             android:theme="@style/AppTheme.NoActionBar"
             android:parentActivityName=".MainMenu">
