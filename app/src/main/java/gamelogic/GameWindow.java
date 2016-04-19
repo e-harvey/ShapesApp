@@ -114,15 +114,17 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
             //get the block and rotate it
             int x = (int)(event.getX() / blockWidth);
             int y = (int)(event.getY() / blockWidth);
-            System.out.println("press at " + x + "," + y);
-            if(grid[x][y].getType() == Block.BlockType.EMPTY) {
-                fill_empty_block(x, y);
-            } else {
-                grid[x][y].rotate();
-            }
-            grid[x][y].setChanged(true);
+            if(y < YBlocks) {
+                System.out.println("press at " + x + "," + y);
+                if (grid[x][y].getType() == Block.BlockType.EMPTY) {
+                    fill_empty_block(x, y);
+                } else {
+                    grid[x][y].rotate();
+                }
+                grid[x][y].setChanged(true);
 
-            return true; // VERY IMPORTANT
+                return true; // VERY IMPORTANT
+            }
         }
         if(event.getAction() == MotionEvent.ACTION_UP) {
 
