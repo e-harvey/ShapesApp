@@ -7,10 +7,9 @@
     <!-- Button Dimensions -->
     <dimen name="Friend_Button_Width">150dp</dimen>
     <dimen name="Friend_Button_Height">60dp</dimen>
+
     <!-- Icon Size values-->
-    <dimen name="help_width">50dp</dimen>
-    <dimen name="help_height">50dp</dimen>
-    <dimen name="setting_width">50dp</dimen>
-    <dimen name="setting_height">50dp</dimen>
-    <dimen name="fab_margin">16dp</dimen>
+    <dimen name="icon_width">100dp</dimen>
+    <dimen name="icon_height">100dp</dimen>
+
 </resources>

@@ -1,9 +1,11 @@
 package fthomas.shapes;
 
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 /**
@@ -13,6 +15,16 @@ public class FriendsMenu extends AppCompatActivity {
     public void onCreate(Bundle savedInstance) {
         super.onCreate(savedInstance);
         setContentView(R.layout.activity_friends);
+        Typeface alltextTypeface = Typeface.createFromAsset(getAssets(), "Beeb Mode One.ttf");
+
+        TextView FriendsTitle = (TextView)findViewById(R.id.FriendsTitle);
+        FriendsTitle.setTypeface(alltextTypeface);
+
+        TextView AddFriends = (TextView)findViewById(R.id.Add_Friend);
+        AddFriends.setTypeface(alltextTypeface);
+
+        TextView PlayFriends = (TextView)findViewById(R.id.Play_Friends);
+        PlayFriends.setTypeface(alltextTypeface);
     }
 
     public void Acknowledge(View v) {

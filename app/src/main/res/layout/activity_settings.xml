@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    android:background="@color/Background"
+    android:textColor="@color/Text">
+
+    <!--- Screen title "Settings" -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="@string/Settings_title"
+        android:id="@+id/SettingsTitle"
+        android:textSize="32sp"
+        android:layout_marginTop="48dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
+
+    <!---background Volume text and seekbar -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/bgVolume"
+        android:id="@+id/bgVolumeText"
+        android:textSize="20sp"
+        android:textColor="@color/Text"
+        android:layout_below="@+id/SettingsTitle"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="40dp"
+        android:layout_marginStart="30dp"/>
+
+    <SeekBar
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/bgVolumeSeekBar"
+        android:layout_below="@+id/bgVolumeText"
+        android:layout_centerHorizontal="true"
+        android:layout_marginStart="30dp"
+        android:layout_marginEnd="30dp"
+        android:progress="0"/>
+
+
+        <!--- TO DO: update according to users choice -->
+
+
+</RelativeLayout>
