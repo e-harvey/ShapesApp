@@ -10,8 +10,10 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.lang.*;
 
 import fthomas.shapes.R;
 
@@ -30,6 +32,7 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
     static public ArrayList<Bitmap> blockImages = new ArrayList<>();
     private long score = 0;
     private int windowHeight;
+    private int blockSeed;
 
     private class ShapeData {
         public boolean sides[];
@@ -52,6 +55,7 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
         windowHeight = metrics.heightPixels;
         gridHeight = (int)(metrics.widthPixels * ((float)YBlocks / XBlocks));
         blockWidth = gridWidth / XBlocks;
+        blockSeed = 2; //TODO: get block seed from somewhere
 
         // initialize bitmaps
         // 0 empty, 1 wedge, 2 diagonal, 3 cleft, 4 square
@@ -125,8 +129,10 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
             int y = (int)(event.getY() / blockWidth);
             if(y < YBlocks) { //stop overflow at bottom of screen
                 System.out.println("press at " + x + "," + y);
-                grid[x][y].rotate();
-                grid[x][y].setChanged(true);
+                if(grid[x][y].isActive()) {
+                    grid[x][y].rotate();
+                    grid[x][y].setChanged(true);
+                }
 
                 return true; // VERY IMPORTANT
             }
@@ -222,7 +228,7 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
     public void fill_empty_block(int x, int y)
     {
         if(grid[x][y].getType() == Block.BlockType.EMPTY) {
-            int typeNum = (int)(Math.random() * 100);
+            int typeNum = rand_seeded() % 100;
             Bitmap image;
             Block.BlockType type;
             //TODO: adjust probabilities as needed
@@ -247,7 +253,7 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
                 image = blockImages.get(1);
             }
 
-            grid[x][y].changeType(type, image, ((int)(Math.random() * 100) % 4));
+            grid[x][y].changeType(type, image, (rand_seeded() % 4));
             grid[x][y].setChanged(true);
         }
     }
@@ -265,17 +271,36 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
             Paint paint = new Paint();
             paint.setColor(0xFF000000);
             paint.setStyle(Paint.Style.FILL);
-            canvas.drawRect(0, gridHeight, gridWidth, windowHeight, paint);
+            canvas.drawRect(0, gridHeight - (blockWidth / 2), gridWidth, windowHeight, paint);
 
             //TODO: scale to screen resolution
+            int textSize = (int)((windowHeight - gridHeight) / 2.5F);
             paint = new Paint();
-            paint.setTextSize(100);
+            paint.setTextSize(textSize);
             paint.setColor(0xFFFFFFFF);
-            paint.setTextAlign(Paint.Align.CENTER);
-            canvas.drawText(score + "", gridWidth / 2, gridHeight + 100, paint);
+            paint.setTextAlign(Paint.Align.RIGHT);
+            int horizLocation = gridWidth - blockWidth;
+            int vertLocation = gridHeight;
+            canvas.drawText("score:", horizLocation, vertLocation, paint);
+            canvas.drawText("" + score, horizLocation, vertLocation + textSize, paint);
 
-            //TODO: draw timer here
+            //draw timer
+            //TODO: get remaining time
+            textSize = (int)((windowHeight - gridHeight) / 3.0F);
+            horizLocation = blockWidth;
+            paint.setTextSize(textSize);
+            paint.setTextAlign(Paint.Align.LEFT);
+            String remainingTime = "tmp-Time";
+            canvas.drawText("Time:", horizLocation, vertLocation, paint);
+            canvas.drawText(remainingTime, horizLocation, vertLocation + textSize, paint);
         }
+    }
+
+    private int rand_seeded()
+    {
+        String tmp = String.valueOf(blockSeed);
+        blockSeed = Math.abs(tmp.hashCode());
+        return  blockSeed;
     }
 
     private void initBlocks()

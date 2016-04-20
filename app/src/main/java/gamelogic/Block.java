@@ -54,7 +54,7 @@ public class Block
         this.activeSides = new boolean[4];
         this.removable = removable;
         this.active = true;
-        this.changed = false; //TODO: check this
+        this.changed = false;
         partOfShape = false;
         this.x = x;
         this.y = y;
