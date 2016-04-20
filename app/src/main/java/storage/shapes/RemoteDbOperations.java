@@ -19,6 +19,14 @@ interface RemoteDbOperations {
     public long getBlockSeed(String username);
 
     /**
+     * Return the daily challenge block seed.
+     *
+     *
+     * @return the block seed or -1 otherwise.
+     */
+    public long getDailyChallengeSeed();
+
+    /**
      * Set the block seed for the given user.
      *
      * @param username the username of the user.

@@ -5,7 +5,6 @@
 package storage.shapes;
 
 import java.io.BufferedReader;
-import java.io.DataInput;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -42,11 +41,11 @@ class RemoteDatabaseOperations implements RemoteDbOperations, SharedDbOperations
     /* Begin Private methods */
 
     /**
-     * This method upacks the params which is of the form [field1,val1,field2,val2,...]
-     * and then send the post request to the given url.
+     * This method unpacks the params which is of the form [field1,val1,field2,val2,...]
+     * and then sends the post request to the given url.
      *
-     * @return Success: upon sucessfully connecting to the database.
-     *         Failure: upon fauling to connect to the database.
+     * @return PostRequestStatus.Success: upon sucessfully connecting to the database.
+     *         PostRequestStatus.Failure: upon failing to connect to the database.
      */
     private PostRequestStatus sendPostRequest(ArrayList<String> param) {
         PostRequestStatus postRequestStatus = PostRequestStatus.Failure;
@@ -57,9 +56,11 @@ class RemoteDatabaseOperations implements RemoteDbOperations, SharedDbOperations
         String service = null, request = "";
 
         try {
+            // Unpack the url
             service = DB_URL + "/?" + param.get(0) + "=" + URLEncoder.encode(param.get(1), charset) +
             "&" + URLEncoder.encode(param.get(2), charset) + "=" + URLEncoder.encode(param.get(3), charset);
 
+            // Unpack the post request parameters
             for (int i = 4; i < param.size() - 1; i += 2) {
                 if (i == 4)
                     request = request + param.get(i) + "=" + URLEncoder.encode(param.get(i + 1), charset);
@@ -71,9 +72,6 @@ class RemoteDatabaseOperations implements RemoteDbOperations, SharedDbOperations
             e.printStackTrace();
             return postRequestStatus;
         }
-
-        System.out.print(service + " ");
-        System.out.println(request);
 
         try {
             url = new URL(service);
@@ -89,18 +87,24 @@ class RemoteDatabaseOperations implements RemoteDbOperations, SharedDbOperations
 
             BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
 
-            String whatWeGot = br.readLine();
-            System.out.println(whatWeGot);
+            // Read the server's reply
+            String rx = br.readLine();
+
+            // Parse the json object
             JSONParser jsonParser = new JSONParser();
-            jsonObject = (JSONObject) jsonParser.parse(whatWeGot);
+            jsonObject = (JSONObject) jsonParser.parse(rx);
 
             System.out.println(jsonObject.get("status"));
             System.out.println(jsonObject.get("data"));
 
-            if ((Boolean)jsonObject.get("status"))
+            if ((Boolean)jsonObject.get("status")) {
                 postRequestStatus = PostRequestStatus.Success;
+                data = (String) jsonObject.get("data");
+            } else {
+                data = "-1";
+            }
 
-            data = (String) jsonObject.get("data");
+
         } catch (MalformedURLException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -113,33 +117,12 @@ class RemoteDatabaseOperations implements RemoteDbOperations, SharedDbOperations
 
     }
 
-    /**
-     * This method prints out the connection status information based on the
-     * value of postRequestStatus.
-     *
-     * @param postRequestStatus the status of the remote connection.
-     * todo: Print messages to the user's screen.
-     */
-    private void printPostRequestStatus(PostRequestStatus postRequestStatus)
-    {
-        String userStatus = null;
-
-        switch(postRequestStatus) {
-            case Success:
-                userStatus = "You have successfully connected to the database!";
-                break;
-
-            default:
-                userStatus = "Please check your local network connection.";
-        }
-        System.out.println(userStatus);
-    }
-
     /* Begin RemoteDbOperation methods */
     public boolean getLoginStatus(String username)
     {
         ArrayList<String> params = new ArrayList<String>();
 
+        // Pack the post request
         params.add(0, "service");
         params.add(1, "get");
 
@@ -149,9 +132,6 @@ class RemoteDatabaseOperations implements RemoteDbOperations, SharedDbOperations
         params.add(4, "username");
         params.add(5, username);
 
-        params.add(6, "token");
-        params.add(7, token);
-
         return sendPostRequest(params) == PostRequestStatus.Success;
     }
 
@@ -159,6 +139,7 @@ class RemoteDatabaseOperations implements RemoteDbOperations, SharedDbOperations
     {
         ArrayList<String> params = new ArrayList<String>();
 
+        // Pack the post request
         params.add(0, "service");
         params.add(1, "get");
 
@@ -171,7 +152,21 @@ class RemoteDatabaseOperations implements RemoteDbOperations, SharedDbOperations
         params.add(6, "token");
         params.add(7, token);
 
-        data = "0";
+        sendPostRequest(params);
+        return Long.valueOf(data);
+    }
+
+    public long getDailyChallengeSeed()
+    {
+        ArrayList<String> params = new ArrayList<String>();
+
+        // Pack the post request
+        params.add(0, "service");
+        params.add(1, "get");
+
+        params.add(2, "action");
+        params.add(3, "getDailyChallengeSeed");
+
         sendPostRequest(params);
         return Long.valueOf(data);
     }
@@ -180,6 +175,7 @@ class RemoteDatabaseOperations implements RemoteDbOperations, SharedDbOperations
     {
         ArrayList<String> params = new ArrayList<String>();
 
+        // Pack the post request
         params.add(0, "service");
         params.add(1, "set");
 
@@ -204,6 +200,7 @@ class RemoteDatabaseOperations implements RemoteDbOperations, SharedDbOperations
     {
         ArrayList<String> params = new ArrayList<String>();
 
+        // Pack the post request
         params.add(0, "service");
         params.add(1, "set");
 
@@ -222,6 +219,7 @@ class RemoteDatabaseOperations implements RemoteDbOperations, SharedDbOperations
     public boolean deleteUser(String username, String password) {
         ArrayList<String> params = new ArrayList<String>();
 
+        // Pack the post request
         params.add(0, "service");
         params.add(1, "set");
 
@@ -241,6 +239,7 @@ class RemoteDatabaseOperations implements RemoteDbOperations, SharedDbOperations
     {
         ArrayList<String> params = new ArrayList<String>();
 
+        // Pack the post request
         params.add(0, "service");
         params.add(1, "set");
 
@@ -263,6 +262,7 @@ class RemoteDatabaseOperations implements RemoteDbOperations, SharedDbOperations
     {
         ArrayList<String> params = new ArrayList<String>();
 
+        // Pack the post request
         params.add(0, "service");
         params.add(1, "get");
 
@@ -272,10 +272,7 @@ class RemoteDatabaseOperations implements RemoteDbOperations, SharedDbOperations
         params.add(4, "username");
         params.add(5, username);
 
-        params.add(6, "token");
-        params.add(7, token);
-
-        data = "0";
+        data = "-1";
         sendPostRequest(params);
         return Long.valueOf(data);
     }
@@ -286,6 +283,7 @@ class RemoteDatabaseOperations implements RemoteDbOperations, SharedDbOperations
 
         ArrayList<String> params = new ArrayList<String>();
 
+        // Pack the post request
         params.add(0, "service");
         params.add(1, "login");
 
@@ -309,6 +307,7 @@ class RemoteDatabaseOperations implements RemoteDbOperations, SharedDbOperations
     {
         ArrayList<String> params = new ArrayList<String>();
 
+        // Pack the post request
         params.add(0, "service");
         params.add(1, "login");
 
@@ -328,6 +327,7 @@ class RemoteDatabaseOperations implements RemoteDbOperations, SharedDbOperations
     {
         ArrayList<String> params = new ArrayList<String>();
 
+        // Pack the post request
         params.add(0, "service");
         params.add(1, "set");
 

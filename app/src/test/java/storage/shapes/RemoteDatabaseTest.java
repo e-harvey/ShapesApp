@@ -53,6 +53,10 @@ public class RemoteDatabaseTest {
 
         ret = remoteDatabaseOperations.deleteUser("testuser2", "password2");
         assertEquals(true, ret);
+        //dailychallenge seed = 21080 at Tue Apr 19 22:41:59 EDT 2016
+
+        seed = remoteDatabaseOperations.getDailyChallengeSeed();
+        assertEquals(21080, seed);
     }
 
 }

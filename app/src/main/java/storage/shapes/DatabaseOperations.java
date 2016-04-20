@@ -125,4 +125,8 @@ public abstract class DatabaseOperations  {
     public static void deleteFriend(String usernameOwner, String usernameFriend) {
         local.deleteFriend(usernameOwner, usernameFriend);
     }
+
+    public long getDailyChallengeSeed() {
+        return remote.getDailyChallengeSeed();
+    }
 }
