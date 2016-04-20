@@ -3,7 +3,8 @@
 class get {
     private static $publicActions = array("getHighScore",
                                           "getBlockSeed",
-                                          "getLoginstatus");
+                                          "getLoginstatus",
+                                          "getDailyChallengeSeed");
 
     public function serve() {
         if(isset($_GET['action'])) {
@@ -17,13 +18,10 @@ class get {
 
     public function getHighScore() {
         if(isset($_POST['username']) &&
-           isset($_POST['token']) &&
-           $_POST['username'] != "" &&
-           $_POST['token'] != "") {
+           $_POST['username'] != "") {
 
             $username = $_POST['username'];
-            $token = $_POST['token'];
-            $score = Control::getHighScore($username,$token);
+            $score = Control::getHighScore($username);
 
             return(new Response(true,$score));
         }
@@ -32,13 +30,10 @@ class get {
 
     public function getBlockSeed() {
         if(isset($_POST['username']) &&
-           isset($_POST['token']) &&
-           $_POST['username'] != "" &&
-           $_POST['token'] != "") {
+           $_POST['username'] != "") {
 
             $username = $_POST['username'];
-            $token = $_POST['token'];
-            $seed = Control::getBlockSeed($username,$token);
+            $seed = Control::getBlockSeed($username);
 
             return(new Response(true,$seed));
         }
@@ -47,13 +42,10 @@ class get {
 
     public function getLoginStatus() {
         if(isset($_POST['username']) &&
-           isset($_POST['token']) &&
-           $_POST['username'] != "" &&
-           $_POST['token'] != "") {
+           $_POST['username'] != "") {
 
             $username = $_POST['username'];
-            $token = $_POST['token'];
-            $status = Control::getLoginStatus($username,$token);
+            $status = Control::getLoginStatus($username);
 
             if ($status) {
                 // Token matches
@@ -64,6 +56,15 @@ class get {
             }
         }
         return(new Response(false,'The username or token was not given.'));
+    }
+
+    public function getDailyChallengeSeed() {
+        $seed = Control::getDailyChallengeSeed();
+
+        if ($seed) {
+            return(new Response(true,$seed));
+        }
+        return(new Response(false,'Failed to get daily challenge seed.'));
     }
 }
 ?>

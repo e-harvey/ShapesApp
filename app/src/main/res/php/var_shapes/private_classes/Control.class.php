@@ -1,3 +1,8 @@
+/**
+ * This file was copied from https://github.com/irremotus/php-webservices
+ * to be used as a template.
+ */
+
 <?php
 class Control {
     // internal helper methods
@@ -19,11 +24,18 @@ class Control {
     /**
      * Check the login status of the user.
      * @param username the user's username.
-     * @param tok the user's token.
      * @return true if the given token matches; otherwise false.
      */
-    public static function getLoginStatus($username, $tok) {
-        return Control::checkToken($username, $tok);
+    public static function getLoginStatus($username) {
+        global $connection;
+        $statement = $connection->prepare("SELECT status FROM user WHERE username =:username");
+        $statement->bindParam(':username', $username);
+        $statement->execute();
+        $status = $statement->fetchAll();
+
+        if ($statement->rowCount() > 0)
+            return $status[0][0];
+        return false;
     }
 
     /**
@@ -44,8 +56,9 @@ class Control {
         if ($statement->rowCount() > 0 && password_verify($password, $hash[0][0]) == true) {
             $token = password_hash($username,  PASSWORD_BCRYPT);
 
-            $statement = $connection->prepare("update user set token = :token");
+            $statement = $connection->prepare("update user set token = :token, status = 1 where username = :username");
             $statement->bindParam(':token', $token);
+            $statement->bindParam(':username', $username);
 
             if ($statement->execute() && ($statement->rowCount() > 0)) {
                 return $token;
@@ -66,7 +79,7 @@ class Control {
         global $connection;
 
         if (Control::checkToken($username, $tok)) {
-            $statement = $connection->prepare("update user set token = 0 where username =:username");
+            $statement = $connection->prepare("update user set token = 0, status = 0 where username =:username");
             $statement->bindParam(':username', $username);
             $statement->execute();
             return true;
@@ -228,24 +241,33 @@ class Control {
      * @param tok the user's token.
      * @return the user's highscore if it's found; otherwise false.
      */
-    public static function getHighScore($username, $tok) {
+    public static function getHighScore($username) {
         global $connection;
+        $statement = $connection->prepare("SELECT highscore FROM user WHERE username =:username");
+        $statement->bindParam(':username', $username);
+        $statement->execute();
+        $score = $statement->fetchAll();
 
-        if (Control::checkToken($username, $tok)) {
-            $statement = $connection->prepare("SELECT highscore FROM user WHERE username =:username");
-            $statement->bindParam(':username', $username);
-            $statement->execute();
-            $score = $statement->fetchAll();
-
-            if ($statement->rowCount() > 0)
-                return $score[0][0];
-        }
+        if ($statement->rowCount() > 0)
+            return $score[0][0];
         return false;
     }
 
-    public static function getBlockSeed($username, $tok) {
+    public static function getBlockSeed($username) {
         global $connection;
         $statement = $connection->prepare("SELECT seed FROM blockseed WHERE username =:username");
+        $statement->bindParam(':username', $username);
+        $statement->execute();
+        $seed = $statement->fetchAll();
+
+        if ($statement->rowCount() > 0)
+            return $seed[0][0];
+        return false;
+    }
+
+    public static function getDailyChallengeSeed() {
+        global $connection;
+        $statement = $connection->prepare("SELECT seed FROM dailychallenge");
         $statement->bindParam(':username', $username);
         $statement->execute();
         $seed = $statement->fetchAll();

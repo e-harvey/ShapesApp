@@ -1,3 +1,8 @@
+/**
+ * This file was copied from https://github.com/irremotus/php-webservices
+ * to be used as a template.
+ */
+
 <?php
 
 class login {

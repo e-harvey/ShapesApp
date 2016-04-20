@@ -1,3 +1,7 @@
+/**
+ * This file was copied from https://github.com/irremotus/php-webservices
+ * to be used as a template.
+ */
 <?php
 $PHP_BASE_PATH = dirname(__DIR__.'/../');
 $user_conf = NULL;
