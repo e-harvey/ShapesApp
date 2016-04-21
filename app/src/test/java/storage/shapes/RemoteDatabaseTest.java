@@ -1,5 +1,7 @@
 package storage.shapes;
 
+import android.provider.ContactsContract;
+
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -11,6 +13,8 @@ public class RemoteDatabaseTest {
     public void RemoteDatabaseOperationsTest() {
         long seed, score;
         boolean ret;
+
+        DatabaseOperations.DatabaseOperationsInit(null);
 
         RemoteDatabaseOperations remoteDatabaseOperations = new RemoteDatabaseOperations();
         assertNotEquals(null, remoteDatabaseOperations);
@@ -56,7 +60,7 @@ public class RemoteDatabaseTest {
         //dailychallenge seed = 21080 at Tue Apr 19 22:41:59 EDT 2016
 
         seed = remoteDatabaseOperations.getDailyChallengeSeed();
-        assertEquals(21080, seed);
+        assertNotEquals(-1, seed);
     }
 
 }
