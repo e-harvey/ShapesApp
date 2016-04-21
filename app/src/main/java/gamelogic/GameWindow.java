@@ -5,15 +5,17 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.Typeface;
 import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
-import java.nio.ByteBuffer;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
-import java.lang.*;
 
 import fthomas.shapes.R;
 
@@ -33,6 +35,10 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
     private long score = 0;
     private int windowHeight;
     private int blockSeed;
+    private long startTime;
+    private long remainingTime;
+    private String timeString;
+    private Typeface textTypeface;
 
     private class ShapeData {
         public boolean sides[];
@@ -56,6 +62,9 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
         gridHeight = (int)(metrics.widthPixels * ((float)YBlocks / XBlocks));
         blockWidth = gridWidth / XBlocks;
         blockSeed = 2; //TODO: get block seed from somewhere
+        startTime = System.nanoTime();
+        remainingTime = 1000000000L * 90; // put number of seconds here //TODO: get game time from somewhere
+        textTypeface = Typeface.createFromAsset(getContext().getAssets(), "ka1.ttf");
 
         // initialize bitmaps
         // 0 empty, 1 wedge, 2 diagonal, 3 cleft, 4 square
@@ -152,43 +161,70 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
         for(int x = 1; x < XBlocks - 1; x++) {
             for(int y = 1; y < YBlocks - 1; y++) {
                 if(grid[x][y].isChanged()) {
-                    ArrayList<ShapeData> shapeBlocks = check_shape(x, y);
-                    //change every block in the shape to empty
-                    if(shapeBlocks != null) {
-                        //TODO: update score here
-                        score += shapeBlocks.size() * shapeBlocks.size();
-
-                        //Change shape blocks to green to show shape has been made
-                        for(ShapeData block : shapeBlocks) {
-                            Block tmpBlock = grid[block.x][block.y];
-                            switch (tmpBlock.getType()) {
-                                case WEDGE:
-                                    tmpBlock.changeType(Block.BlockType.WEDGE, blockImages.get(5), tmpBlock.getRotation());
-                                    break;
-                                case DIAGONAL:
-                                    tmpBlock.changeType(Block.BlockType.DIAGONAL, blockImages.get(6), tmpBlock.getRotation());
-                                    break;
-                                case CLEFT:
-                                    tmpBlock.changeType(Block.BlockType.CLEFT, blockImages.get(7), tmpBlock.getRotation());
-                                    break;
-                                case SQUARE:
-                                    tmpBlock.changeType(Block.BlockType.SQUARE, blockImages.get(8), tmpBlock.getRotation());
-                                    break;
-                            }
-
-                            tmpBlock.setActive(false);
-                            tmpBlock.setPartOfShape(true);
-                        }
-                    }
+                    handle_shapes(x, y);
                     grid[x][y].setChanged(false);
                 }
                 grid[x][y].update();
                 fill_empty_block(x, y);
             }
         }
+        handle_time();
     }
 
-    public ArrayList<ShapeData> check_shape(int startX, int startY)
+    private void handle_time()
+    {
+        long curTime = System.nanoTime();
+        long timeChange = curTime - startTime;
+        startTime = curTime;
+        remainingTime -= timeChange;
+        if(remainingTime < 0) {
+            remainingTime = 0;
+        }
+        Date date = new Date(remainingTime / 1000000);
+        DateFormat formatter;
+        if(remainingTime < 60000000000L) { // < minute
+            formatter = new SimpleDateFormat("ss:SS");
+        } else if(remainingTime < 600000000000L) { // < 10 minutes
+            formatter = new SimpleDateFormat("m:ss:SS");
+        } else {
+            formatter = new SimpleDateFormat("mm:ss:SS");
+        }
+        timeString = formatter.format(date);
+    }
+
+    private void handle_shapes(int x, int y)
+    {
+        ArrayList<ShapeData> shapeBlocks = check_shape(x, y);
+        //change every block in the shape to empty
+        if(shapeBlocks != null) {
+            //TODO: update score here
+            score += shapeBlocks.size() * shapeBlocks.size();
+
+            //Change shape blocks to green to show shape has been made
+            for(ShapeData block : shapeBlocks) {
+                Block tmpBlock = grid[block.x][block.y];
+                switch (tmpBlock.getType()) {
+                    case WEDGE:
+                        tmpBlock.changeType(Block.BlockType.WEDGE, blockImages.get(5), tmpBlock.getRotation());
+                        break;
+                    case DIAGONAL:
+                        tmpBlock.changeType(Block.BlockType.DIAGONAL, blockImages.get(6), tmpBlock.getRotation());
+                        break;
+                    case CLEFT:
+                        tmpBlock.changeType(Block.BlockType.CLEFT, blockImages.get(7), tmpBlock.getRotation());
+                        break;
+                    case SQUARE:
+                        tmpBlock.changeType(Block.BlockType.SQUARE, blockImages.get(8), tmpBlock.getRotation());
+                        break;
+                }
+
+                tmpBlock.setActive(false);
+                tmpBlock.setPartOfShape(true);
+            }
+        }
+    }
+
+    private ArrayList<ShapeData> check_shape(int startX, int startY)
     {
         int[][] adjCoord = {{0, -1},{1, 0},{0, 1},{-1, 0}}; //adjacent grid offsets (top, right, bottom, left)
         ArrayList<ShapeData> activeBlocks = new ArrayList<>();
@@ -267,33 +303,40 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
                     grid[x][y].draw(canvas);
                 }
             }
-            //draw score
-            Paint paint = new Paint();
-            paint.setColor(0xFF000000);
-            paint.setStyle(Paint.Style.FILL);
-            canvas.drawRect(0, gridHeight - (blockWidth / 2), gridWidth, windowHeight, paint);
-
-            //TODO: scale to screen resolution
-            int textSize = (int)((windowHeight - gridHeight) / 2.5F);
-            paint = new Paint();
-            paint.setTextSize(textSize);
-            paint.setColor(0xFFFFFFFF);
-            paint.setTextAlign(Paint.Align.RIGHT);
-            int horizLocation = gridWidth - blockWidth;
-            int vertLocation = gridHeight;
-            canvas.drawText("score:", horizLocation, vertLocation, paint);
-            canvas.drawText("" + score, horizLocation, vertLocation + textSize, paint);
-
-            //draw timer
-            //TODO: get remaining time
-            textSize = (int)((windowHeight - gridHeight) / 3.0F);
-            horizLocation = blockWidth;
-            paint.setTextSize(textSize);
-            paint.setTextAlign(Paint.Align.LEFT);
-            String remainingTime = "tmp-Time";
-            canvas.drawText("Time:", horizLocation, vertLocation, paint);
-            canvas.drawText(remainingTime, horizLocation, vertLocation + textSize, paint);
+            draw_info(canvas);
         }
+    }
+
+    private void draw_info(Canvas canvas)
+    {
+        //draw score
+        Paint paint = new Paint();
+        paint.setColor(0xFF000000);
+        paint.setStyle(Paint.Style.FILL);
+        canvas.drawRect(0, gridHeight - (blockWidth / 2), gridWidth, windowHeight, paint);
+
+        //TODO: scale to screen resolution
+        float textSize = ((windowHeight - gridHeight) / 2.5F);
+        paint = new Paint();
+        paint.setTypeface(textTypeface);
+        paint.setTextSize(textSize);
+        paint.setColor(0xFFFFFFFF);
+        paint.setTextAlign(Paint.Align.RIGHT);
+        int horizLocation = gridWidth - blockWidth;
+        int vertLocation = gridHeight;
+        canvas.drawText("SCORE:", horizLocation, vertLocation, paint);
+        canvas.drawText("" + score, horizLocation, vertLocation + textSize, paint);
+
+        //draw timer
+        //TODO: get remaining time
+        textSize = ((windowHeight - gridHeight) / 3.0F);
+        paint.setTextSize(textSize);
+        horizLocation = blockWidth;
+        paint.setTextAlign(Paint.Align.LEFT);
+        canvas.drawText("Time:", horizLocation, vertLocation, paint);
+        float timerSize = ((windowHeight - gridHeight) / 3.5F);
+        paint.setTextSize(timerSize);
+        canvas.drawText(timeString, horizLocation, vertLocation + textSize, paint);
     }
 
     private int rand_seeded()
