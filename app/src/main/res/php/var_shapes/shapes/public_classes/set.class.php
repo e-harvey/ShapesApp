@@ -5,7 +5,7 @@
 		private static $publicActions = array("setPassword",
                                               "setBlockSeed",
                                               "addUser","deleteUser",
-                                              "setHighScore", "addNewFriend");
+                                              "setHighScore");
 
 		public function serve() {
 			if(isset($_GET['action'])) {
@@ -128,27 +128,6 @@
                 }
             } else {
                 return(new Response(false,'You must provide a valid non-empty username, token, and score.'));
-            }
-        }
-
-        public function addNewFriend() {
-            if(isset($_POST['usernameOwner']) &&
-               isset($_POST['usernameFriend']) &&
-	       $_POST['usernameOwner'] != "" &&
-	       $_POST['usernameFriend'] != "") {
-
-                $usernameOwner = $_POST['usernameOwner'];
-                $usernameFriend = $_POST['usernameFriend'];
-
-		$status = Control::addNewFriend($usernameOwner, $usernameFriend);
-
-                if ($status == true) {
-                    return(new Response(true,'Successfully added friend.'));
-                } else {
-                    return(new Response(false,'Failed to add friend.'));
-                }
-            } else {
-                return(new Response(false,'You must provide a valid non-empty username for yourself and your friend.'));
             }
         }
 

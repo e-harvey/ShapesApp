@@ -5,32 +5,25 @@ class Control {
         global $connection;
         $statement = $connection->prepare("SELECT token FROM user WHERE username =:username");
         $statement->bindParam(':username', $username);
-	$statement->execute();
-	$token = $statement->fetchAll();
+        $statement->execute();
+        $token = $statement->fetchAll();
 
         if ($statement->rowCount() > 0 && $tok == $token[0][0]) {
             return true;
         }
         return false;
     }
-    
+
     // login services
 
     /**
      * Check the login status of the user.
      * @param username the user's username.
+     * @param tok the user's token.
      * @return true if the given token matches; otherwise false.
      */
-    public static function getLoginStatus($username) {
-    	   global $connection;
-	   $statement = $connection->prepare("SELECT status FROM user WHERE username =:username");
-	   $statement->bindParam(':username', $username);
-	   $statement->execute();
-	   $status = $statement->fetchAll();
-
-	   if ($statement->rowCount() > 0)
-	      return $status[0][0];
-	   return false;
+    public static function getLoginStatus($username, $tok) {
+        return Control::checkToken($username, $tok);
     }
 
     /**
@@ -45,15 +38,14 @@ class Control {
         global $connection;
         $statement = $connection->prepare("SELECT passwdhash FROM user WHERE username =:username");
         $statement->bindParam(':username', $username);
-	$statement->execute();
+        $statement->execute();
         $hash = $statement->fetchAll();
 
         if ($statement->rowCount() > 0 && password_verify($password, $hash[0][0]) == true) {
-           $token = password_hash($username,  PASSWORD_BCRYPT);
+            $token = password_hash($username,  PASSWORD_BCRYPT);
 
-            $statement = $connection->prepare("update user set token = :token, status = 1 where username = :username");
+            $statement = $connection->prepare("update user set token = :token");
             $statement->bindParam(':token', $token);
-            $statement->bindParam(':username', $username);
 
             if ($statement->execute() && ($statement->rowCount() > 0)) {
                 return $token;
@@ -74,9 +66,9 @@ class Control {
         global $connection;
 
         if (Control::checkToken($username, $tok)) {
-            $statement = $connection->prepare("update user set token = 0, status = 0 where username =:username");
+            $statement = $connection->prepare("update user set token = 0 where username =:username");
             $statement->bindParam(':username', $username);
-	    $statement->execute();
+            $statement->execute();
             return true;
         }
 
@@ -97,8 +89,8 @@ class Control {
 
         if (Control::checkToken($username, $tok)) {
             $statement = $connection->prepare("select username from blockseed where username = :username");
-	    $statement->bindParam(':username', $username);
-	    $statement->execute();
+            $statement->bindParam(':username', $username);
+            $statement->execute();
             $result = $statement->fetchAll();
 
             // If there is already an entry in the blockseed table just update
@@ -107,12 +99,12 @@ class Control {
             } else { // Create a new entry in the table blockseed
                 $statement = $connection->prepare("insert into blockseed values (:username, :seed)");
             }
-	    $statement->bindParam(':username', $username);
-	    $statement->bindParam(':seed', $seed);
-	    $statement->execute();
-	    return true;
+            $statement->bindParam(':username', $username);
+            $statement->bindParam(':seed', $seed);
+            $statement->execute();
+            return true;
         }
-        
+
         return false;
     }
 
@@ -131,7 +123,7 @@ class Control {
             $statement = $connection->prepare("update user set highscore = :highscore where username =:username");
             $statement->bindParam(':highscore', $highscore);
             $statement->bindParam(':username', $username);
-	    $statement->execute();
+            $statement->execute();
             return true;
         }
         return false;
@@ -157,7 +149,7 @@ class Control {
         $hash = password_hash($password,  PASSWORD_BCRYPT);
         $highscore = 0;
         $status = 0;
-        $token = 'deadbeefbeefdead';
+        $token = 0;
 
         $statement = $connection->prepare("insert into user values (:username,  :highscore,  :status, :hash, :token)");
         $statement->bindParam(':username', $username);
@@ -187,21 +179,18 @@ class Control {
         global $connection;
         $statement = $connection->prepare("SELECT passwdhash FROM user WHERE username =:username");
         $statement->bindParam(':username', $username);
-	$statement->execute();
+        $statement->execute();
         $hash = $statement->fetchAll();
 
         if ($statement->rowCount() > 0 && password_verify($password, $hash[0][0]) == true) {
             $s1 = $connection->prepare("delete FROM user WHERE username =:username");
             $s2 = $connection->prepare("delete FROM blockseed WHERE username =:username");
-            $s3 = $connection->prepare("delete FROM friends WHERE user =:username");
+            $s3 = $connection->prepare("delete FROM friends WHERE username =:username");
             $s1->bindParam(':username', $username);
             $s2->bindParam(':username', $username);
             $s3->bindParam(':username', $username);
 
-	    $s1->execute();
-	    $s2->execute();
-	    $s3->execute();
-	    return true;
+            return ($s1->execute() && ($s1->rowCount() > 0)) || ($s2->execute() && ($s2->rowCount() > 0)) || ($s3->execute() && ($s3->rowCount() > 0));
         }
         return false;
     }
@@ -218,7 +207,7 @@ class Control {
         global $connection;
         $statement = $connection->prepare("SELECT passwdhash FROM user WHERE username =:username");
         $statement->bindParam(':username', $username);
-	$statement->execute();
+        $statement->execute();
         $oldHash = $statement->fetchAll();
 
         if ($statement->rowCount() > 0 && password_verify($oldPassword, $oldHash[0][0]) == true) {
@@ -226,9 +215,7 @@ class Control {
             $newHash = password_hash($newPassword, PASSWORD_BCRYPT);
             $statement->bindParam(':hash', $newHash);
             $statement->bindParam(':username', $username);
-	    if ($statement->execute() && ($statement->rowCount() > 0)) {
-	       return true;
-	    }
+            return $statement->execute() && ($statement->rowCount() > 0);
         }
         return false;
     }
@@ -241,94 +228,31 @@ class Control {
      * @param tok the user's token.
      * @return the user's highscore if it's found; otherwise false.
      */
-    public static function getHighScore($username) {
-        global $connection;
-	$statement = $connection->prepare("SELECT highscore FROM user WHERE username =:username");
-	$statement->bindParam(':username', $username);
-	$statement->execute();
-	$score = $statement->fetchAll();
-
-	if ($statement->rowCount() > 0)
-		return $score[0][0];
-        return false;
-    }
-
-    public static function getBlockSeed($username) {
-        global $connection;
-        $statement = $connection->prepare("SELECT seed FROM blockseed WHERE username =:username");
-        $statement->bindParam(':username', $username);
-	$statement->execute();
-	$seed = $statement->fetchAll();
-
-        if ($statement->rowCount() > 0)
-            return $seed[0][0];
-        return false;
-    }
-    
-    public static function getDailyChallengeSeed() {
-        global $connection;
-        $statement = $connection->prepare("SELECT seed FROM dailychallenge");
-        $statement->bindParam(':username', $username);
-	$statement->execute();
-	$seed = $statement->fetchAll();
-
-        if ($statement->rowCount() > 0)
-            return $seed[0][0];
-        return false;
-    }
-
-    /**
-     * Attempt to set a new block seed for the given user.  Verify the
-     * token and if it matched update the block seed.
-     * @param username the user's username.
-     * @param tok the user's token.
-     */
-    public static function getTopFriend($username, $tok) {
+    public static function getHighScore($username, $tok) {
         global $connection;
 
         if (Control::checkToken($username, $tok)) {
-            $statement = $connection->prepare("(select highscore,username from user having username in (select friend from friends where user = :username)) order by highscore desc");
-	    $statement->bindParam(':username', $username);
-	    $statement->execute();
-            $result = $statement->fetchAll();
+            $statement = $connection->prepare("SELECT highscore FROM user WHERE username =:username");
+            $statement->bindParam(':username', $username);
+            $statement->execute();
+            $score = $statement->fetchAll();
 
-            if (($statement->rowCount()) > 0) {
-	       return $result[0][0].",".$result[0][1];;
-            }
+            if ($statement->rowCount() > 0)
+                return $score[0][0];
         }
-        
         return false;
     }
 
-    public static function findUser($username) {
+    public static function getBlockSeed($username, $tok) {
         global $connection;
-	
-            $statement = $connection->prepare("select username from user where username = :username");
-	    $statement->bindParam(':username', $username);
-	    $statement->execute();
-            $result = $statement->fetchAll();
+        $statement = $connection->prepare("SELECT seed FROM blockseed WHERE username =:username");
+        $statement->bindParam(':username', $username);
+        $statement->execute();
+        $seed = $statement->fetchAll();
 
-            // If there is already an entry in the blockseed table just update
-            if (($statement->rowCount()) > 0 && $result[0][0] == $username) {
-	       return true;
-            }
-        
+        if ($statement->rowCount() > 0)
+            return $seed[0][0];
         return false;
-    }
-
-    public static function addNewFriend($usernameOwner, $usernameFriend) {
-        global $connection;
-	
-            $statement = $connection->prepare("insert into friends values (:usernameOwner, :usernameFriend)");
-	    $statement->bindParam(':usernameOwner', $usernameOwner);
-	    $statement->bindParam(':usernameFriend', $usernameFriend);
-	    $statement->execute();
-
-            if (($statement->rowCount()) > 0) {
-	       return true;
-            }
-        
-	        return false;
     }
 }
 ?>
