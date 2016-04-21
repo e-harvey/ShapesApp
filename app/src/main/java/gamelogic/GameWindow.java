@@ -18,6 +18,7 @@ import java.util.Date;
 import java.util.HashMap;
 
 import fthomas.shapes.R;
+import storage.shapes.DatabaseOperations;
 
 /**
  * Created by Ben on 4/14/2016.
@@ -25,6 +26,7 @@ import fthomas.shapes.R;
 public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
 {
     private GameThread gameThread;
+    private HighScoreThread highScoreThread;
     private Block[][] grid;
     private final int XBlocks = 7; //blocks on x axis
     private final int YBlocks = 10; //blocks on y axis
@@ -33,12 +35,16 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
     private int blockWidth;
     static public ArrayList<Bitmap> blockImages = new ArrayList<>();
     private long score = 0;
+    private String friendName = null;
+    private long friendScore;
+    private String localUser;
     private int windowHeight;
-    private int blockSeed;
+    private long blockSeed;
     private long startTime;
     private long remainingTime;
     private String timeString;
     private Typeface textTypeface;
+    private DrawMethod drawMethod;
 
     private class ShapeData {
         public boolean sides[];
@@ -52,7 +58,7 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
         }
     }
 
-    public GameWindow(Context context)
+    public GameWindow(Context context, boolean playWithFriends)
     {
         super(context);
         grid = new Block[XBlocks][YBlocks];
@@ -61,10 +67,10 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
         windowHeight = metrics.heightPixels;
         gridHeight = (int)(metrics.widthPixels * ((float)YBlocks / XBlocks));
         blockWidth = gridWidth / XBlocks;
-        blockSeed = 2; //TODO: get block seed from somewhere
         startTime = System.nanoTime();
         remainingTime = 1000000000L * 90; // put number of seconds here //TODO: get game time from somewhere
         textTypeface = Typeface.createFromAsset(getContext().getAssets(), "ka1.ttf");
+        localUser = DatabaseOperations.getLocalLoggedInUser();
 
         // initialize bitmaps
         // 0 empty, 1 wedge, 2 diagonal, 3 cleft, 4 square
@@ -85,7 +91,21 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
 
         getHolder().addCallback(this);
         gameThread = new GameThread(getHolder(), this);
+
+        // Spawn the correct highscore thread.
+        highScoreThread = new HighScoreThread(this, playWithFriends);
+        highScoreThread.setRunning(true);
+        highScoreThread.start();
+
+        if (playWithFriends) {
+            blockSeed = rand_seeded();
+            // TODO ensure that everyone playing gets this blockseed...
+            DatabaseOperations.setBlockSeed(localUser, blockSeed);
+        }
+
         setFocusable(true);
+
+        setDrawMethod(playWithFriends);
     }
 
 
@@ -103,11 +123,14 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
             try {
                 gameThread.setRunning(false);
                 gameThread.join();
+                highScoreThread.setRunning(false);
+                highScoreThread.join();
             } catch(InterruptedException e) {
                 e.printStackTrace();
             }
             retry = false;
         }
+        DatabaseOperations.setHighScore(DatabaseOperations.getLocalLoggedInUser(), score);
     }
     @Override
     public void surfaceCreated(SurfaceHolder holder)
@@ -264,7 +287,7 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
     public void fill_empty_block(int x, int y)
     {
         if(grid[x][y].getType() == Block.BlockType.EMPTY) {
-            int typeNum = rand_seeded() % 100;
+            long typeNum = rand_seeded() % 100;
             Bitmap image;
             Block.BlockType type;
             //TODO: adjust probabilities as needed
@@ -289,7 +312,7 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
                 image = blockImages.get(1);
             }
 
-            grid[x][y].changeType(type, image, (rand_seeded() % 4));
+            grid[x][y].changeType(type, image, ((int) rand_seeded() % 4));
             grid[x][y].setChanged(true);
         }
     }
@@ -303,47 +326,15 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
                     grid[x][y].draw(canvas);
                 }
             }
-            draw_info(canvas);
+            drawMethod.execute(canvas);
         }
     }
 
-    private void draw_info(Canvas canvas)
-    {
-        //draw score
-        Paint paint = new Paint();
-        paint.setColor(0xFF000000);
-        paint.setStyle(Paint.Style.FILL);
-        canvas.drawRect(0, gridHeight - (blockWidth / 2), gridWidth, windowHeight, paint);
-
-        //TODO: scale to screen resolution
-        float textSize = ((windowHeight - gridHeight) / 2.5F);
-        paint = new Paint();
-        paint.setTypeface(textTypeface);
-        paint.setTextSize(textSize);
-        paint.setColor(0xFFFFFFFF);
-        paint.setTextAlign(Paint.Align.RIGHT);
-        int horizLocation = gridWidth - blockWidth;
-        int vertLocation = gridHeight;
-        canvas.drawText("SCORE:", horizLocation, vertLocation, paint);
-        canvas.drawText("" + score, horizLocation, vertLocation + textSize, paint);
-
-        //draw timer
-        //TODO: get remaining time
-        textSize = ((windowHeight - gridHeight) / 3.0F);
-        paint.setTextSize(textSize);
-        horizLocation = blockWidth;
-        paint.setTextAlign(Paint.Align.LEFT);
-        canvas.drawText("Time:", horizLocation, vertLocation, paint);
-        float timerSize = ((windowHeight - gridHeight) / 3.5F);
-        paint.setTextSize(timerSize);
-        canvas.drawText(timeString, horizLocation, vertLocation + textSize, paint);
-    }
-
-    private int rand_seeded()
+    private long rand_seeded()
     {
         String tmp = String.valueOf(blockSeed);
         blockSeed = Math.abs(tmp.hashCode());
-        return  blockSeed;
+        return blockSeed;
     }
 
     private void initBlocks()
@@ -381,5 +372,114 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
             grid[x][y].setActive(false);
             grid[x][y].setRemovable(false);
         }
+    }
+
+    /**
+     * A prototype for the database update method.
+     */
+    public interface DrawMethod {
+        public void execute(Canvas canvas);
+    }
+
+    /**
+     * Set the desired update method.  If we are playing with friends we must update
+     * the gameWindows's friend score and friend name attributes; otherwise we just
+     * update the user's highScore.
+     *
+     * @param playWithFriends true if the user is playing with friends; otherwise false.
+     */
+    private void setDrawMethod(boolean playWithFriends) {
+
+        if (playWithFriends) {
+            drawMethod = new DrawMethod() {
+                public void execute(Canvas canvas) {
+                float vertAlign = 0;
+
+                //draw score
+                Paint paint = new Paint();
+                paint.setColor(0xFF000000);
+                paint.setStyle(Paint.Style.FILL);
+                canvas.drawRect(0, gridHeight - (blockWidth / 2), gridWidth, windowHeight, paint);
+
+                //TODO: scale to screen resolution
+                float textSize = ((windowHeight - gridHeight) / 4.0F);
+                paint = new Paint();
+                paint.setTypeface(textTypeface);
+                paint.setTextSize(textSize);
+                paint.setColor(0xFFFFFFFF);
+                paint.setTextAlign(Paint.Align.RIGHT);
+                int horizLocation = gridWidth - blockWidth;
+                int vertLocation = gridHeight;
+                canvas.drawText("SCORE:", horizLocation, vertLocation, paint);
+                canvas.drawText("" + score, horizLocation, vertLocation + textSize + 10, paint);
+
+                //draw timer
+                //TODO: get remaining time
+                textSize = ((windowHeight - gridHeight) / 3.0F);
+                paint.setTextSize(textSize);
+                horizLocation = blockWidth;
+                paint.setTextAlign(Paint.Align.LEFT);
+                canvas.drawText("Time:", horizLocation, vertLocation, paint);
+                float timerSize = ((windowHeight - gridHeight) / 3.5F);
+                paint.setTextSize(timerSize);
+                canvas.drawText(timeString, horizLocation, vertLocation + textSize, paint);
+
+                // Draw friend's score
+                vertAlign += textSize + 30;
+                textSize = (int) ((windowHeight - gridHeight) / 5.0F);
+                vertAlign += textSize;
+                paint = new Paint();
+                paint.setTypeface(textTypeface);
+                horizLocation = blockWidth;
+                paint.setTextSize(textSize);
+                paint.setColor(0xFFFFFFFF);
+                paint.setTextAlign(Paint.Align.LEFT);
+                canvas.drawText(friendName + "'s SCORE:", horizLocation, vertLocation + vertAlign, paint);
+                canvas.drawText(String.valueOf(friendScore), horizLocation, vertLocation + vertAlign + textSize + 10, paint);
+                }
+            };
+        } else {
+            drawMethod = new DrawMethod() {
+                public void execute(Canvas canvas) {
+			//draw score
+			Paint paint = new Paint();
+			paint.setColor(0xFF000000);
+			paint.setStyle(Paint.Style.FILL);
+			canvas.drawRect(0, gridHeight - (blockWidth / 2), gridWidth, windowHeight, paint);
+
+			//TODO: scale to screen resolution
+			float textSize = ((windowHeight - gridHeight) / 2.5F);
+			paint = new Paint();
+			paint.setTypeface(textTypeface);
+			paint.setTextSize(textSize);
+			paint.setColor(0xFFFFFFFF);
+			paint.setTextAlign(Paint.Align.RIGHT);
+			int horizLocation = gridWidth - blockWidth;
+			int vertLocation = gridHeight;
+			canvas.drawText("SCORE:", horizLocation, vertLocation, paint);
+			canvas.drawText("" + score, horizLocation, vertLocation + textSize, paint);
+
+			//draw timer
+			//TODO: get remaining time
+			textSize = ((windowHeight - gridHeight) / 3.0F);
+			paint.setTextSize(textSize);
+			horizLocation = blockWidth;
+			paint.setTextAlign(Paint.Align.LEFT);
+			canvas.drawText("Time:", horizLocation, vertLocation, paint);
+			float timerSize = ((windowHeight - gridHeight) / 3.5F);
+			paint.setTextSize(timerSize);
+			canvas.drawText(timeString, horizLocation, vertLocation + textSize, paint);
+                }
+            };
+        }
+    }
+
+    public long getScore() {
+        return score;
+    }
+
+    public void setFriendsScore(String name, long score) {
+        friendScore = score;
+        friendName = name;
     }
 }

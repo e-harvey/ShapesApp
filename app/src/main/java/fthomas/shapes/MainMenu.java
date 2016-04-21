@@ -16,11 +16,35 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.R.layout;
 
+import java.util.ArrayList;
+
+import static org.junit.Assert.*;
+
+import storage.shapes.DatabaseOperations;
+
 public class MainMenu extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Initialize the databases
+        DatabaseOperations.DatabaseOperationsInit(this.getApplicationContext());
+
+        // TODO: need first login screen
+        /* Begin temporary unit tests */
+        /* Create test users */
+        DatabaseOperations.addUser("deadbeef", "wachtwoord");
+
+        DatabaseOperations.addUser("prancingCow", "moooooo");
+
+        DatabaseOperations.addUser("NommingNomer", "nomnom");
+
+        DatabaseOperations.login("deadbeef", "wachtwoord");
+
+        DatabaseOperations.addNewFriend("deadbeef", "prancingCow");
+        DatabaseOperations.addNewFriend("deadbeef", "NommingNomer");
+        /* End temporary unit tests */
 
         Typeface alltextTypeface = Typeface.createFromAsset(getAssets(), "Beeb Mode One.ttf");
 
@@ -39,7 +63,6 @@ public class MainMenu extends AppCompatActivity {
         multiplayerTypeface.setTypeface(alltextTypeface);
         Button scoresTypeface = (Button)findViewById(R.id.Scores);
         scoresTypeface.setTypeface(alltextTypeface);
-
     }
 
     public void acknowledge(View v) {

@@ -20,6 +20,6 @@ public class PlayMenu extends Activity {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         //change to gameWindow, when created...
-        setContentView(new GameWindow(this));
+        setContentView(new GameWindow(this, true));
     }
 }
