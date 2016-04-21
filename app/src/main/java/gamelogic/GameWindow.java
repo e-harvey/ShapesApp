@@ -46,6 +46,10 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
     private Typeface textTypeface;
     private DrawMethod drawMethod;
 
+    /**
+     * structure used to for when determining if a shape exists
+     * @see GameWindow#check_shape(int, int)
+     */
     private class ShapeData {
         public boolean sides[];
         public int x;
@@ -58,6 +62,11 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
         }
     }
 
+    /**
+     * constructor, main driver of the game itself
+     * @param context What context the game runs in
+     * @param playWithFriends Is the user playing with friends
+     */
     public GameWindow(Context context, boolean playWithFriends)
     {
         super(context);
@@ -97,8 +106,10 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
         highScoreThread.setRunning(true);
         highScoreThread.start();
 
+        //Get initial seed
+        blockSeed = (long)(Math.random() * 1000000000000L);
         if (playWithFriends) {
-            blockSeed = rand_seeded();
+            blockSeed = rand_hashed();
             // TODO ensure that everyone playing gets this blockseed...
             DatabaseOperations.setBlockSeed(localUser, blockSeed);
         }
@@ -108,12 +119,18 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
         setDrawMethod(playWithFriends);
     }
 
-
+    /**
+     * needed for the class to extend surfaceView, should never change
+     */
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height)
     {
         //needed it for class, ????
     }
+
+    /**
+     * joins running threads when the surface is destroyed
+     */
     @Override
     public void surfaceDestroyed(SurfaceHolder holder)
     {
@@ -132,6 +149,10 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
         }
         DatabaseOperations.setHighScore(DatabaseOperations.getLocalLoggedInUser(), score);
     }
+
+    /**
+     * initialilzes the gameThread that control the framerate and update speed
+     */
     @Override
     public void surfaceCreated(SurfaceHolder holder)
     {
@@ -152,6 +173,12 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
         }
         System.out.println(state.toString());
     }
+
+    /**
+     * Handles screen presses on needed blocks
+     * @param event the touch event
+     * @return trur if acted on, otherwise returns the super implementation
+     */
     @Override
     public boolean onTouchEvent(MotionEvent event)
     {
@@ -177,6 +204,10 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
         return super.onTouchEvent(event);
     }
 
+    /**
+     * Goes through each block in the grid and handles any changes to the game's state
+     * Updates the timer
+     */
     public void update()
     {
         //TODO: change so it has a list of changed blocks, and/or empty blocks
@@ -194,6 +225,9 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
         handle_time();
     }
 
+    /**
+     * Calculates and formats the remaining game time for later use
+     */
     private void handle_time()
     {
         long curTime = System.nanoTime();
@@ -215,6 +249,12 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
         timeString = formatter.format(date);
     }
 
+    /**
+     * Checks the specified block to see if a shape has been created
+     * If a shape was made, changes those blocks' bitmaps to indicate that to the user
+     * @param x block x coordinate
+     * @param y block y coordinate
+     */
     private void handle_shapes(int x, int y)
     {
         ArrayList<ShapeData> shapeBlocks = check_shape(x, y);
@@ -247,6 +287,13 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
         }
     }
 
+    /**
+     * From the specified coordinates, check to see if a shape was made
+     * Uses a modified breadth-first search
+     * @param startX starting block x coordinate
+     * @param startY starting block y coordinate
+     * @return ArrayList containing all blocks of the found shape, null otherwise
+     */
     private ArrayList<ShapeData> check_shape(int startX, int startY)
     {
         int[][] adjCoord = {{0, -1},{1, 0},{0, 1},{-1, 0}}; //adjacent grid offsets (top, right, bottom, left)
@@ -284,10 +331,15 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
         return new ArrayList<>(shape.values());
     }
 
+    /**
+     * If the specified block is empty, changes it to a new one based on the blockSeed
+     * @param x block x coordinate
+     * @param y block y coordinate
+     */
     public void fill_empty_block(int x, int y)
     {
         if(grid[x][y].getType() == Block.BlockType.EMPTY) {
-            long typeNum = rand_seeded() % 100;
+            long typeNum = rand_hashed() % 100;
             Bitmap image;
             Block.BlockType type;
             //TODO: adjust probabilities as needed
@@ -312,11 +364,16 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
                 image = blockImages.get(1);
             }
 
-            grid[x][y].changeType(type, image, ((int) rand_seeded() % 4));
+            grid[x][y].changeType(type, image, ((int) rand_hashed() % 4));
             grid[x][y].setChanged(true);
         }
     }
 
+    /**
+     * draws all blocks to the screen
+     * draws the playgame interface
+     * @param canvas the canvas being drawn on
+     */
     @Override
     public void draw(Canvas canvas)
     {
@@ -330,13 +387,22 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
         }
     }
 
-    private long rand_seeded()
+    /**
+     * Hashes the blockSeed to a new number
+     * consistent
+     * @return the new blockSeed
+     */
+    private long rand_hashed()
     {
         String tmp = String.valueOf(blockSeed);
         blockSeed = Math.abs(tmp.hashCode());
         return blockSeed;
     }
 
+    /**
+     * initializes the play area blocks
+     * sets the play area outline and initializes the inside blocks to empty
+     */
     private void initBlocks()
     {
         // init all blocks to empty
@@ -401,7 +467,6 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
                 paint.setStyle(Paint.Style.FILL);
                 canvas.drawRect(0, gridHeight - (blockWidth / 2), gridWidth, windowHeight, paint);
 
-                //TODO: scale to screen resolution
                 float textSize = ((windowHeight - gridHeight) / 4.0F);
                 paint = new Paint();
                 paint.setTypeface(textTypeface);
@@ -414,7 +479,6 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
                 canvas.drawText("" + score, horizLocation, vertLocation + textSize + 10, paint);
 
                 //draw timer
-                //TODO: get remaining time
                 textSize = ((windowHeight - gridHeight) / 3.0F);
                 paint.setTextSize(textSize);
                 horizLocation = blockWidth;
@@ -447,7 +511,6 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
 			paint.setStyle(Paint.Style.FILL);
 			canvas.drawRect(0, gridHeight - (blockWidth / 2), gridWidth, windowHeight, paint);
 
-			//TODO: scale to screen resolution
 			float textSize = ((windowHeight - gridHeight) / 2.5F);
 			paint = new Paint();
 			paint.setTypeface(textTypeface);
@@ -460,7 +523,6 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
 			canvas.drawText("" + score, horizLocation, vertLocation + textSize, paint);
 
 			//draw timer
-			//TODO: get remaining time
 			textSize = ((windowHeight - gridHeight) / 3.0F);
 			paint.setTextSize(textSize);
 			horizLocation = blockWidth;

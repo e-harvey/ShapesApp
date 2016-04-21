@@ -22,6 +22,11 @@ public class GameThread extends Thread {
         this.gameWindow = gameWindow;
     }
 
+    /**
+     * runs the game at a specified framerate
+     * updates the game and draws it each frame
+     * @see GameThread#FPS
+     */
     @Override
     public void run()
     {

@@ -46,6 +46,14 @@ public class Block
         this(type, image, x, y, true);
     }
 
+    /**
+     * constructor, initializes the blocks type, image, coordinates, and whether it's removable
+     * @param type he block's type
+     * @param image the bitmap used to display the block
+     * @param x the block's x coordinate
+     * @param y the block's y coordinate
+     * @param removable is the block changeable
+     */
     public Block(BlockType type, Bitmap image, int x, int y, boolean removable)
     {
         this.type = type;
@@ -83,6 +91,9 @@ public class Block
         }
     }
 
+    /**
+     * rotates the block 90 degrees clockwise
+     */
     public void rotate()
     {
         if(active && removable) {
@@ -98,6 +109,10 @@ public class Block
         }
     }
 
+    /**
+     * updates the block with any needed changes
+     * handles what happens when the block is part of a shape
+     */
     public void update()
     {
         //update stuff
@@ -114,6 +129,10 @@ public class Block
         }
     }
 
+    /**
+     * draws the block on the specified canvas
+     * @param canvas the canvas being drawn on
+     */
     public void draw(Canvas canvas)
     {
         if(image != null) {
@@ -121,6 +140,12 @@ public class Block
         }
     }
 
+    /**
+     * changes the block to a new type, with image and rotation
+     * @param type the new block type
+     * @param image the new bitmap to represent this block
+     * @param rotation the rotation to start this new block with
+     */
     public void changeType(BlockType type, Bitmap image, int rotation) {
         if(!removable || !active) {
             return;
