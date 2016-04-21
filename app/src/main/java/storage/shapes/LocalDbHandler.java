@@ -9,32 +9,39 @@ import android.database.sqlite.SQLiteOpenHelper;
  */
 public class LocalDbHandler extends SQLiteOpenHelper {
 
-    String query;
-    static final int DATABASE_VERSION = 1;
+    private String sqlCmd;
 
-    public LocalDbHandler(Context context, String databaseName) {
-        super(context, databaseName, null, DATABASE_VERSION);
-        String tableName = "MASTER_TABLE";
-        query = "create table " + tableName + " (USERNAME TEXT PRIMARY KEY, PASSWORD TEXT, LOGIN INT, SCORE INTEGER) ";
-        SQLiteDatabase db = this.getWritableDatabase();
-    }
-
-
-    public LocalDbHandler(Context context, String databaseName, boolean b) { // enter "true" for boolean to initiate friends db
-        super(context, databaseName, null, DATABASE_VERSION);
-        String tableName = "FRIENDS_TABLE";
-        this.query = "create table " + tableName + " (ID INTEGER PRIMARY KEY,USERNAME TEXT)";
-        SQLiteDatabase db = this.getWritableDatabase();
-    }
-
-
-    @Override
-    public void onCreate(SQLiteDatabase db) { // executes if database has not been created yet
-        db.execSQL(query);
+    public LocalDbHandler(Context context, String databaseName, int databaseVersion)
+    {
+        super(context, databaseName, null, databaseVersion);
     }
 
     @Override
-    public void onUpgrade(SQLiteDatabase arg0, int arg1, int arg2){ // executes on database change/upgrade
+    public void onCreate(SQLiteDatabase db)
+    {
+        sqlCmd = "create table user(" +
+                "username varchar(512), " +
+                "highscore bigint unsigned, " +
+                "status boolean, " +
+                "token char(60), " +
+                "primary key (username))";
+
+        // Create the user table
+        db.execSQL(sqlCmd);
+
+
+        sqlCmd = "create table friends(" +
+                "user varchar(512), " +
+                "friend varchar(512), " +
+                "constraint user_friend_unique unique(user,friend))";
+
+        // Create the friend table
+        db.execSQL(sqlCmd);
     }
 
+    @Override
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion)
+    {
+
+    }
 }
