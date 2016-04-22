@@ -33,6 +33,7 @@ public class FriendsMenu extends AppCompatActivity {
     }
 
     public void Play(View v) {
+        PlayMenu.setPlayWithFriends(true);
         Intent intent = new Intent(this, PlayMenu.class);
         startActivity(intent);
     }

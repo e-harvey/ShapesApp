@@ -275,31 +275,6 @@ public abstract class DatabaseOperations  {
 
         return name_score.split(",");
     }
-/*
-
-    */
-/**
-     * Get the score of the friend with the highest score.
-     *
-     * @param username the local user's username
-     * @return the friend's high score on success otherwise -1
-     *//*
-
-    public static long getTopFriendScore(String username)
-    {
-        long score = -1;
-
-        if (isNetworkConnected())
-            score = remote.getTopFriendScore(username);
-
-        if (score == -1) {
-            return lastTopScore;
-        } else {
-            lastTopScore = score;
-            return score;
-        }
-    }
-*/
 
     /**
      * Returns true if the user is connected to the remote database and

@@ -44,6 +44,7 @@ public class MainMenu extends AppCompatActivity {
 
         DatabaseOperations.addNewFriend("deadbeef", "prancingCow");
         DatabaseOperations.addNewFriend("deadbeef", "NommingNomer");
+
         /* End temporary unit tests */
 
         Typeface alltextTypeface = Typeface.createFromAsset(getAssets(), "Beeb Mode One.ttf");
@@ -71,6 +72,7 @@ public class MainMenu extends AppCompatActivity {
     }
 
     public void Play_Menu(View v) {
+        PlayMenu.setPlayWithFriends(false);
         Intent intent = new Intent(this, PlayMenu.class);
         startActivity(intent);
     }

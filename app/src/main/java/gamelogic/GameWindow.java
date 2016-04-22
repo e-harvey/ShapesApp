@@ -102,21 +102,20 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
         gameThread = new GameThread(getHolder(), this);
 
         // Spawn the correct highscore thread.
-        highScoreThread = new HighScoreThread(this, playWithFriends);
-        highScoreThread.setRunning(true);
-        highScoreThread.start();
+        // highScoreThread = new HighScoreThread(this, playWithFriends);
+        // highScoreThread.setRunning(true);
+        // highScoreThread.start();
+
 
         //Get initial seed
-        blockSeed = (long)(Math.random() * 1000000000000L);
+        setDrawMethod(playWithFriends);
         if (playWithFriends) {
-            blockSeed = rand_hashed();
-            // TODO ensure that everyone playing gets this blockseed...
-            DatabaseOperations.setBlockSeed(localUser, blockSeed);
+            blockSeed = DatabaseOperations.getBlockSeed(friendName);
+        } else {
+            blockSeed = (long)(Math.random() * 1000000000000L);
         }
 
         setFocusable(true);
-
-        setDrawMethod(playWithFriends);
     }
 
     /**
@@ -140,14 +139,15 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
             try {
                 gameThread.setRunning(false);
                 gameThread.join();
-                highScoreThread.setRunning(false);
-                highScoreThread.join();
             } catch(InterruptedException e) {
                 e.printStackTrace();
             }
             retry = false;
         }
-        DatabaseOperations.setHighScore(DatabaseOperations.getLocalLoggedInUser(), score);
+
+        // Update the user's new highscore and blockseed for this session
+        DatabaseOperations.setHighScore(localUser, score);
+        DatabaseOperations.setBlockSeed(localUser, blockSeed);
     }
 
     /**
@@ -505,32 +505,32 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
         } else {
             drawMethod = new DrawMethod() {
                 public void execute(Canvas canvas) {
-			//draw score
-			Paint paint = new Paint();
-			paint.setColor(0xFF000000);
-			paint.setStyle(Paint.Style.FILL);
-			canvas.drawRect(0, gridHeight - (blockWidth / 2), gridWidth, windowHeight, paint);
+                //draw score
+                Paint paint = new Paint();
+                paint.setColor(0xFF000000);
+                paint.setStyle(Paint.Style.FILL);
+                canvas.drawRect(0, gridHeight - (blockWidth / 2), gridWidth, windowHeight, paint);
 
-			float textSize = ((windowHeight - gridHeight) / 2.5F);
-			paint = new Paint();
-			paint.setTypeface(textTypeface);
-			paint.setTextSize(textSize);
-			paint.setColor(0xFFFFFFFF);
-			paint.setTextAlign(Paint.Align.RIGHT);
-			int horizLocation = gridWidth - blockWidth;
-			int vertLocation = gridHeight;
-			canvas.drawText("SCORE:", horizLocation, vertLocation, paint);
-			canvas.drawText("" + score, horizLocation, vertLocation + textSize, paint);
+                float textSize = ((windowHeight - gridHeight) / 4.0F);
+                paint = new Paint();
+                paint.setTypeface(textTypeface);
+                paint.setTextSize(textSize);
+                paint.setColor(0xFFFFFFFF);
+                paint.setTextAlign(Paint.Align.RIGHT);
+                int horizLocation = gridWidth - blockWidth;
+                int vertLocation = gridHeight;
+                canvas.drawText("SCORE:", horizLocation, vertLocation, paint);
+                canvas.drawText("" + score, horizLocation, vertLocation + textSize + 10, paint);
 
-			//draw timer
-			textSize = ((windowHeight - gridHeight) / 3.0F);
-			paint.setTextSize(textSize);
-			horizLocation = blockWidth;
-			paint.setTextAlign(Paint.Align.LEFT);
-			canvas.drawText("Time:", horizLocation, vertLocation, paint);
-			float timerSize = ((windowHeight - gridHeight) / 3.5F);
-			paint.setTextSize(timerSize);
-			canvas.drawText(timeString, horizLocation, vertLocation + textSize, paint);
+                //draw timer
+                textSize = ((windowHeight - gridHeight) / 3.0F);
+                paint.setTextSize(textSize);
+                horizLocation = blockWidth;
+                paint.setTextAlign(Paint.Align.LEFT);
+                canvas.drawText("Time:", horizLocation, vertLocation, paint);
+                float timerSize = ((windowHeight - gridHeight) / 3.5F);
+                paint.setTextSize(timerSize);
+                canvas.drawText(timeString, horizLocation, vertLocation + textSize, paint);
                 }
             };
         }
