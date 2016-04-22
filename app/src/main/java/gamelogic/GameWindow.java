@@ -42,6 +42,7 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
     private long blockSeed;
     private long startTime;
     private long remainingTime;
+    private boolean gameRunning;
     private String timeString;
     private Typeface textTypeface;
     private DrawMethod drawMethod;
@@ -77,7 +78,7 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
         gridHeight = (int)(metrics.widthPixels * ((float)YBlocks / XBlocks));
         blockWidth = gridWidth / XBlocks;
         startTime = System.nanoTime();
-        remainingTime = 1000000000L * 90; // put number of seconds here //TODO: get game time from somewhere
+        remainingTime = 1000000000L * 90; // put number of starting seconds here //TODO: get game time from somewhere
         textTypeface = Typeface.createFromAsset(getContext().getAssets(), "ka1.ttf");
         localUser = DatabaseOperations.getLocalLoggedInUser();
 
@@ -94,17 +95,15 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
         blockImages.add(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.cleft_green), blockWidth, blockWidth, false));
         blockImages.add(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.square_green), blockWidth, blockWidth, false));
 
-        //TODO: start the blocks offset by half to allow for more blocks on screen at a time
         initBlocks();
-        //TODO: add timer so the game ends
 
         getHolder().addCallback(this);
         gameThread = new GameThread(getHolder(), this);
 
         // Spawn the correct highscore thread.
-        highScoreThread = new HighScoreThread(this, playWithFriends);
-        highScoreThread.setRunning(true);
-        highScoreThread.start();
+        //highScoreThread = new HighScoreThread(this, playWithFriends);
+        //highScoreThread.setRunning(true);
+        //highScoreThread.start();
 
         //Get initial seed
         blockSeed = (long)(Math.random() * 1000000000000L);
@@ -140,8 +139,8 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
             try {
                 gameThread.setRunning(false);
                 gameThread.join();
-                highScoreThread.setRunning(false);
-                highScoreThread.join();
+                //highScoreThread.setRunning(false);
+                //highScoreThread.join();
             } catch(InterruptedException e) {
                 e.printStackTrace();
             }
@@ -161,6 +160,7 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
         if(state == Thread.State.NEW) {
             gameThread.setRunning(true);
             gameThread.start();
+            gameRunning = true;
         } else if(state == Thread.State.TERMINATED) {
             try {
                 gameThread.join();
@@ -182,23 +182,25 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
     @Override
     public boolean onTouchEvent(MotionEvent event)
     {
-        if(event.getAction() == MotionEvent.ACTION_DOWN) {
-            //get the block and rotate it
-            int x = (int)(event.getX() / blockWidth);
-            int y = (int)(event.getY() / blockWidth);
-            if(y < YBlocks) { //stop overflow at bottom of screen
-                System.out.println("press at " + x + "," + y);
-                if(grid[x][y].isActive()) {
-                    grid[x][y].rotate();
-                    grid[x][y].setChanged(true);
-                }
+        if(gameRunning) {
+            if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                //get the block and rotate it
+                int x = (int) (event.getX() / blockWidth);
+                int y = (int) (event.getY() / blockWidth);
+                if (y < YBlocks) { //stop overflow at bottom of screen
+                    System.out.println("press at " + x + "," + y);
+                    if (grid[x][y].isActive()) {
+                        grid[x][y].rotate();
+                        grid[x][y].setChanged(true);
+                    }
 
+                    return true; // VERY IMPORTANT
+                }
+            }
+            if (event.getAction() == MotionEvent.ACTION_UP) {
+                //TODO: add tap-and-hold to change one block for point cost
                 return true; // VERY IMPORTANT
             }
-        }
-        if(event.getAction() == MotionEvent.ACTION_UP) {
-            //TODO: add tap-and-hold to change one block for point cost
-            return true; // VERY IMPORTANT
         }
 
         return super.onTouchEvent(event);
@@ -236,6 +238,9 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
         remainingTime -= timeChange;
         if(remainingTime < 0) {
             remainingTime = 0;
+            gameRunning = false;
+            gameThread.setRunning(false);
+            //TODO: do highscore stuff here;
         }
         Date date = new Date(remainingTime / 1000000);
         DateFormat formatter;
@@ -249,6 +254,11 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
         timeString = formatter.format(date);
     }
 
+    private void add_time(float secs)
+    {
+        remainingTime += secs * 1000000000L;
+    }
+
     /**
      * Checks the specified block to see if a shape has been created
      * If a shape was made, changes those blocks' bitmaps to indicate that to the user
@@ -260,8 +270,9 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
         ArrayList<ShapeData> shapeBlocks = check_shape(x, y);
         //change every block in the shape to empty
         if(shapeBlocks != null) {
-            //TODO: update score here
+            //TODO: update score/time here
             score += shapeBlocks.size() * shapeBlocks.size();
+            add_time(shapeBlocks.size() * shapeBlocks.size() * 0.0425F);
 
             //Change shape blocks to green to show shape has been made
             for(ShapeData block : shapeBlocks) {
