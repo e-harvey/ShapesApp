@@ -11,7 +11,7 @@ import fthomas.shapes.R;
  */
 public class Block
 {
-    final private float SHAPE_SECS = 1.0F;
+    final private float SHAPE_SECS = 0.7F;
     public enum BlockType {EMPTY, WEDGE, DIAGONAL, CLEFT, SQUARE};
     private BlockType type;
     private Bitmap image = null;
