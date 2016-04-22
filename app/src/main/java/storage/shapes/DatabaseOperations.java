@@ -226,7 +226,7 @@ public abstract class DatabaseOperations  {
      *
      * @return the block seed or -1 otherwise.
      */
-    public long getDailyChallengeSeed()
+    public static long getDailyChallengeSeed()
     {
         return remote.getDailyChallengeSeed();
     }

@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 
+import fthomas.shapes.PlayMenu;
 import fthomas.shapes.R;
 import storage.shapes.DatabaseOperations;
 
@@ -68,7 +69,7 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
      * @param context What context the game runs in
      * @param playWithFriends Is the user playing with friends
      */
-    public GameWindow(Context context, boolean playWithFriends)
+    public GameWindow(Context context, PlayMenu.gamePlayType type)
     {
         super(context);
         grid = new Block[XBlocks][YBlocks];
@@ -81,7 +82,7 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
         remainingTime = 1000000000L * 90; // put number of starting seconds here //TODO: get game time from somewhere
         textTypeface = Typeface.createFromAsset(getContext().getAssets(), "ka1.ttf");
         localUser = DatabaseOperations.getLocalLoggedInUser();
-
+        
         // initialize bitmaps
         // 0 empty, 1 wedge, 2 diagonal, 3 cleft, 4 square
         // 5 wedge_green, 6 diagonal_green, 7 cleft_green, 8 square_green
@@ -101,10 +102,12 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
         gameThread = new GameThread(getHolder(), this);
 
         //Get initial seed
-        setDrawMethod(playWithFriends);
-        if (playWithFriends) {
+        setDrawMethod(type == PlayMenu.gamePlayType.PLAY_WITH_FRIENDS);
+        if (type == PlayMenu.gamePlayType.PLAY_WITH_FRIENDS) {
             blockSeed = DatabaseOperations.getBlockSeed(friendName);
-        } else {
+        } else if(type == PlayMenu.gamePlayType.DAILY_CHALLENGE) {
+            blockSeed = DatabaseOperations.getDailyChallengeSeed();
+        } else if(type == PlayMenu.gamePlayType.SINGLE_PLAYER){
             blockSeed = (long)(Math.random() * 1000000000000L);
         }
 
@@ -234,7 +237,7 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
             remainingTime = 0;
             gameRunning = false;
             gameThread.setRunning(false);
-            //TODO: do highscore stuff here;
+            //TODO: stuff
         }
         Date date = new Date(remainingTime / 1000000);
         DateFormat formatter;

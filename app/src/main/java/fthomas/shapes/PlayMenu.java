@@ -11,7 +11,9 @@ import storage.shapes.DatabaseOperations;
  * Created by FThom_000 on 3/19/2016.
  */
 public class PlayMenu extends Activity {
-    private static boolean playWithFriends;
+    public enum gamePlayType {PLAY_WITH_FRIENDS, SINGLE_PLAYER, DAILY_CHALLENGE};
+    public static gamePlayType type;
+    public static String friendname;
 
     @Override
     public void onCreate(Bundle savedInstance) {
@@ -24,16 +26,16 @@ public class PlayMenu extends Activity {
 
         // TODO check that the local user has a friend with a valid
         // blockseed to play with.
-        if (playWithFriends) {
-            setContentView(new GameWindow(this, true));
-        } else {
-            setContentView(new GameWindow(this, false));
-        }
+        setContentView(new GameWindow(this, type));
         //change to gameWindow, when created...
 
     }
 
-    public static void setPlayWithFriends(boolean playWithFriends) {
-        PlayMenu.playWithFriends = playWithFriends;
+    public static void setType(gamePlayType type) {
+        PlayMenu.type = type;
+    }
+
+    public static void setFriendname(String friendname) {
+        PlayMenu.friendname = friendname;
     }
 }

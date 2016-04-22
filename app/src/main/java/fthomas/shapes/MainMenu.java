@@ -60,6 +60,8 @@ public class MainMenu extends AppCompatActivity {
 
         Button playTypeface = (Button)findViewById(R.id.Play);
         playTypeface.setTypeface(alltextTypeface);
+        Button ChallengeTypeFace = (Button)findViewById(R.id.Challenge);
+        ChallengeTypeFace.setTypeface(alltextTypeface);
         Button multiplayerTypeface = (Button)findViewById(R.id.Multiplayer);
         multiplayerTypeface.setTypeface(alltextTypeface);
         Button scoresTypeface = (Button)findViewById(R.id.Scores);
@@ -72,7 +74,7 @@ public class MainMenu extends AppCompatActivity {
     }
 
     public void Play_Menu(View v) {
-        PlayMenu.setPlayWithFriends(false);
+        PlayMenu.setType(PlayMenu.gamePlayType.SINGLE_PLAYER);
         Intent intent = new Intent(this, PlayMenu.class);
         startActivity(intent);
     }
@@ -94,6 +96,12 @@ public class MainMenu extends AppCompatActivity {
 
     public void Settings_Screen(View v) {
         Intent intent = new Intent(this, SettingsScreen.class);
+        startActivity(intent);
+    }
+
+    public void Challenge_Menu(View view) {
+        PlayMenu.setType(PlayMenu.gamePlayType.DAILY_CHALLENGE);
+        Intent intent = new Intent(this, PlayMenu.class);
         startActivity(intent);
     }
 }
