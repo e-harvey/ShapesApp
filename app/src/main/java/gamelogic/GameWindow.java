@@ -17,6 +17,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 
+<<<<<<< HEAD
+=======
+import fthomas.shapes.PlayMenu;
+>>>>>>> upstream/master
 import fthomas.shapes.R;
 import storage.shapes.DatabaseOperations;
 
@@ -42,6 +46,10 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
     private long blockSeed;
     private long startTime;
     private long remainingTime;
+<<<<<<< HEAD
+=======
+    private boolean gameRunning;
+>>>>>>> upstream/master
     private String timeString;
     private Typeface textTypeface;
     private DrawMethod drawMethod;
@@ -67,7 +75,11 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
      * @param context What context the game runs in
      * @param playWithFriends Is the user playing with friends
      */
+<<<<<<< HEAD
     public GameWindow(Context context, boolean playWithFriends)
+=======
+    public GameWindow(Context context, PlayMenu.gamePlayType type)
+>>>>>>> upstream/master
     {
         super(context);
         grid = new Block[XBlocks][YBlocks];
@@ -77,10 +89,17 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
         gridHeight = (int)(metrics.widthPixels * ((float)YBlocks / XBlocks));
         blockWidth = gridWidth / XBlocks;
         startTime = System.nanoTime();
+<<<<<<< HEAD
         remainingTime = 1000000000L * 90; // put number of seconds here //TODO: get game time from somewhere
         textTypeface = Typeface.createFromAsset(getContext().getAssets(), "ka1.ttf");
         localUser = DatabaseOperations.getLocalLoggedInUser();
 
+=======
+        remainingTime = 1000000000L * 90; // put number of starting seconds here //TODO: get game time from somewhere
+        textTypeface = Typeface.createFromAsset(getContext().getAssets(), "ka1.ttf");
+        localUser = DatabaseOperations.getLocalLoggedInUser();
+        
+>>>>>>> upstream/master
         // initialize bitmaps
         // 0 empty, 1 wedge, 2 diagonal, 3 cleft, 4 square
         // 5 wedge_green, 6 diagonal_green, 7 cleft_green, 8 square_green
@@ -94,13 +113,18 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
         blockImages.add(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.cleft_green), blockWidth, blockWidth, false));
         blockImages.add(Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.square_green), blockWidth, blockWidth, false));
 
+<<<<<<< HEAD
         //TODO: start the blocks offset by half to allow for more blocks on screen at a time
         initBlocks();
         //TODO: add timer so the game ends
+=======
+        initBlocks();
+>>>>>>> upstream/master
 
         getHolder().addCallback(this);
         gameThread = new GameThread(getHolder(), this);
 
+<<<<<<< HEAD
         // Spawn the correct highscore thread.
         highScoreThread = new HighScoreThread(this, playWithFriends);
         highScoreThread.setRunning(true);
@@ -117,6 +141,19 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
         setFocusable(true);
 
         setDrawMethod(playWithFriends);
+=======
+        //Get initial seed
+        setDrawMethod(type == PlayMenu.gamePlayType.PLAY_WITH_FRIENDS);
+        if (type == PlayMenu.gamePlayType.PLAY_WITH_FRIENDS) {
+            blockSeed = DatabaseOperations.getBlockSeed(friendName);
+        } else if(type == PlayMenu.gamePlayType.DAILY_CHALLENGE) {
+            blockSeed = DatabaseOperations.getDailyChallengeSeed();
+        } else if(type == PlayMenu.gamePlayType.SINGLE_PLAYER){
+            blockSeed = (long)(Math.random() * 1000000000000L);
+        }
+
+        setFocusable(true);
+>>>>>>> upstream/master
     }
 
     /**
@@ -140,14 +177,24 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
             try {
                 gameThread.setRunning(false);
                 gameThread.join();
+<<<<<<< HEAD
                 highScoreThread.setRunning(false);
                 highScoreThread.join();
+=======
+>>>>>>> upstream/master
             } catch(InterruptedException e) {
                 e.printStackTrace();
             }
             retry = false;
         }
+<<<<<<< HEAD
         DatabaseOperations.setHighScore(DatabaseOperations.getLocalLoggedInUser(), score);
+=======
+
+        // Update the user's new highscore and blockseed for this session
+        DatabaseOperations.setHighScore(localUser, score);
+        DatabaseOperations.setBlockSeed(localUser, blockSeed);
+>>>>>>> upstream/master
     }
 
     /**
@@ -161,6 +208,10 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
         if(state == Thread.State.NEW) {
             gameThread.setRunning(true);
             gameThread.start();
+<<<<<<< HEAD
+=======
+            gameRunning = true;
+>>>>>>> upstream/master
         } else if(state == Thread.State.TERMINATED) {
             try {
                 gameThread.join();
@@ -182,6 +233,7 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
     @Override
     public boolean onTouchEvent(MotionEvent event)
     {
+<<<<<<< HEAD
         if(event.getAction() == MotionEvent.ACTION_DOWN) {
             //get the block and rotate it
             int x = (int)(event.getX() / blockWidth);
@@ -200,6 +252,28 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
             //TODO: add tap-and-hold to change one block for point cost
             return true; // VERY IMPORTANT
         }
+=======
+        if(gameRunning) {
+            if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                //get the block and rotate it
+                int x = (int) (event.getX() / blockWidth);
+                int y = (int) (event.getY() / blockWidth);
+                if (y < YBlocks) { //stop overflow at bottom of screen
+                    System.out.println("press at " + x + "," + y);
+                    if (grid[x][y].isActive()) {
+                        grid[x][y].rotate();
+                        grid[x][y].setChanged(true);
+                    }
+
+                    return true; // VERY IMPORTANT
+                }
+            }
+            if (event.getAction() == MotionEvent.ACTION_UP) {
+                //TODO: add tap-and-hold to change one block for point cost
+                return true; // VERY IMPORTANT
+            }
+        }
+>>>>>>> upstream/master
 
         return super.onTouchEvent(event);
     }
@@ -236,6 +310,12 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
         remainingTime -= timeChange;
         if(remainingTime < 0) {
             remainingTime = 0;
+<<<<<<< HEAD
+=======
+            gameRunning = false;
+            gameThread.setRunning(false);
+            //TODO: stuff
+>>>>>>> upstream/master
         }
         Date date = new Date(remainingTime / 1000000);
         DateFormat formatter;
@@ -249,6 +329,14 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
         timeString = formatter.format(date);
     }
 
+<<<<<<< HEAD
+=======
+    private void add_time(float secs)
+    {
+        remainingTime += secs * 1000000000L;
+    }
+
+>>>>>>> upstream/master
     /**
      * Checks the specified block to see if a shape has been created
      * If a shape was made, changes those blocks' bitmaps to indicate that to the user
@@ -260,8 +348,14 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
         ArrayList<ShapeData> shapeBlocks = check_shape(x, y);
         //change every block in the shape to empty
         if(shapeBlocks != null) {
+<<<<<<< HEAD
             //TODO: update score here
             score += shapeBlocks.size() * shapeBlocks.size();
+=======
+            //TODO: update score/time here
+            score += shapeBlocks.size() * shapeBlocks.size();
+            add_time(shapeBlocks.size() * shapeBlocks.size() * 0.0425F);
+>>>>>>> upstream/master
 
             //Change shape blocks to green to show shape has been made
             for(ShapeData block : shapeBlocks) {
@@ -505,6 +599,7 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
         } else {
             drawMethod = new DrawMethod() {
                 public void execute(Canvas canvas) {
+<<<<<<< HEAD
 			//draw score
 			Paint paint = new Paint();
 			paint.setColor(0xFF000000);
@@ -531,6 +626,34 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
 			float timerSize = ((windowHeight - gridHeight) / 3.5F);
 			paint.setTextSize(timerSize);
 			canvas.drawText(timeString, horizLocation, vertLocation + textSize, paint);
+=======
+                //draw score
+                Paint paint = new Paint();
+                paint.setColor(0xFF000000);
+                paint.setStyle(Paint.Style.FILL);
+                canvas.drawRect(0, gridHeight - (blockWidth / 2), gridWidth, windowHeight, paint);
+
+                float textSize = ((windowHeight - gridHeight) / 4.0F);
+                paint = new Paint();
+                paint.setTypeface(textTypeface);
+                paint.setTextSize(textSize);
+                paint.setColor(0xFFFFFFFF);
+                paint.setTextAlign(Paint.Align.RIGHT);
+                int horizLocation = gridWidth - blockWidth;
+                int vertLocation = gridHeight;
+                canvas.drawText("SCORE:", horizLocation, vertLocation, paint);
+                canvas.drawText("" + score, horizLocation, vertLocation + textSize + 10, paint);
+
+                //draw timer
+                textSize = ((windowHeight - gridHeight) / 3.0F);
+                paint.setTextSize(textSize);
+                horizLocation = blockWidth;
+                paint.setTextAlign(Paint.Align.LEFT);
+                canvas.drawText("Time:", horizLocation, vertLocation, paint);
+                float timerSize = ((windowHeight - gridHeight) / 3.5F);
+                paint.setTextSize(timerSize);
+                canvas.drawText(timeString, horizLocation, vertLocation + textSize, paint);
+>>>>>>> upstream/master
                 }
             };
         }

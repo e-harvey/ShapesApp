@@ -12,6 +12,8 @@ import android.widget.Toast;
  * Created by FThom_000 on 3/19/2016.
  */
 public class FriendsMenu extends AppCompatActivity {
+    private String friendName; //TODO: set this
+
     public void onCreate(Bundle savedInstance) {
         super.onCreate(savedInstance);
         setContentView(R.layout.activity_friends);
@@ -33,6 +35,8 @@ public class FriendsMenu extends AppCompatActivity {
     }
 
     public void Play(View v) {
+        PlayMenu.setType(PlayMenu.gamePlayType.PLAY_WITH_FRIENDS);
+        PlayMenu.setFriendname(friendName);
         Intent intent = new Intent(this, PlayMenu.class);
         startActivity(intent);
     }

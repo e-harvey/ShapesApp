@@ -40,7 +40,10 @@ public class SendPostRequest extends AsyncTask<ArrayList<String>, Void, String> 
         JSONObject jsonObject;
         String service = null, request = "", charset = "UTF-8";
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> upstream/master
         try {
             // Unpack the url
             service = DB_URL + "/?" + param[0].get(0) + "=" + URLEncoder.encode(param[0].get(1), charset) +
@@ -48,6 +51,12 @@ public class SendPostRequest extends AsyncTask<ArrayList<String>, Void, String> 
 
             // Unpack the post request parameters
             for (int i = 4; i < param[0].size() - 1; i += 2) {
+<<<<<<< HEAD
+=======
+                if(param[0].get(i) == null || param[0].get(i+1) == null) {
+                    return "-1";
+                }
+>>>>>>> upstream/master
                 if (i == 4)
                     request = request + param[0].get(i) + "=" + URLEncoder.encode(param[0].get(i + 1), charset);
                 else

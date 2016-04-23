@@ -36,14 +36,18 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/bgVolumeSeekBar"
+<<<<<<< HEAD
         android:minHeight="5dip"
         android:maxHeight="5dip"
+=======
+>>>>>>> upstream/master
         android:layout_below="@+id/bgVolumeText"
         android:layout_centerHorizontal="true"
         android:layout_marginStart="30dp"
         android:layout_marginEnd="30dp"
         android:progress="0"/>
 
+<<<<<<< HEAD
     <!---sound effects Volume text and seekbar -->
     <TextView
         android:layout_width="wrap_content"
@@ -67,6 +71,8 @@
         android:layout_marginStart="30dp"
         android:layout_marginEnd="30dp"
         android:progress="0"/>
+=======
+>>>>>>> upstream/master
 
         <!--- TO DO: update according to users choice -->
 

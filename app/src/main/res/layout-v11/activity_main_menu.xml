@@ -53,7 +53,7 @@
         android:text="@string/Play"
         android:id="@+id/Play"
         android:textColor="@color/Text"
-        android:layout_above="@id/Multiplayer"
+        android:layout_above="@+id/Challenge"
         android:layout_centerHorizontal="true"
         android:onClick="Play_Menu"
         style="?android:attr/borderlessButtonStyle"/>
@@ -85,6 +85,18 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
         android:scaleType="fitCenter"/>
+
+    <Button
+        style="?android:attr/borderlessButtonStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/Challenge"
+        android:id="@+id/Challenge"
+        android:textSize="24sp"
+        android:textColor="@color/Text"
+        android:onClick="Challenge_Menu"
+        android:layout_above="@id/Multiplayer"
+        android:layout_centerHorizontal="true" />
 
 </RelativeLayout>
 

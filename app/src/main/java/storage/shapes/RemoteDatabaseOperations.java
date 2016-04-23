@@ -55,9 +55,12 @@ class RemoteDatabaseOperations implements RemoteDbOperations, SharedDbOperations
         params.add(4, "username");
         params.add(5, username);
 
+<<<<<<< HEAD
         params.add(6, "token");
         params.add(7, DatabaseOperations.getToken(username));
 
+=======
+>>>>>>> upstream/master
         try {
             ret = Long.valueOf(new SendPostRequest().execute(params).get());
         } catch (InterruptedException e) {

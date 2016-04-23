@@ -226,7 +226,11 @@ public abstract class DatabaseOperations  {
      *
      * @return the block seed or -1 otherwise.
      */
+<<<<<<< HEAD
     public long getDailyChallengeSeed()
+=======
+    public static long getDailyChallengeSeed()
+>>>>>>> upstream/master
     {
         return remote.getDailyChallengeSeed();
     }
@@ -275,6 +279,7 @@ public abstract class DatabaseOperations  {
 
         return name_score.split(",");
     }
+<<<<<<< HEAD
 /*
 
     */
@@ -300,6 +305,8 @@ public abstract class DatabaseOperations  {
         }
     }
 */
+=======
+>>>>>>> upstream/master
 
     /**
      * Returns true if the user is connected to the remote database and

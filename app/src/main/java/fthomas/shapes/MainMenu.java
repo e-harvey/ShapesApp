@@ -46,6 +46,7 @@ public class MainMenu extends AppCompatActivity {
     }
 
     public void Play_Menu(View v) {
+        PlayMenu.setType(PlayMenu.gamePlayType.SINGLE_PLAYER);
         Intent intent = new Intent(this, PlayMenu.class);
         startActivity(intent);
     }
@@ -67,6 +68,12 @@ public class MainMenu extends AppCompatActivity {
 
     public void Settings_Screen(View v) {
         Intent intent = new Intent(this, SettingsScreen.class);
+        startActivity(intent);
+    }
+
+    public void Challenge_Menu(View view) {
+        PlayMenu.setType(PlayMenu.gamePlayType.DAILY_CHALLENGE);
+        Intent intent = new Intent(this, PlayMenu.class);
         startActivity(intent);
     }
 }
