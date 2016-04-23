@@ -49,6 +49,8 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
     private String timeString;
     private Typeface textTypeface;
     private DrawMethod drawMethod;
+    private MediaPlayer mPlayer = null;
+    private MediaPlayer backgroundPlayer;
 
     /**
      * structure used to for when determining if a shape exists
@@ -84,6 +86,11 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
         remainingTime = 1000000000L * 90; // put number of starting seconds here //TODO: get game time from somewhere
         textTypeface = Typeface.createFromAsset(getContext().getAssets(), "ka1.ttf");
         localUser = DatabaseOperations.getLocalLoggedInUser();
+        backgroundPlayer = MediaPlayer.create(getContext(), R.raw.a_night_of_dizzy_spells);
+
+        backgroundPlayer.setVolume(0.3F, 0.3F);
+        backgroundPlayer.setLooping(true);
+        backgroundPlayer.start();
         
         // initialize bitmaps
         // 0 empty, 1 wedge, 2 diagonal, 3 cleft, 4 square
@@ -133,10 +140,11 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
     {
         // surface destroyed, stop game (update scores here)
         boolean retry = true;
-        while(retry) {
+        while (retry) {
             try {
                 gameThread.setRunning(false);
                 gameThread.join();
+                backgroundPlayer.release();
             } catch(InterruptedException e) {
                 e.printStackTrace();
             }
@@ -163,12 +171,17 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
         } else if(state == Thread.State.TERMINATED) {
             try {
                 gameThread.join();
+                backgroundPlayer.release();
             }  catch(InterruptedException e) {
                 e.printStackTrace();
             }
             gameThread = new GameThread(getHolder(), this);
             gameThread.setRunning(true);
             gameThread.start();
+            backgroundPlayer = MediaPlayer.create(getContext(), R.raw.a_night_of_dizzy_spells);
+            backgroundPlayer.setVolume(0.3F, 0.3F);
+            backgroundPlayer.setLooping(true);
+            backgroundPlayer.start();
         }
         System.out.println(state.toString());
     }
@@ -270,10 +283,24 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
         //change every block in the shape to empty
         if(shapeBlocks != null) {
 
-            MediaPlayer mPlayer = MediaPlayer.create(getContext(), R.raw.apears);
+
+            if(mPlayer != null) {
+                mPlayer.release();
+            }
+            if(shapeBlocks.size() >= (XBlocks - 3) * (YBlocks - 3)) { //TODO: delete this *wink**wink*
+                mPlayer = MediaPlayer.create(getContext(), R.raw.godlike);
+            } else {
+                mPlayer = MediaPlayer.create(getContext(), R.raw.onclick);
+            }
+            mPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mediaPlayer) {
+                    mediaPlayer.stop();
+                    mediaPlayer.release();
+                }
+            });
             mPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             mPlayer.start();
-
             //TODO: update score/time here
             score += shapeBlocks.size() * shapeBlocks.size();
             add_time(shapeBlocks.size() * shapeBlocks.size() * 0.0425F);
