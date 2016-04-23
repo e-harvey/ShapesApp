@@ -16,16 +16,20 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.R.layout;
 
+import java.util.ArrayList;
+
+import static org.junit.Assert.*;
+
+import storage.shapes.DatabaseOperations;
+
 public class MainMenu extends AppCompatActivity {
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected void onCreate(Bundle savedInstance) {
+        super.onCreate(savedInstance);
+        setContentView(R.layout.activity_main_menu);
 
         Typeface alltextTypeface = Typeface.createFromAsset(getAssets(), "Beeb Mode One.ttf");
-
-
-        setContentView(R.layout.activity_main_menu);
 
         Typeface importedTypeface = Typeface.createFromAsset(getAssets(), "Arcade.ttf");
         TextView titleTypeface = (TextView)findViewById(R.id.Title);
@@ -39,12 +43,6 @@ public class MainMenu extends AppCompatActivity {
         multiplayerTypeface.setTypeface(alltextTypeface);
         Button scoresTypeface = (Button)findViewById(R.id.Scores);
         scoresTypeface.setTypeface(alltextTypeface);
-
-    }
-
-    public void acknowledge(View v) {
-        Toast myToast = Toast.makeText(getApplicationContext(), "This feature is not implemented yet", Toast.LENGTH_SHORT);
-        myToast.show();
     }
 
     public void Play_Menu(View v) {

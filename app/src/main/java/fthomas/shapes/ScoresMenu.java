@@ -19,5 +19,12 @@ public class ScoresMenu extends AppCompatActivity {
         TextView ScoreTitle = (TextView)findViewById(R.id.HighScore_Title);
         ScoreTitle.setTypeface(alltextTypeface);
 
+        TextView High_Score_Text = (TextView)findViewById(R.id.High_Score_Text);
+        High_Score_Text.setTypeface(alltextTypeface);
+        TextView UserScore = (TextView)findViewById(R.id.UserScore);
+        UserScore.setTypeface(alltextTypeface);
+        TextView Friends_Scores_Text = (TextView)findViewById(R.id.Friends_Scores_Text);
+        Friends_Scores_Text.setTypeface(alltextTypeface);
+
     }
 }

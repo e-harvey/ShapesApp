@@ -13,6 +13,7 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="@string/Settings_title"
         android:id="@+id/SettingsTitle"
+        android:textColor="@color/Text"
         android:textSize="32sp"
         android:layout_marginTop="48dp"
         android:layout_alignParentTop="true"
@@ -35,12 +36,37 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/bgVolumeSeekBar"
+        android:minHeight="5dip"
+        android:maxHeight="5dip"
         android:layout_below="@+id/bgVolumeText"
         android:layout_centerHorizontal="true"
         android:layout_marginStart="30dp"
         android:layout_marginEnd="30dp"
         android:progress="0"/>
 
+    <!---sound effects Volume text and seekbar -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/effVolume"
+        android:id="@+id/effVolumeText"
+        android:textSize="20sp"
+        android:textColor="@color/Text"
+        android:layout_below="@+id/bgVolumeSeekBar"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="30dp"/>
+
+    <SeekBar
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/effVolumeSeekBar"
+        android:minHeight="5dip"
+        android:maxHeight="5dip"
+        android:layout_below="@+id/effVolumeText"
+        android:layout_centerHorizontal="true"
+        android:layout_marginStart="30dp"
+        android:layout_marginEnd="30dp"
+        android:progress="0"/>
 
         <!--- TO DO: update according to users choice -->
 
