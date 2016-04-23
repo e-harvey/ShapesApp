@@ -6,6 +6,8 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Typeface;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -67,7 +69,7 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
     /**
      * constructor, main driver of the game itself
      * @param context What context the game runs in
-     * @param playWithFriends Is the user playing with friends
+     * @param type Is the user playing singleplayer, dailyChallenge, or PlayWithFriends
      */
     public GameWindow(Context context, PlayMenu.gamePlayType type)
     {
@@ -267,6 +269,11 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
         ArrayList<ShapeData> shapeBlocks = check_shape(x, y);
         //change every block in the shape to empty
         if(shapeBlocks != null) {
+
+            MediaPlayer mPlayer = MediaPlayer.create(getContext(), R.raw.apears);
+            mPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+            mPlayer.start();
+
             //TODO: update score/time here
             score += shapeBlocks.size() * shapeBlocks.size();
             add_time(shapeBlocks.size() * shapeBlocks.size() * 0.0425F);
@@ -535,7 +542,7 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
                 paint.setTextSize(textSize);
                 horizLocation = blockWidth;
                 paint.setTextAlign(Paint.Align.LEFT);
-                canvas.drawText("Time:", horizLocation, vertLocation, paint);
+                    canvas.drawText("Time:", horizLocation, vertLocation, paint);
                 float timerSize = ((windowHeight - gridHeight) / 3.5F);
                 paint.setTextSize(timerSize);
                 canvas.drawText(timeString, horizLocation, vertLocation + textSize, paint);
