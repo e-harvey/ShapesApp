@@ -149,8 +149,8 @@ class LocalDatabaseOperations implements LocalDbOperations, SharedDbOperations  
     public void logout(String username)
     {
         sqlCmd = "update user" +
-                " set status = 0, token = 'beefdeafdeadbeef', " +
-                " where username = '" + username + "'";
+                " set status = 0 where token = '" + this.getToken(username) + "'" +
+                " AND username = '" + username + "'";
 
         try {
             sqLiteDatabase.execSQL(sqlCmd);
@@ -161,13 +161,22 @@ class LocalDatabaseOperations implements LocalDbOperations, SharedDbOperations  
 
     public boolean login(String username, String password)
     {
-        sqlCmd = "update user " +
-                "set status = 1 " +
-                "where username = '" + username + "'";
+        String col[] = {"username"};
+        String selArgs[] = {username};
 
-        try {
-            sqLiteDatabase.execSQL(sqlCmd);
-        } catch (SQLiteConstraintException e) {
+        cursor = sqLiteDatabase.query("user", col, "username = ?", selArgs, null, null, null);
+
+        if (cursor.getCount() > 0) {
+            sqlCmd = "update user " +
+                    "set status = 1 " +
+                    "where username = '" + username + "'";
+
+            try {
+                sqLiteDatabase.execSQL(sqlCmd);
+            } catch (SQLiteConstraintException e) {
+                return false;
+            }
+        } else {
             return false;
         }
 

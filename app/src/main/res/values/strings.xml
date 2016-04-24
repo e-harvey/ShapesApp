@@ -39,5 +39,14 @@
     <string name="bgVolume">Background Volume</string>
     <string name="effVolume">Effects Volume</string>
     <string name="Clear_Button">Clear Scores</string>
+    <string name="logout_Button">Logout</string>
+    <string name="backtoMain_button">Main Menu</string>
+
+
+    <!-- login screen strings-->
+    <string name="Username">Username:</string>
+    <string name="Password">Password:</string>
+    <string name="Create_Button">Create</string>
+    <string name="login_Button">Login</string>
 
 </resources>

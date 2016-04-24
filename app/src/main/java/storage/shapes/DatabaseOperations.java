@@ -3,8 +3,11 @@ package storage.shapes;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.widget.Toast;
 
 import java.util.ArrayList;
+
+import static org.junit.Assert.assertNotEquals;
 
 /**
  * Created by Fritz on 4/7/2016.
@@ -17,8 +20,13 @@ public abstract class DatabaseOperations  {
 
     public static void DatabaseOperationsInit(Context context) {
         DatabaseOperations.context = context;
-        local = new LocalDatabaseOperations(context);
-        remote = new RemoteDatabaseOperations();
+
+        if (local == null ) {
+            local = new LocalDatabaseOperations(context);
+        }
+        if (remote == null){
+            remote = new RemoteDatabaseOperations();
+        }
         lastTopScore = 0;
     }
 
@@ -65,12 +73,16 @@ public abstract class DatabaseOperations  {
     public static boolean login(String username, String password)
     {
         if (!local.login(username, password)) {
-             return false;
+            return false;
         }
 
-        if (isNetworkConnected() && !remote.login(username, password)) {
+        if (isNetworkConnected()) {
+            if (!remote.login(username, password)) {
                 System.out.println("Play with friends is not available." +
                         "  Please check your credentials.");
+            } else {
+                System.out.println("Successfully contacted the remote database and logged user '" + username + "' in.");
+            }
         } else {
             System.out.println("Failed to contact remote database.");
         }
@@ -116,11 +128,26 @@ public abstract class DatabaseOperations  {
      */
     public static boolean addUser(String username, String password) {
         boolean ret;
+
+        // Ensure username and password are non-empty
+        if (username == null || username.length() == 0) {
+            Toast.makeText(context, "Username required.", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if (password == null || password.length() == 0) {
+            Toast.makeText(context, "Password required.", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
         // Ensure username only contains valid characters
-        if (username.contains("\\"))
+        if (username.contains("\\")) {
             System.out.println("usernames may not contain \"\\\"");
-        if (username.contains("'"))
+            return false;
+        }
+        if (username.contains("'")) {
             System.out.println("usernames may not contain \"'\"");
+            return false;
+        }
 
         if (!(ret = local.addUser(username, password))) {
             System.out.println("user '"+ username +"' could not be added to the local database");

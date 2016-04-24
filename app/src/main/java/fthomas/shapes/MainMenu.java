@@ -27,30 +27,28 @@ public class MainMenu extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        // Initialize the databases
         DatabaseOperations.DatabaseOperationsInit(this.getApplicationContext());
 
-        // TODO: need first login screen
-        /* Begin temporary unit tests */
-        /* Create test users */
-        DatabaseOperations.addUser("deadbeef", "wachtwoord");
-
-        DatabaseOperations.addUser("prancingCow", "moooooo");
-
-        DatabaseOperations.addUser("NommingNomer", "nomnom");
-
-        DatabaseOperations.login("deadbeef", "wachtwoord");
-
-        DatabaseOperations.addNewFriend("deadbeef", "prancingCow");
-        DatabaseOperations.addNewFriend("deadbeef", "NommingNomer");
-
-        /* End temporary unit tests */
+        setContentView(R.layout.activity_main_menu); // Todo
 
         Typeface alltextTypeface = Typeface.createFromAsset(getAssets(), "Beeb Mode One.ttf");
 
+        /**
+         * Test to if user is logged in or not.
+         * returns null if the user is not logged in.
+         */
+//        DatabaseOperations.DatabaseOperationsInit(this.getApplicationContext());
 
-        setContentView(R.layout.activity_main_menu);
+        /**
+         * Get the local logged in user.
+         *
+         * @return the username of the logged in user, otherwise null
+         */
+        if (DatabaseOperations.getLocalLoggedInUser() == null) {
+            Toast.makeText(getApplicationContext(), "In main, rerouting to login", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(this, LoginScreen.class);
+            startActivity(intent);
+        }
 
         Typeface importedTypeface = Typeface.createFromAsset(getAssets(), "Arcade.ttf");
         TextView titleTypeface = (TextView)findViewById(R.id.Title);
@@ -66,11 +64,6 @@ public class MainMenu extends AppCompatActivity {
         multiplayerTypeface.setTypeface(alltextTypeface);
         Button scoresTypeface = (Button)findViewById(R.id.Scores);
         scoresTypeface.setTypeface(alltextTypeface);
-    }
-
-    public void acknowledge(View v) {
-        Toast myToast = Toast.makeText(getApplicationContext(), "This feature is not implemented yet", Toast.LENGTH_SHORT);
-        myToast.show();
     }
 
     public void Play_Menu(View v) {
