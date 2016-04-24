@@ -53,13 +53,12 @@ public class LoginScreen extends AppCompatActivity {
         Button CreateBtn = (Button)findViewById(R.id.Create_Button);
         CreateBtn.setTypeface(alltextTypeface);
 
+        Button DeleteUserButton = (Button) findViewById(R.id.DeleteUserButton);
+        DeleteUserButton.setTypeface(alltextTypeface);
+
         /**
          * the following deals with login buttons and actions
          */
-
-//        /* Create test users */
-//        DatabaseOperations.addUser("deadbeef", "wachtwoord");
-
         LoginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -68,9 +67,6 @@ public class LoginScreen extends AppCompatActivity {
 
                 String pass = password.getText().toString();
                 String user = username.getText().toString();
-
-                System.out.println("user1:" + user);
-                System.out.println("pass1:" + pass);
 
                 /**
                  * login will return true if user is sucesffuly logged in
@@ -100,8 +96,6 @@ public class LoginScreen extends AppCompatActivity {
 
                 String pass = password.getText().toString();
                 String user = username.getText().toString();
-                System.out.println("user2:" + user);
-                System.out.println("pass2:" + pass);
 
                 if (DatabaseOperations.addUser(user, pass)) {
                     Toast.makeText(getApplicationContext(), "Account Created... \nLogging you in.", Toast.LENGTH_SHORT).show();
@@ -114,20 +108,29 @@ public class LoginScreen extends AppCompatActivity {
             }
         });
 
+        DeleteUserButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                /**
+                 * Add the given user to the given database.
+                 *
+                 * @param username the desired username
+                 * @param password the desired password
+                 * @return true if the user is added to the database; otherwise false
+                 */
+                EditText password = (EditText) findViewById(R.id.userPassword);
+                EditText username = (EditText) findViewById(R.id.userName);
 
-//        /* Create test users */
-//        DatabaseOperations.addUser("deadbeef", "wachtwoord");
-//
-//        DatabaseOperations.addUser("prancingCow", "moooooo");
-//
-//        DatabaseOperations.addUser("NommingNomer", "nomnom");
-//
-//        DatabaseOperations.login("deadbeef", "wachtwoord");
-//
-//        DatabaseOperations.addNewFriend("deadbeef", "prancingCow");
-//        DatabaseOperations.addNewFriend("deadbeef", "NommingNomer");
-//        /* End temporary unit tests */
+                String pass = password.getText().toString();
+                String user = username.getText().toString();
 
+                if (DatabaseOperations.deleteUser(user, pass)) {
+                    Toast.makeText(getApplicationContext(), "User '" + user + "' deleted!", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getApplicationContext(), "Sorry, please check your credentials.", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 
 }

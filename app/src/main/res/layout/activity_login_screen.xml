@@ -12,10 +12,34 @@
         android:text="@string/app_name"
         android:id="@+id/Title"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="100dp"
+        android:layout_marginTop="10dp"
         android:textColor="@color/Text"
         android:textSize="80sp"
         />
+
+    <Space
+        android:layout_width="20px"
+        android:layout_height="30dp"
+        android:id="@+id/spacer0"
+        android:layout_below="@id/Title"
+        android:layout_centerHorizontal="true"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/Username"
+        android:id="@+id/userNameLabel"
+        android:textColor="@color/Text"
+        android:textSize="24sp"
+        android:layout_below="@id/spacer0"
+        android:layout_centerHorizontal="true"/>
+
+    <Space
+        android:layout_width="20px"
+        android:layout_height="20dp"
+        android:id="@+id/spacer1"
+        android:layout_below="@id/userNameLabel"
+        android:layout_centerHorizontal="true"/>
 
     <EditText
         android:layout_width="wrap_content"
@@ -26,26 +50,16 @@
         android:background="@color/TextFieldsbg"
         android:textSize="24sp"
         android:layout_centerVertical="true"
+        android:layout_below="@id/spacer1"
         android:layout_alignLeft="@+id/userPassword"
         android:layout_alignStart="@+id/userPassword"
         android:layout_alignRight="@+id/userPassword"
         android:layout_alignEnd="@+id/userPassword" />
-
     <Space
         android:layout_width="20px"
-        android:layout_height="20dp"
-        android:id="@+id/spacer1"
-        android:layout_above="@id/userName"
-        android:layout_centerHorizontal="true"/>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/Username"
-        android:id="@+id/userNameLabel"
-        android:textColor="@color/Text"
-        android:textSize="24sp"
-        android:layout_above="@id/spacer1"
+        android:layout_height="30dp"
+        android:id="@+id/spacer4"
+        android:layout_below="@+id/userPassword"
         android:layout_centerHorizontal="true"/>
 
     <Space
@@ -84,6 +98,18 @@
         android:layout_below="@+id/spacer3"
         android:layout_centerHorizontal="true"/>
 
+    <!--- Delete user button -->
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/deleteUser_Button"
+        android:id="@+id/DeleteUserButton"
+        android:textSize="24sp"
+        android:textColor="@color/Text"
+        style="?android:attr/borderlessButtonStyle"
+        android:layout_below="@+id/spacer4"
+        android:layout_alignRight="@id/userPassword"/>
+
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -94,6 +120,7 @@
         style="?android:attr/borderlessButtonStyle"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
+        android:layout_below="@id/DeleteUserButton"
         android:layout_marginBottom="50dp"/>
 
     <Button
@@ -104,7 +131,7 @@
         android:textSize="24sp"
         android:textColor="@color/Text"
         style="?android:attr/borderlessButtonStyle"
-        android:layout_above="@+id/Login_Button"
-        android:layout_centerHorizontal="true" />
+        android:layout_below="@+id/spacer4"
+        android:layout_alignLeft="@id/userPassword" />
 
 </RelativeLayout>

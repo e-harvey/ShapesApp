@@ -151,9 +151,11 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
             retry = false;
         }
 
-        // Update the user's new highscore and blockseed for this session
-        DatabaseOperations.setHighScore(localUser, score);
-        DatabaseOperations.setBlockSeed(localUser, blockSeed);
+        // Update the user's new highscore and blockseed for this session, if it was higher
+        if (score > DatabaseOperations.getHighScore(localUser)) {
+            DatabaseOperations.setHighScore(localUser, score);
+            DatabaseOperations.setBlockSeed(localUser, blockSeed);
+        }
     }
 
     /**

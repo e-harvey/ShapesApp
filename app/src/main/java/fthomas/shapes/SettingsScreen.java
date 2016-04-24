@@ -23,19 +23,19 @@ public class SettingsScreen extends AppCompatActivity {
 
         Typeface alltextTypeface = Typeface.createFromAsset(getAssets(), "Beeb Mode One.ttf");
 
-        TextView SettingsTitle = (TextView)findViewById(R.id.SettingsTitle);
+        TextView SettingsTitle = (TextView) findViewById(R.id.SettingsTitle);
         SettingsTitle.setTypeface(alltextTypeface);
 
-        TextView bgVolumeText = (TextView)findViewById(R.id.bgVolumeText);
+        TextView bgVolumeText = (TextView) findViewById(R.id.bgVolumeText);
         bgVolumeText.setTypeface(alltextTypeface);
 
-        TextView effVolumeText = (TextView)findViewById(R.id.effVolumeText);
+        TextView effVolumeText = (TextView) findViewById(R.id.effVolumeText);
         effVolumeText.setTypeface(alltextTypeface);
 
-        TextView LogoutButton = (TextView)findViewById(R.id.LogoutButton);
+        TextView LogoutButton = (TextView) findViewById(R.id.LogoutButton);
         LogoutButton.setTypeface(alltextTypeface);
 
-        TextView backtoMain_button = (TextView)findViewById(R.id.backtoMain_button);
+        TextView backtoMain_button = (TextView) findViewById(R.id.backtoMain_button);
         backtoMain_button.setTypeface(alltextTypeface);
 
         LogoutButton.setOnClickListener(new View.OnClickListener() {
@@ -51,7 +51,7 @@ public class SettingsScreen extends AppCompatActivity {
                 if (user != null) {
 
                 } else {
-                    Toast.makeText(getApplicationContext(), "Oh no we cant get the username. \nPlease try again later.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "Oh no we cant get the username.\nPlease try again later.", Toast.LENGTH_SHORT).show();
                 }
                 /**
                  * Log the user out of the given database.
