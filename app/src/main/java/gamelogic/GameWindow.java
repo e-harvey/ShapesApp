@@ -142,25 +142,6 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
     @Override
     public void surfaceDestroyed(SurfaceHolder holder)
     {
-        // surface destroyed, stop game (update scores here)
-<<<<<<< Updated upstream
-        boolean retry = true;
-        while (retry) {
-            try {
-                gameThread.setRunning(false);
-                gameThread.join();
-                backgroundMusic.release();
-            } catch(InterruptedException e) {
-                e.printStackTrace();
-            }
-            retry = false;
-        }
-
-        // Update the user's new highscore and blockseed for this session, if it was higher
-        if (score > DatabaseOperations.getHighScore(localUser)) {
-            DatabaseOperations.setHighScore(localUser, score);
-            DatabaseOperations.setBlockSeed(localUser, blockSeed);
-        }
         stopGameThread();
     }
 
@@ -596,7 +577,7 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
             try {
                 gameThread.setRunning(false);
                 gameThread.join();
-                backgroundPlayer.release();
+                backgroundMusic.release();
             } catch(InterruptedException e) {
                 e.printStackTrace();
             }

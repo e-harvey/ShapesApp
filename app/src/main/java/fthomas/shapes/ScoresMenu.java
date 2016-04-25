@@ -30,6 +30,7 @@ public class ScoresMenu extends AppCompatActivity {
 
         TextView Friends_Scores_Text = (TextView)findViewById(R.id.Friends_Scores_Text);
         Friends_Scores_Text.setTypeface(alltextTypeface);
+        // TODO: Display friends' highscores.
 
     }
 }
