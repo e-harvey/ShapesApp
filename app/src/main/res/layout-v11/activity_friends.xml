@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     android:background="@color/Background"
-    tools:context="fthomas.hello_world.MyActivity">
+    tools:context="storage.shapes.MainActivity">
 
     <!--- Screen title "Friends" -->
     <TextView
@@ -58,7 +58,26 @@
         android:layout_below="@+id/FriendsTitle"
         android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true"
-        android:layout_above="@+id/Add_Friend" />
+        android:layout_above="@+id/Add_Friend" >
+
+        <RadioGroup
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="New RadioButton"
+            android:id="@+id/friendsList" >
+
+            <!--<RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/fake_friend"
+            android:id="@+id/radioButton5"
+            android:layout_gravity="center_horizontal"
+            android:checked="false"
+            android:textSize="28dp"
+                android:textColor="@color/Text"
+                android:buttonTint="@color/Text" />-->
+            </RadioGroup>
+    </ScrollView>
 
     <!--<RadioGroup-->
         <!--android:layout_width="match_parent"-->
