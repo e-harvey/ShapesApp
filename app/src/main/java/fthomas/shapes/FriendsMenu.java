@@ -136,8 +136,8 @@ public class FriendsMenu extends AppCompatActivity {
         System.out.println("Friend: " + friendName + ".");
 
         if (friendName == null || DatabaseOperations.getBlockSeed(friendName) == -1) {
-            Toast.makeText(getApplicationContext(), "Sorry, '" + friendName +
-                    "' needs to play some games first.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "Sorry, please select a friend.\nPlease make sure that'" + friendName +
+                    "'has played some games first.", Toast.LENGTH_LONG).show();
             PlayMenu.setType(PlayMenu.gamePlayType.SINGLE_PLAYER);
         } else {
             PlayMenu.setType(PlayMenu.gamePlayType.PLAY_WITH_FRIENDS);
@@ -150,6 +150,11 @@ public class FriendsMenu extends AppCompatActivity {
     public String getSelectedFriend() {
         RadioGroup r = (RadioGroup) findViewById(R.id.friendsList);
         RadioButton b = (RadioButton) findViewById(r.getCheckedRadioButtonId());
-        return b.getText().toString().split("\t")[0];
+
+
+        if (b != null)
+            return b.getText().toString().split("\t")[0];
+        else
+            return null;
     }
 }

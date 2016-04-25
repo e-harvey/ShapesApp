@@ -29,7 +29,7 @@ public class PlayMenu extends Activity {
 
         if (type == gamePlayType.PLAY_WITH_FRIENDS)
             gameWindow.setFriendsScore(friendname, DatabaseOperations.getHighScore(friendname));
-        
+
         setContentView(gameWindow);
     }
 
