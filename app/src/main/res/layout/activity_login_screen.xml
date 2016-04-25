@@ -98,6 +98,18 @@
         android:layout_below="@+id/spacer3"
         android:layout_centerHorizontal="true"/>
 
+    <!--- Create user button -->
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/Create_Button"
+        android:id="@+id/Create_Button"
+        android:textSize="24sp"
+        android:textColor="@color/Text"
+        style="?android:attr/borderlessButtonStyle"
+        android:layout_below="@+id/spacer4"
+        android:layout_centerHorizontal="true" />
+
     <!--- Delete user button -->
     <Button
         android:layout_width="wrap_content"
@@ -107,9 +119,10 @@
         android:textSize="24sp"
         android:textColor="@color/Text"
         style="?android:attr/borderlessButtonStyle"
-        android:layout_below="@+id/spacer4"
-        android:layout_alignRight="@id/userPassword"/>
+        android:layout_below="@id/Create_Button"
+        android:layout_centerHorizontal="true" />
 
+    <!--- Login user button -->
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -121,17 +134,5 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_below="@id/DeleteUserButton"
-        android:layout_marginBottom="50dp"/>
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/Create_Button"
-        android:id="@+id/Create_Button"
-        android:textSize="24sp"
-        android:textColor="@color/Text"
-        style="?android:attr/borderlessButtonStyle"
-        android:layout_below="@+id/spacer4"
-        android:layout_alignLeft="@id/userPassword" />
-
+        android:layout_marginBottom="50dp" />
 </RelativeLayout>
