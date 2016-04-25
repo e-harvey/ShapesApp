@@ -2,6 +2,7 @@ package fthomas.shapes;
 
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.v7.app.AppCompatActivity;
 import android.R.layout;
 import android.widget.TextView;
@@ -23,6 +24,7 @@ public class ScoresMenu extends AppCompatActivity {
 
         TextView High_Score_Text = (TextView)findViewById(R.id.High_Score_Text);
         High_Score_Text.setTypeface(alltextTypeface);
+        High_Score_Text.setText(DatabaseOperations.getLocalLoggedInUser() + "'s Score:");
 
         TextView UserScore = (TextView)findViewById(R.id.UserScore);
         UserScore.setTypeface(alltextTypeface);
@@ -30,6 +32,7 @@ public class ScoresMenu extends AppCompatActivity {
 
         TextView Friends_Scores_Text = (TextView)findViewById(R.id.Friends_Scores_Text);
         Friends_Scores_Text.setTypeface(alltextTypeface);
+        // TODO: Display friends' highscores.
 
     }
 }

@@ -6,32 +6,6 @@
     android:background="@color/Background"
     android:textColor="@color/Text">
 
-    <!--- Screen title "Help" -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="@string/Help_title"
-        android:id="@+id/HelpTitle"
-        android:textColor="@color/Text"
-        android:textSize="32sp"
-        android:layout_marginTop="48dp"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
-
-    <!--- instructions 1-->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="@string/instruct1"
-        android:textColor="@color/Text"
-        android:id="@+id/instruct1"
-        android:textSize="20sp"
-        android:layout_marginTop="10dp"
-        android:layout_below="@id/HelpTitle"
-        android:layout_centerHorizontal="true" />
-
     <!--- instructions 2-->
     <TextView
         android:layout_width="wrap_content"
@@ -46,15 +20,12 @@
         android:textAlignment="center" />
 
     <!-- actual demo -->
-    <VideoView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/videoView"
-        android:background="@color/Background"
-        android:layout_below="@+id/instruct1"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentEnd="true"
-        android:layout_above="@+id/instruct2"
-        android:scaleType="fitCenter"/>
+    <FrameLayout android:id="@+id/video_frame"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" >
+        <VideoView android:id="@+id/videoView"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent" />
+    </FrameLayout>
 
 </RelativeLayout>

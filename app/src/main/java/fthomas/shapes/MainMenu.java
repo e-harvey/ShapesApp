@@ -29,15 +29,9 @@ public class MainMenu extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         DatabaseOperations.DatabaseOperationsInit(this.getApplicationContext());
 
-        setContentView(R.layout.activity_main_menu); // Todo
+        setContentView(R.layout.activity_main_menu);
 
         Typeface alltextTypeface = Typeface.createFromAsset(getAssets(), "Beeb Mode One.ttf");
-
-        if (DatabaseOperations.getLocalLoggedInUser() == null) {
-            Toast.makeText(getApplicationContext(), "Hey... rerouting to login screen...", Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(this, LoginScreen.class);
-            startActivity(intent);
-        }
 
         Typeface importedTypeface = Typeface.createFromAsset(getAssets(), "Arcade.ttf");
         TextView titleTypeface = (TextView)findViewById(R.id.Title);
@@ -56,34 +50,56 @@ public class MainMenu extends AppCompatActivity {
     }
 
     public void Play_Menu(View v) {
-        PlayMenu.setType(PlayMenu.gamePlayType.SINGLE_PLAYER);
-        Intent intent = new Intent(this, PlayMenu.class);
-        startActivity(intent);
+        if (checkStatus()) {
+            PlayMenu.setType(PlayMenu.gamePlayType.SINGLE_PLAYER);
+            Intent intent = new Intent(this, PlayMenu.class);
+            startActivity(intent);
+        }
     }
 
     public void Friends_Menu(View v) {
-        Intent intent = new Intent(this, FriendsMenu.class);
-        startActivity(intent);
+        if (checkStatus()) {
+            Intent intent = new Intent(this, FriendsMenu.class);
+            startActivity(intent);
+        }
     }
 
     public void Scores_Menu(View v) {
-        Intent intent = new Intent(this, ScoresMenu.class);
-        startActivity(intent);
+        if (checkStatus()) {
+            Intent intent = new Intent(this, ScoresMenu.class);
+            startActivity(intent);
+        }
     }
 
     public void Help_Screen(View v) {
-        Intent intent = new Intent(this, HelpScreen.class);
-        startActivity(intent);
+        if (checkStatus()) {
+            Intent intent = new Intent(this, HelpScreen.class);
+            startActivity(intent);
+        }
     }
 
     public void Settings_Screen(View v) {
-        Intent intent = new Intent(this, SettingsScreen.class);
-        startActivity(intent);
+        if (checkStatus()) {
+            Intent intent = new Intent(this, SettingsScreen.class);
+            startActivity(intent);
+        }
     }
 
     public void Challenge_Menu(View view) {
-        PlayMenu.setType(PlayMenu.gamePlayType.DAILY_CHALLENGE);
-        Intent intent = new Intent(this, PlayMenu.class);
-        startActivity(intent);
+        if (checkStatus()) {
+            PlayMenu.setType(PlayMenu.gamePlayType.DAILY_CHALLENGE);
+            Intent intent = new Intent(this, PlayMenu.class);
+            startActivity(intent);
+        }
+    }
+
+    private boolean checkStatus() {
+        if (DatabaseOperations.getLocalLoggedInUser() == null) {
+            Toast.makeText(getApplicationContext(), "Hey... you need to login first.\nRerouting to login screen.", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(this, LoginScreen.class);
+            startActivity(intent);
+            return false;
+        }
+        return true;
     }
 }
