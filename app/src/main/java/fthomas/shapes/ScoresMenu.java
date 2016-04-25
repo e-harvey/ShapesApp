@@ -7,6 +7,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.R.layout;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+
 import storage.shapes.DatabaseOperations;
 
 /**
@@ -32,7 +35,27 @@ public class ScoresMenu extends AppCompatActivity {
 
         TextView Friends_Scores_Text = (TextView)findViewById(R.id.Friends_Scores_Text);
         Friends_Scores_Text.setTypeface(alltextTypeface);
-        // TODO: Display friends' highscores.
+        String friendsList = getFormatedFriendsList();
+        Friends_Scores_Text.setText(friendsList);
+    }
 
+    private String getFormatedFriendsList() {
+        String list = "";
+
+        // Get the friend list
+        ArrayList<String> friendsScores = DatabaseOperations.getFriendsList(DatabaseOperations.getLocalLoggedInUser());
+
+        Iterator<String> i = friendsScores.iterator();
+
+        // Construct the formatted string
+        while (i.hasNext()) {
+            String friend = i.next();
+
+            list = list + friend + "\t" +
+                    DatabaseOperations.getHighScore(friend)
+                    + (i.hasNext() ? "" : "\n");
+        }
+
+        return list;
     }
 }

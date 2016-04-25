@@ -29,7 +29,6 @@ import storage.shapes.DatabaseOperations;
 public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
 {
     private GameThread gameThread;
-    private HighScoreThread highScoreThread;
     private Block[][] grid;
     private final int XBlocks = 7; //blocks on x axis
     private final int YBlocks = 10; //blocks on y axis

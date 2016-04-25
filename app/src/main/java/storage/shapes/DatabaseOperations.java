@@ -151,6 +151,8 @@ public abstract class DatabaseOperations  {
             System.out.println("user '"+ username +"' could not be added to the local database");
         }
 
+        // TODO only allow account creation with network connection.
+        // TODO create default account used to play locally.
         if (isNetworkConnected() && !remote.addUser(username, password)) {
             System.out.println("user '"+ username +"' could not be added to the remote database");
         }
