@@ -29,11 +29,9 @@ public class MainMenu extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         DatabaseOperations.DatabaseOperationsInit(this.getApplicationContext());
 
-        setContentView(R.layout.activity_main_menu); // Todo
+        setContentView(R.layout.activity_main_menu);
 
         Typeface alltextTypeface = Typeface.createFromAsset(getAssets(), "Beeb Mode One.ttf");
-
-        checkStatus();
 
         Typeface importedTypeface = Typeface.createFromAsset(getAssets(), "Arcade.ttf");
         TextView titleTypeface = (TextView)findViewById(R.id.Title);

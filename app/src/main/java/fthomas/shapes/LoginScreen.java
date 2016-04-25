@@ -29,6 +29,12 @@ public class LoginScreen extends AppCompatActivity {
 
         Typeface alltextTypeface = Typeface.createFromAsset(getAssets(), "Beeb Mode One.ttf");
 
+        if (DatabaseOperations.getLocalLoggedInUser() != null &&
+                DatabaseOperations.getLoginStatus(DatabaseOperations.getLocalLoggedInUser())) {
+            Intent intent = new Intent(getApplicationContext(), MainMenu.class);
+            startActivity(intent);
+        }
+
         TextView Title = (TextView) findViewById(R.id.Title);
         Title.setTypeface(alltextTypeface);
 
