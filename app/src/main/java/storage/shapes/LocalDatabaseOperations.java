@@ -41,12 +41,16 @@ class LocalDatabaseOperations implements LocalDbOperations, SharedDbOperations  
 
         cursor = sqLiteDatabase.query("friends", col, "user = ?", selArgs, null, null, null);
 
-        cursor.moveToFirst();
-        do {
-            arrayList.add(i++, cursor.getString(0));
-        } while (cursor.moveToNext());
+        if (cursor.getCount() > 0) {
+            cursor.moveToFirst();
+            do {
+                arrayList.add(i++, cursor.getString(0));
+            } while (cursor.moveToNext());
 
-        return arrayList;
+            return arrayList;
+        } else {
+            return null;
+        }
     }
 
     public String getLocalLoggedInUser()

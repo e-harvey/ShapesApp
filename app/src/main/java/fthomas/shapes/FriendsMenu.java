@@ -1,12 +1,18 @@
 package fthomas.shapes;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.text.InputType;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -30,34 +36,82 @@ public class FriendsMenu extends AppCompatActivity {
         TextView FriendsTitle = (TextView)findViewById(R.id.FriendsTitle);
         FriendsTitle.setTypeface(alltextTypeface);
 
-        TextView AddFriends = (TextView)findViewById(R.id.Add_Friend);
+        Button AddFriends = (Button)findViewById(R.id.Add_Friend);
         AddFriends.setTypeface(alltextTypeface);
 
         TextView PlayFriends = (TextView)findViewById(R.id.Play_Friends);
         PlayFriends.setTypeface(alltextTypeface);
 
         if (!createFriendsList()) {
-            //@todo display no connection :(
+
         }
+
+        AddFriends.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(FriendsMenu.this);
+                builder.setTitle("Friend Name");
+
+                final EditText friendName = new EditText(FriendsMenu.this);
+                friendName.setInputType(InputType.TYPE_CLASS_TEXT);
+                builder.setView(friendName);
+
+                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (DatabaseOperations.addNewFriend(DatabaseOperations.getLocalLoggedInUser(),
+                                                            friendName.getText().toString())) {
+                            RadioGroup buttons = (RadioGroup) findViewById(R.id.friendsList);
+                            addButton(buttons, friendName.getText().toString(),
+                                    DatabaseOperations.getHighScore(friendName.getText().toString()));
+                        } else {
+                            Toast.makeText(getApplicationContext(), "Sorry, we can't find that friend.", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+
+                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+
+                AlertDialog alert = builder.create();
+                alert.show();
+
+                Button okButton = alert.getButton(DialogInterface.BUTTON_POSITIVE);
+                okButton.setBackgroundColor(Color.GREEN);
+                Button cancelButton = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
+                cancelButton.setBackgroundColor(Color.RED);
+            }
+        });
 
     }
 
     private Boolean createFriendsList() {
         String username = DatabaseOperations.getLocalLoggedInUser();
-        if (username == null)
+
+        if (username == null) {
+            Toast.makeText(getApplicationContext(), "Hey... you need to login first.", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(this, LoginScreen.class);
+            startActivity(intent);
             return false;
-        /*ArrayList<String> friends = DatabaseOperations.getFriendsList(username);
-        if (friends == null)
-            return false;*/
+        }
+
+        ArrayList<String> friends = DatabaseOperations.getFriendsList(username);
+        if (friends == null) {
+            Toast.makeText(getApplicationContext(), "Sorry, you need to add some friends first!", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
         RadioGroup buttons = (RadioGroup) findViewById(R.id.friendsList);
-        addButton(buttons, "Steve", 1200);
-        addButton(buttons, "Tom", 2134);
-        addButton(buttons, "Bob", 1337);
-        /*
+
         for (String friend : friends) {
             long high_score = DatabaseOperations.getHighScore(friend);
             addButton(buttons, friend, high_score);
-        }*/
+        }
+
         return true;
     }
     public void Acknowledge(View v) {
@@ -79,7 +133,11 @@ public class FriendsMenu extends AppCompatActivity {
     }
     public void Play(View v) {
         String friendName = getSelectedFriend();
-        if (friendName == null) {
+        System.out.println("Friend: " + friendName + ".");
+
+        if (friendName == null || DatabaseOperations.getBlockSeed(friendName) == -1) {
+            Toast.makeText(getApplicationContext(), "Sorry, '" + friendName +
+                    "' needs to play some games first.", Toast.LENGTH_SHORT).show();
             PlayMenu.setType(PlayMenu.gamePlayType.SINGLE_PLAYER);
         } else {
             PlayMenu.setType(PlayMenu.gamePlayType.PLAY_WITH_FRIENDS);
@@ -92,6 +150,6 @@ public class FriendsMenu extends AppCompatActivity {
     public String getSelectedFriend() {
         RadioGroup r = (RadioGroup) findViewById(R.id.friendsList);
         RadioButton b = (RadioButton) findViewById(r.getCheckedRadioButtonId());
-        return b.getText().toString();
+        return b.getText().toString().split("\t")[0];
     }
 }

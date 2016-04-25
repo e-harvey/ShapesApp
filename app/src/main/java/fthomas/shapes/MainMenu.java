@@ -31,6 +31,8 @@ public class MainMenu extends AppCompatActivity {
 
         setContentView(R.layout.activity_main_menu);
 
+        System.out.println("seed: " + DatabaseOperations.getBlockSeed(DatabaseOperations.getLocalLoggedInUser()));
+
         Typeface alltextTypeface = Typeface.createFromAsset(getAssets(), "Beeb Mode One.ttf");
 
         Typeface importedTypeface = Typeface.createFromAsset(getAssets(), "Arcade.ttf");
