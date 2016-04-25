@@ -49,8 +49,9 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
     private String timeString;
     private Typeface textTypeface;
     private DrawMethod drawMethod;
-    private MediaPlayer mPlayer = null;
-    private MediaPlayer backgroundPlayer;
+    private MediaPlayer shapeSound;
+    private MediaPlayer godlikeSound;
+    private MediaPlayer backgroundMusic;
 
     /**
      * structure used to for when determining if a shape exists
@@ -86,11 +87,14 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
         remainingTime = 1000000000L * 90; // put number of starting seconds here //TODO: get game time from somewhere
         textTypeface = Typeface.createFromAsset(getContext().getAssets(), "ka1.ttf");
         localUser = DatabaseOperations.getLocalLoggedInUser();
-        backgroundPlayer = MediaPlayer.create(getContext(), R.raw.a_night_of_dizzy_spells);
 
-        backgroundPlayer.setVolume(0.3F, 0.3F);
-        backgroundPlayer.setLooping(true);
-        backgroundPlayer.start();
+        //setup sound
+        shapeSound = MediaPlayer.create(getContext(), R.raw.onclick);
+        godlikeSound = MediaPlayer.create(getContext(), R.raw.godlike);
+        backgroundMusic = MediaPlayer.create(getContext(), R.raw.a_night_of_dizzy_spells);
+        backgroundMusic.setVolume(0.3F, 0.3F);
+        backgroundMusic.setLooping(true);
+        backgroundMusic.start();
         
         // initialize bitmaps
         // 0 empty, 1 wedge, 2 diagonal, 3 cleft, 4 square
@@ -144,7 +148,7 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
             try {
                 gameThread.setRunning(false);
                 gameThread.join();
-                backgroundPlayer.release();
+                backgroundMusic.release();
             } catch(InterruptedException e) {
                 e.printStackTrace();
             }
@@ -173,17 +177,17 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
         } else if(state == Thread.State.TERMINATED) {
             try {
                 gameThread.join();
-                backgroundPlayer.release();
+                backgroundMusic.release();
             }  catch(InterruptedException e) {
                 e.printStackTrace();
             }
             gameThread = new GameThread(getHolder(), this);
             gameThread.setRunning(true);
             gameThread.start();
-            backgroundPlayer = MediaPlayer.create(getContext(), R.raw.a_night_of_dizzy_spells);
-            backgroundPlayer.setVolume(0.3F, 0.3F);
-            backgroundPlayer.setLooping(true);
-            backgroundPlayer.start();
+            backgroundMusic = MediaPlayer.create(getContext(), R.raw.a_night_of_dizzy_spells);
+            backgroundMusic.setVolume(0.3F, 0.3F);
+            backgroundMusic.setLooping(true);
+            backgroundMusic.start();
         }
         System.out.println(state.toString());
     }
@@ -285,24 +289,11 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
         //change every block in the shape to empty
         if(shapeBlocks != null) {
 
-
-            if(mPlayer != null) {
-                mPlayer.release();
-            }
             if(shapeBlocks.size() >= (XBlocks - 3) * (YBlocks - 3)) { //TODO: delete this *wink**wink*
-                mPlayer = MediaPlayer.create(getContext(), R.raw.godlike);
+                godlikeSound.start();
             } else {
-                mPlayer = MediaPlayer.create(getContext(), R.raw.onclick);
+                shapeSound.start();
             }
-            mPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mediaPlayer) {
-                    mediaPlayer.stop();
-                    mediaPlayer.release();
-                }
-            });
-            mPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-            mPlayer.start();
             //TODO: update score/time here
             score += shapeBlocks.size() * shapeBlocks.size();
             add_time(shapeBlocks.size() * shapeBlocks.size() * 0.0425F);
