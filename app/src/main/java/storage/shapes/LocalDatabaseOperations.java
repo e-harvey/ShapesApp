@@ -18,7 +18,6 @@ import java.util.ArrayList;
  * Created by Fritz on 4/6/2016.
  */
 class LocalDatabaseOperations implements LocalDbOperations, SharedDbOperations  {
-    private Context context;
     private LocalDbHandler localDbHandler;
     private SQLiteDatabase sqLiteDatabase;
     private String sqlCmd;
@@ -26,7 +25,6 @@ class LocalDatabaseOperations implements LocalDbOperations, SharedDbOperations  
 
     /* Begin constructors */
     LocalDatabaseOperations(Context context) {
-        this.context = context;
         localDbHandler = new LocalDbHandler(context, "shapes", 1);
         sqLiteDatabase = localDbHandler.getWritableDatabase();
     }
@@ -224,26 +222,34 @@ class LocalDatabaseOperations implements LocalDbOperations, SharedDbOperations  
 
     public boolean deleteUser(String username, String password)
     {
-        sqlCmd = "delete from user " +
-                "where username = '" + username + "'";
+        String col[] = {"username"};
+        String selArgs[] = {username};
 
-        try {
-            sqLiteDatabase.execSQL(sqlCmd);
-        } catch (SQLiteConstraintException e) {
-            ;
-        }
+        cursor = sqLiteDatabase.query("user", col, "username = ?", selArgs, null, null, null);
 
-        sqlCmd = "delete from friends " +
-                "where user = '" + username + "'";
+        if (cursor.getCount() <= 0) {
+            return false;
+        } else {
+            sqlCmd = "delete from user " +
+                    "where username = '" + username + "'";
 
-        try {
-            sqLiteDatabase.execSQL(sqlCmd);
+            try {
+                sqLiteDatabase.execSQL(sqlCmd);
+            } catch (SQLiteConstraintException e) {
+                ;
+            }
+
+            sqlCmd = "delete from friends " +
+                    "where user = '" + username + "'";
+
+            try {
+                sqLiteDatabase.execSQL(sqlCmd);
+            } catch (SQLiteConstraintException e) {
+                ;
+            }
+
             return true;
-        } catch (SQLiteConstraintException e) {
-            ;
         }
-
-        return false;
     }
 
     public boolean setPassword(String username, String oldPassword, String newPassword)

@@ -27,9 +27,6 @@ public class LoginScreen extends AppCompatActivity {
         DatabaseOperations.DatabaseOperationsInit(this.getApplicationContext());
         setContentView(R.layout.activity_login_screen);
 
-        /**
-         * setting text typeface
-         */
         Typeface alltextTypeface = Typeface.createFromAsset(getAssets(), "Beeb Mode One.ttf");
 
         TextView Title = (TextView) findViewById(R.id.Title);
@@ -56,9 +53,6 @@ public class LoginScreen extends AppCompatActivity {
         Button DeleteUserButton = (Button) findViewById(R.id.DeleteUserButton);
         DeleteUserButton.setTypeface(alltextTypeface);
 
-        /**
-         * the following deals with login buttons and actions
-         */
         LoginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -68,9 +62,6 @@ public class LoginScreen extends AppCompatActivity {
                 String pass = password.getText().toString();
                 String user = username.getText().toString();
 
-                /**
-                 * login will return true if user is sucesffuly logged in
-                 */
                 if (DatabaseOperations.login(user, pass)) {
                     Toast.makeText(getApplicationContext(), "Successful login", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(getApplicationContext(), MainMenu.class);
@@ -84,13 +75,6 @@ public class LoginScreen extends AppCompatActivity {
         CreateBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                /**
-                 * Add the given user to the given database.
-                 *
-                 * @param username the desired username
-                 * @param password the desired password
-                 * @return true if the user is added to the database; otherwise false
-                 */
                 EditText password = (EditText) findViewById(R.id.userPassword);
                 EditText username = (EditText) findViewById(R.id.userName);
 
@@ -111,13 +95,6 @@ public class LoginScreen extends AppCompatActivity {
         DeleteUserButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                /**
-                 * Add the given user to the given database.
-                 *
-                 * @param username the desired username
-                 * @param password the desired password
-                 * @return true if the user is added to the database; otherwise false
-                 */
                 EditText password = (EditText) findViewById(R.id.userPassword);
                 EditText username = (EditText) findViewById(R.id.userName);
 

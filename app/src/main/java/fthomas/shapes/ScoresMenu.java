@@ -6,6 +6,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.R.layout;
 import android.widget.TextView;
 
+import storage.shapes.DatabaseOperations;
+
 /**
  * Created by FThom_000 on 3/20/2016.
  */
@@ -24,6 +26,7 @@ public class ScoresMenu extends AppCompatActivity {
 
         TextView UserScore = (TextView)findViewById(R.id.UserScore);
         UserScore.setTypeface(alltextTypeface);
+        UserScore.setText(String.valueOf(DatabaseOperations.getHighScore(DatabaseOperations.getLocalLoggedInUser())));
 
         TextView Friends_Scores_Text = (TextView)findViewById(R.id.Friends_Scores_Text);
         Friends_Scores_Text.setTypeface(alltextTypeface);

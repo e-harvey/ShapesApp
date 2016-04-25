@@ -1,9 +1,5 @@
 package storage.shapes;
 
-import android.content.Context;
-
-import java.util.ArrayList;
-
 interface SharedDbOperations {
     void logout(String username);
     boolean login(String username, String password);

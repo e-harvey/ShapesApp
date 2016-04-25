@@ -18,21 +18,23 @@ public class SettingsScreen extends AppCompatActivity {
     public void onCreate(Bundle savedInstance) {
         super.onCreate(savedInstance);
         DatabaseOperations.DatabaseOperationsInit(this.getApplicationContext());
+
         setContentView(R.layout.activity_settings);
 
+        if (DatabaseOperations.getLocalLoggedInUser() == null) {
+            Intent intent = new Intent(getApplicationContext(), LoginScreen.class);
+            startActivity(intent);
+        }
 
         Typeface alltextTypeface = Typeface.createFromAsset(getAssets(), "Beeb Mode One.ttf");
 
         TextView SettingsTitle = (TextView) findViewById(R.id.SettingsTitle);
         SettingsTitle.setTypeface(alltextTypeface);
 
-        TextView bgVolumeText = (TextView) findViewById(R.id.bgVolumeText);
-        bgVolumeText.setTypeface(alltextTypeface);
-
-        TextView effVolumeText = (TextView) findViewById(R.id.effVolumeText);
-        effVolumeText.setTypeface(alltextTypeface);
-
         TextView LogoutButton = (TextView) findViewById(R.id.LogoutButton);
+        LogoutButton.setTypeface(alltextTypeface);
+
+        TextView backToLoginScreenButton = (TextView) findViewById(R.id.backToLoginScreen_button);
         LogoutButton.setTypeface(alltextTypeface);
 
         TextView backtoMain_button = (TextView) findViewById(R.id.backtoMain_button);
@@ -41,11 +43,6 @@ public class SettingsScreen extends AppCompatActivity {
         LogoutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                /**
-                 * Get the local logged in user.
-                 *
-                 * @return the username of the logged in user, otherwise null
-                 */
                 String user;
                 user = DatabaseOperations.getLocalLoggedInUser();
                 if (user != null) {
@@ -53,13 +50,17 @@ public class SettingsScreen extends AppCompatActivity {
                 } else {
                     Toast.makeText(getApplicationContext(), "Oh no we cant get the username.\nPlease try again later.", Toast.LENGTH_SHORT).show();
                 }
-                /**
-                 * Log the user out of the given database.
-                 *
-                 * @param username the user's username
-                 */
+
                 DatabaseOperations.logout(user);
                 Toast.makeText(getApplicationContext(), "Successful logout", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(getApplicationContext(), LoginScreen.class);
+                startActivity(intent);
+            }
+        });
+
+        backToLoginScreenButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
                 Intent intent = new Intent(getApplicationContext(), LoginScreen.class);
                 startActivity(intent);
             }

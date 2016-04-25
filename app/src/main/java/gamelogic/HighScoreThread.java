@@ -11,7 +11,6 @@ public class HighScoreThread extends Thread {
     private UpdateMethod updateMethod;
     private String localUser;
 
-
     HighScoreThread(GameWindow gameWindow, boolean playWithFriends) {
         super();
         gameWindowHandle = gameWindow;

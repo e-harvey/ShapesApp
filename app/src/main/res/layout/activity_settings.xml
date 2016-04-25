@@ -19,79 +19,11 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true" />
 
-    <!---background Volume text and seekbar -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/bgVolume"
-        android:id="@+id/bgVolumeText"
-        android:textSize="20sp"
-        android:textColor="@color/Text"
+    <Space
+        android:layout_width="20px"
+        android:layout_height="75dp"
+        android:id="@+id/spacer69"
         android:layout_below="@+id/SettingsTitle"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="50dp"
-        android:layout_marginStart="30dp"/>
-
-    <Space
-        android:layout_width="20dp"
-        android:layout_height="10dp"
-        android:id="@+id/spacer4"
-        android:layout_below="@id/bgVolumeText"
-        android:layout_centerHorizontal="true"/>
-
-    <SeekBar
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/bgVolumeSeekBar"
-        android:layout_below="@+id/spacer4"
-        android:layout_centerHorizontal="true"
-        android:layout_marginStart="30dp"
-        android:layout_marginEnd="30dp"
-        android:progress="100"
-        style="@style/Base.Widget.AppCompat.SeekBar" />
-
-    <!---Sound Effects Volume text and seekbar -->
-    <Space
-        android:layout_width="20dp"
-        android:layout_height="10dp"
-        android:id="@+id/spacer5"
-        android:layout_below="@id/bgVolumeSeekBar"
-        android:layout_centerHorizontal="true"/>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/effVolume"
-        android:id="@+id/effVolumeText"
-        android:textSize="20sp"
-        android:textColor="@color/Text"
-        android:layout_below="@+id/spacer5"
-        android:layout_alignParentStart="true"
-        android:layout_marginStart="30dp"/>
-
-    <Space
-        android:layout_width="20dp"
-        android:layout_height="10dp"
-        android:id="@+id/spacer6"
-        android:layout_below="@id/effVolumeText"
-        android:layout_centerHorizontal="true"/>
-
-    <SeekBar
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/effVolumeSeekBar"
-        android:layout_below="@+id/spacer6"
-        android:layout_centerHorizontal="true"
-        android:layout_marginStart="30dp"
-        android:layout_marginEnd="30dp"
-        android:progress="100"
-        style="@style/Base.Widget.AppCompat.SeekBar" />
-
-    <Space
-        android:layout_width="20dp"
-        android:layout_height="10dp"
-        android:id="@+id/spacer7"
-        android:layout_below="@id/effVolumeSeekBar"
         android:layout_centerHorizontal="true"/>
 
     <!--- logout button -->
@@ -103,7 +35,7 @@
         android:textSize="24sp"
         android:textColor="@color/Text"
         style="?android:attr/borderlessButtonStyle"
-        android:layout_below="@id/spacer7"
+        android:layout_below="@id/spacer69"
         android:layout_centerHorizontal="true"/>
 
     <!--- main menu button -->
@@ -117,5 +49,17 @@
         style="?android:attr/borderlessButtonStyle"
         android:layout_below="@id/LogoutButton"
         android:onClick="MainMenu_Screen"
+        android:layout_centerHorizontal="true"/>
+
+    <!--- back to login screen button -->
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/backToLoginScreen_button"
+        android:id="@+id/backToLoginScreen_button"
+        android:textSize="24sp"
+        android:textColor="@color/Text"
+        style="?android:attr/borderlessButtonStyle"
+        android:layout_below="@id/backtoMain_button"
         android:layout_centerHorizontal="true"/>
 </RelativeLayout>

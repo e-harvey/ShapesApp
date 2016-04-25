@@ -41,6 +41,7 @@
     <string name="Clear_Button">Clear Scores</string>
     <string name="logout_Button">Logout</string>
     <string name="deleteUser_Button">Delete</string>
+    <string name="backToLoginScreen_button">Login Screen</string>
     <string name="backtoMain_button">Main Menu</string>
 
 

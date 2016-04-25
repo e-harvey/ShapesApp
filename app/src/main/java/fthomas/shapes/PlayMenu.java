@@ -3,6 +3,7 @@ package fthomas.shapes;
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.WindowManager;
+import android.widget.Toast;
 
 import gamelogic.GameWindow;
 import storage.shapes.DatabaseOperations;
@@ -18,17 +19,17 @@ public class PlayMenu extends Activity {
     @Override
     public void onCreate(Bundle savedInstance) {
         super.onCreate(savedInstance);
-        GameWindow gameWindow;
 
         //go fullscreen
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-        // TODO check that the local user has a friend with a valid
-        // blockseed to play with.
-        setContentView(new GameWindow(this, type));
-        //change to gameWindow, when created...
-
+        if (type == gamePlayType.PLAY_WITH_FRIENDS && DatabaseOperations.getBlockSeed(friendname) != -1) {
+            setContentView(new GameWindow(this, type));
+            Toast.makeText(getApplicationContext(), "Sorry, '" + friendname + "' needs to play some games first.", Toast.LENGTH_SHORT).show();
+        } else {
+            setContentView(new GameWindow(this, gamePlayType.SINGLE_PLAYER));
+        }
     }
 
     public static void setType(gamePlayType type) {

@@ -16,7 +16,6 @@ public abstract class DatabaseOperations  {
     static Context context;
     static LocalDatabaseOperations local;
     static RemoteDatabaseOperations remote;
-    private static long lastTopScore;
 
     public static void DatabaseOperationsInit(Context context) {
         DatabaseOperations.context = context;
@@ -27,7 +26,6 @@ public abstract class DatabaseOperations  {
         if (remote == null){
             remote = new RemoteDatabaseOperations();
         }
-        lastTopScore = 0;
     }
 
     /* Begin private helpler methods */

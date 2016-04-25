@@ -33,19 +33,8 @@ public class MainMenu extends AppCompatActivity {
 
         Typeface alltextTypeface = Typeface.createFromAsset(getAssets(), "Beeb Mode One.ttf");
 
-        /**
-         * Test to if user is logged in or not.
-         * returns null if the user is not logged in.
-         */
-//        DatabaseOperations.DatabaseOperationsInit(this.getApplicationContext());
-
-        /**
-         * Get the local logged in user.
-         *
-         * @return the username of the logged in user, otherwise null
-         */
         if (DatabaseOperations.getLocalLoggedInUser() == null) {
-            Toast.makeText(getApplicationContext(), "In main, rerouting to login", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "Hey... rerouting to login screen...", Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(this, LoginScreen.class);
             startActivity(intent);
         }

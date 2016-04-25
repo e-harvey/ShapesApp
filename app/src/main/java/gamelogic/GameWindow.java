@@ -95,7 +95,7 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
         backgroundMusic.setVolume(0.3F, 0.3F);
         backgroundMusic.setLooping(true);
         backgroundMusic.start();
-        
+
         // initialize bitmaps
         // 0 empty, 1 wedge, 2 diagonal, 3 cleft, 4 square
         // 5 wedge_green, 6 diagonal_green, 7 cleft_green, 8 square_green
@@ -143,6 +143,7 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
     public void surfaceDestroyed(SurfaceHolder holder)
     {
         // surface destroyed, stop game (update scores here)
+<<<<<<< Updated upstream
         boolean retry = true;
         while (retry) {
             try {
@@ -160,6 +161,7 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
             DatabaseOperations.setHighScore(localUser, score);
             DatabaseOperations.setBlockSeed(localUser, blockSeed);
         }
+        stopGameThread();
     }
 
     /**
@@ -258,7 +260,6 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
             remainingTime = 0;
             gameRunning = false;
             gameThread.setRunning(false);
-            //TODO: stuff
         }
         Date date = new Date(remainingTime / 1000000);
         DateFormat formatter;
@@ -578,5 +579,29 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
     public void setFriendsScore(String name, long score) {
         friendScore = score;
         friendName = name;
+    }
+
+    private void updateScore() {
+        // Update the user's new highscore and blockseed for this session, if it was higher
+        if (score > DatabaseOperations.getHighScore(localUser)) {
+            DatabaseOperations.setHighScore(localUser, score);
+            DatabaseOperations.setBlockSeed(localUser, blockSeed);
+        }
+    }
+
+    private void stopGameThread() {
+        boolean retry = true;
+        gameRunning = false;
+        while (retry) {
+            try {
+                gameThread.setRunning(false);
+                gameThread.join();
+                backgroundPlayer.release();
+            } catch(InterruptedException e) {
+                e.printStackTrace();
+            }
+            retry = false;
+        }
+        updateScore();
     }
 }
