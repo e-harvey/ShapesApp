@@ -59,6 +59,19 @@ public class LoginScreen extends AppCompatActivity {
         Button DeleteUserButton = (Button) findViewById(R.id.DeleteUserButton);
         DeleteUserButton.setTypeface(alltextTypeface);
 
+        Button PlayLocalButton = (Button) findViewById(R.id.PlayLocalButton);
+        PlayLocalButton.setTypeface(alltextTypeface);
+
+        PlayLocalButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DatabaseOperations.login("default", "dummy");
+                Toast.makeText(getApplicationContext(), "Playing with default user.\nHistory not saved to remote database.", Toast.LENGTH_LONG).show();
+                Intent intent = new Intent(getApplicationContext(), MainMenu.class);
+                startActivity(intent);
+            }
+        });
+
         LoginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -93,7 +106,7 @@ public class LoginScreen extends AppCompatActivity {
                     Intent main = new Intent(getApplicationContext(), MainMenu.class);
                     startActivity(main);
                 } else {
-                    Toast.makeText(getApplicationContext(), "Account wasn't created.\nTry a different username.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "Account wasn't created.\nCheck your network connection or\nTry a different username\n", Toast.LENGTH_SHORT).show();
                 }
             }
         });

@@ -125,36 +125,42 @@ public abstract class DatabaseOperations  {
      * @return true if the user is added to the database; otherwise false
      */
     public static boolean addUser(String username, String password) {
-        boolean ret;
+        boolean ret = false;
 
         // Ensure username and password are non-empty
         if (username == null || username.length() == 0) {
             Toast.makeText(context, "Username required.", Toast.LENGTH_SHORT).show();
-            return false;
+            return ret;
         }
         if (password == null || password.length() == 0) {
             Toast.makeText(context, "Password required.", Toast.LENGTH_SHORT).show();
-            return false;
+            return ret;
         }
 
         // Ensure username only contains valid characters
         if (username.contains("\\")) {
             System.out.println("usernames may not contain \"\\\"");
-            return false;
+            return ret;
         }
         if (username.contains("'")) {
             System.out.println("usernames may not contain \"'\"");
-            return false;
+            return ret;
         }
 
-        if (!(ret = local.addUser(username, password))) {
-            System.out.println("user '"+ username +"' could not be added to the local database");
+        // Ensure someone doesn't user the local user
+        if (username.equals("default")) {
+            System.out.println("That username is taken.");
+            return ret;
         }
 
-        // TODO only allow account creation with network connection.
-        // TODO create default account used to play locally.
-        if (isNetworkConnected() && !remote.addUser(username, password)) {
-            System.out.println("user '"+ username +"' could not be added to the remote database");
+        if (isNetworkConnected() && remote.addUser(username, password)) {
+            System.out.println("wtf");
+            ret = local.addUser(username, password);
+            System.out.println("local addUser returned: " + ret);
+            if (!ret) {
+                System.out.println("user '" + username + "' could not be added to the database. Check network connection.");
+                while(!remote.deleteUser(username, password));
+            }
         }
 
         return ret;
@@ -206,7 +212,7 @@ public abstract class DatabaseOperations  {
     public static boolean addNewFriend(String usernameOwner, String usernameFriend) {
         if (isNetworkConnected()) {
             if (!remote.findUser(usernameFriend)) {
-                System.out.println("Sorry, we can't find that friend.");
+                System.out.println("Sorry, we can't find that friend." + usernameFriend + ".");
                 return false;
             }
 

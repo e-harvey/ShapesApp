@@ -45,15 +45,18 @@ public class ScoresMenu extends AppCompatActivity {
         // Get the friend list
         ArrayList<String> friendsScores = DatabaseOperations.getFriendsList(DatabaseOperations.getLocalLoggedInUser());
 
-        Iterator<String> i = friendsScores.iterator();
+        if (friendsScores != null) {
+            Iterator<String> i = friendsScores.iterator();
 
-        // Construct the formatted string
-        while (i.hasNext()) {
-            String friend = i.next();
+            // Construct the formatted string
+            while (i.hasNext()) {
+                String friend = i.next();
 
-            list = list + friend + "\t" +
-                    DatabaseOperations.getHighScore(friend)
-                    + (i.hasNext() ? "" : "\n");
+                // TODO properly format scores
+                list = list + friend + "\t" +
+                        DatabaseOperations.getHighScore(friend)
+                        + (i.hasNext() ? "\n" : "");
+            }
         }
 
         return list;

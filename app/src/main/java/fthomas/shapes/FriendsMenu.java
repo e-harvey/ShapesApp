@@ -65,7 +65,7 @@ public class FriendsMenu extends AppCompatActivity {
                             addButton(buttons, friendName.getText().toString(),
                                     DatabaseOperations.getHighScore(friendName.getText().toString()));
                         } else {
-                            Toast.makeText(getApplicationContext(), "Sorry, we can't find that friend.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getApplicationContext(), "Sorry, we can't find that friend.", Toast.LENGTH_LONG).show();
                         }
                     }
                 });
@@ -121,14 +121,15 @@ public class FriendsMenu extends AppCompatActivity {
 
     private void addButton(RadioGroup group, String name, long score) {
         RadioButton b = new RadioButton(this);
-        b.setTextColor(getResources().getColor(R.color.Text));
+        b.setTextColor(Color.BLACK);
+        //b.setTextSize(getResources().getDisplayMetrics().);
         b.setText(String.format("%s\t%20d", name, score));
         ViewGroup.LayoutParams params = group.getLayoutParams();
         params.width = ViewGroup.LayoutParams.MATCH_PARENT;
         params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
         b.setLayoutParams(params);
         b.setGravity(Gravity.CENTER);
-        b.setBackgroundTintList(getResources().getColorStateList(R.color.Text));
+        b.setBackgroundColor(Color.WHITE);
         group.addView(b);
     }
     public void Play(View v) {

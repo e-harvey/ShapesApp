@@ -155,7 +155,7 @@ class RemoteDatabaseOperations implements RemoteDbOperations, SharedDbOperations
         params.add(5, username);
 
         try {
-            ret = Boolean.valueOf(new SendPostRequest().execute(params).get());
+            ret = new SendPostRequest().execute(params).get().equals("true");
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {
@@ -186,12 +186,16 @@ class RemoteDatabaseOperations implements RemoteDbOperations, SharedDbOperations
         params.add(7, password);
 
         try {
-            ret = new SendPostRequest().execute(params).get().equals("-1");
+            String tmp = new SendPostRequest().execute(params).get();
+            System.out.println("remote addUser data: " + tmp);
+            ret = tmp.equals("-1");
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {
             e.printStackTrace();
         }
+
+        System.out.println("remote addUser return: " + ret);
 
         return !ret;
     }

@@ -218,6 +218,7 @@ class LocalDatabaseOperations implements LocalDbOperations, SharedDbOperations  
         try {
             sqLiteDatabase.execSQL(sqlCmd);
         } catch (SQLiteConstraintException e) {
+            e.printStackTrace();
             return false;
         }
 

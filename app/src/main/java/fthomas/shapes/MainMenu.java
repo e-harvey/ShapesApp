@@ -16,6 +16,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.R.layout;
 
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 
 import static org.junit.Assert.*;
@@ -31,22 +33,29 @@ public class MainMenu extends AppCompatActivity {
 
         setContentView(R.layout.activity_main_menu);
 
-        System.out.println("seed: " + DatabaseOperations.getBlockSeed(DatabaseOperations.getLocalLoggedInUser()));
-
         Typeface alltextTypeface = Typeface.createFromAsset(getAssets(), "Beeb Mode One.ttf");
 
         Typeface importedTypeface = Typeface.createFromAsset(getAssets(), "Arcade.ttf");
         TextView titleTypeface = (TextView)findViewById(R.id.Title);
         titleTypeface.setTypeface(importedTypeface);
 
+        /*ImageButton helpButton = (ImageButton) findViewById(R.id.Help);
+        helpButton.setPivotX(0);
+
+        ImageButton settingButton = (ImageButton) findViewById(R.id.Settings);
+        settingButton.setPivotX(getResources().getDisplayMetrics().widthPixels);*/
+
         /** http://www.webpagepublicity.com/free-fonts-a4.html#FreeFonts */
 
         Button playTypeface = (Button)findViewById(R.id.Play);
         playTypeface.setTypeface(alltextTypeface);
+
         Button ChallengeTypeFace = (Button)findViewById(R.id.Challenge);
         ChallengeTypeFace.setTypeface(alltextTypeface);
+
         Button multiplayerTypeface = (Button)findViewById(R.id.Multiplayer);
         multiplayerTypeface.setTypeface(alltextTypeface);
+
         Button scoresTypeface = (Button)findViewById(R.id.Scores);
         scoresTypeface.setTypeface(alltextTypeface);
     }

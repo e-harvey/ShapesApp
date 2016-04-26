@@ -131,8 +131,18 @@
         android:textSize="24sp"
         android:textColor="@color/Text"
         style="?android:attr/borderlessButtonStyle"
-        android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_below="@id/DeleteUserButton"
-        android:layout_marginBottom="50dp" />
+        android:layout_below="@id/DeleteUserButton" />
+
+    <!--- Local user button -->
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/PlayLocalButton"
+        android:id="@+id/PlayLocalButton"
+        android:textSize="24sp"
+        android:textColor="@color/Text"
+        style="?android:attr/borderlessButtonStyle"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/Login_Button" />
 </RelativeLayout>

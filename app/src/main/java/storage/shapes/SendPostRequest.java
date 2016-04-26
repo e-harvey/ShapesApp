@@ -86,11 +86,12 @@ public class SendPostRequest extends AsyncTask<ArrayList<String>, Void, String> 
             JSONParser jsonParser = new JSONParser();
             jsonObject = (JSONObject) jsonParser.parse(rx);
 
-            System.out.println(param[0].get(3) + ": " + jsonObject.get("status"));
+            System.out.println(param[0].get(3) + ": " + jsonObject.get("status") + ".");
             System.out.println(param[0].get(3) + ": " + jsonObject.get("data"));
-
-            if ((Boolean)jsonObject.get("status")) {
-                return (String) jsonObject.get("data");
+            System.out.println(param[0].get(3) + ": " + jsonObject.get("data"));
+            if (String.valueOf(jsonObject.get("status")).equals("true") &&
+                    !String.valueOf(jsonObject.get("data")).equals("false")) {
+                return String.valueOf(jsonObject.get("data"));
             } else {
                 return "-1";
             }
