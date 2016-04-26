@@ -32,10 +32,11 @@ public class HelpScreen extends AppCompatActivity {
         VideoView mVideoView  = (VideoView)findViewById(R.id.videoView);
         MediaController mediaController = new MediaController(this);
         mediaController.setEnabled(true);
+
         mVideoView.setMediaController(mediaController);
-        mVideoView.setEnabled(true);
         mVideoView.setVideoURI(uri);
         mVideoView.requestFocus();
+        mVideoView.setEnabled(true);
         mVideoView.start();
     }
 }
