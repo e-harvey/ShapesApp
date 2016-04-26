@@ -102,7 +102,10 @@ public class LoginScreen extends AppCompatActivity {
 
                 if (DatabaseOperations.addUser(user, pass)) {
                     Toast.makeText(getApplicationContext(), "Account Created... \nLogging you in.", Toast.LENGTH_SHORT).show();
+
                     DatabaseOperations.login(user, pass);
+
+
                     Intent main = new Intent(getApplicationContext(), MainMenu.class);
                     startActivity(main);
                 } else {

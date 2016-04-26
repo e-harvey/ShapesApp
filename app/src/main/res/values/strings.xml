@@ -50,6 +50,6 @@
     <string name="Password">Password:</string>
     <string name="Create_Button">Create user</string>
     <string name="login_Button">Login</string>
-    <string name="PlayLocalButton">Play locally</string>
+    <string name="PlayLocalButton">Play offline</string>
 
 </resources>

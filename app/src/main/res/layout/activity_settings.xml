@@ -51,7 +51,7 @@
         android:onClick="MainMenu_Screen"
         android:layout_centerHorizontal="true"/>
 
-    <!--- back to login screen button -->
+    <!--- back to login screen button
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -61,5 +61,5 @@
         android:textColor="@color/Text"
         style="?android:attr/borderlessButtonStyle"
         android:layout_below="@id/backtoMain_button"
-        android:layout_centerHorizontal="true"/>
+        android:layout_centerHorizontal="true"/> -->
 </RelativeLayout>

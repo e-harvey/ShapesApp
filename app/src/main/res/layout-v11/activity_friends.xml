@@ -32,8 +32,10 @@
         android:layout_marginBottom="50dp"
         android:layout_alignParentBottom="true"
         android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
         android:onClick="Acknowledge"
         android:layout_marginEnd="10dp"
+        android:layout_marginRight="10dp"
         style="?android:attr/borderlessButtonStyle"/>
 
     <!--- play button leads to game area -->
@@ -48,6 +50,8 @@
         android:layout_marginBottom="50dp"
         android:layout_alignParentEnd="true"
         android:layout_marginEnd="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_alignParentRight="true"
         android:onClick="Play"
         style="?android:attr/borderlessButtonStyle"/>
 
@@ -58,6 +62,8 @@
         android:layout_below="@+id/FriendsTitle"
         android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentLeft="true"
         android:layout_above="@+id/Add_Friend" >
 
         <RadioGroup

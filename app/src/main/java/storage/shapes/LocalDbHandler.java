@@ -38,7 +38,6 @@ public class LocalDbHandler extends SQLiteOpenHelper {
         // Create the friend table
         db.execSQL(sqlCmd);
 
-
         sqlCmd = "insert into user " +
                 "values ('default', '0', '1', 'deadbeefdead')";
 

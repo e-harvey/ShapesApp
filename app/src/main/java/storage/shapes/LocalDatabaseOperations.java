@@ -65,16 +65,6 @@ class LocalDatabaseOperations implements LocalDbOperations, SharedDbOperations  
             return cursor.getString(0);
         }
 
-        // Ensure there is only ever 1 local user logged in at a time
-        sqlCmd = "update user" +
-                " set status = 0";
-
-        try {
-            sqLiteDatabase.execSQL(sqlCmd);
-        } catch (SQLiteConstraintException e) {
-            ;
-        }
-
         return null;
     }
 
@@ -165,6 +155,13 @@ class LocalDatabaseOperations implements LocalDbOperations, SharedDbOperations  
     {
         String col[] = {"username"};
         String selArgs[] = {username};
+
+
+        // Ensure there is only ever 1 local user logged in at a time
+        sqlCmd = "update user" +
+                " set status = 0";
+
+        sqLiteDatabase.execSQL(sqlCmd);
 
         cursor = sqLiteDatabase.query("user", col, "username = ?", selArgs, null, null, null);
 

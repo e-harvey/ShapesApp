@@ -34,8 +34,8 @@ public class SettingsScreen extends AppCompatActivity {
         TextView LogoutButton = (TextView) findViewById(R.id.LogoutButton);
         LogoutButton.setTypeface(alltextTypeface);
 
-        TextView backToLoginScreenButton = (TextView) findViewById(R.id.backToLoginScreen_button);
-        LogoutButton.setTypeface(alltextTypeface);
+        //TextView backToLoginScreenButton = (TextView) findViewById(R.id.backToLoginScreen_button);
+        //LogoutButton.setTypeface(alltextTypeface);
 
         TextView backtoMain_button = (TextView) findViewById(R.id.backtoMain_button);
         backtoMain_button.setTypeface(alltextTypeface);
@@ -58,13 +58,13 @@ public class SettingsScreen extends AppCompatActivity {
             }
         });
 
-        backToLoginScreenButton.setOnClickListener(new View.OnClickListener() {
+        /*backToLoginScreenButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getApplicationContext(), LoginScreen.class);
                 startActivity(intent);
             }
-        });
+        });*/
 
     }
 
