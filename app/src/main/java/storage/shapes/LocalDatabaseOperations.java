@@ -41,6 +41,7 @@ class LocalDatabaseOperations implements LocalDbOperations, SharedDbOperations  
 
         cursor = sqLiteDatabase.query("friends", col, "user = ?", selArgs, null, null, null);
 
+        System.out.println("count: " + cursor.getCount());
         if (cursor.getCount() > 0) {
             cursor.moveToFirst();
             do {
@@ -202,8 +203,13 @@ class LocalDatabaseOperations implements LocalDbOperations, SharedDbOperations  
 
         cursor = sqLiteDatabase.query("user", col, "username = ?", selArgs, null, null, null);
 
-        cursor.moveToNext();
-        return Long.valueOf(cursor.getString(0));
+        if (cursor.getCount() > 0) {
+            cursor.moveToNext();
+            return Long.valueOf(cursor.getString(0));
+        } else {
+            return 0;
+        }
+
     }
 
     public boolean addUser(String username, String password)

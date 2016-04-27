@@ -39,9 +39,9 @@ public class LocalDbHandler extends SQLiteOpenHelper {
         db.execSQL(sqlCmd);
 
         sqlCmd = "insert into user " +
-                "values ('default', '0', '1', 'deadbeefdead')";
+                "values ('null', '0', '1', 'deadbeefdead')";
 
-        // Create the default locat user
+        // Create the default local user
         db.execSQL(sqlCmd);
     }
 

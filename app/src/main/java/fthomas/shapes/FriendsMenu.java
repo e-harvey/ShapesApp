@@ -42,67 +42,77 @@ public class FriendsMenu extends AppCompatActivity {
         TextView PlayFriends = (TextView)findViewById(R.id.Play_Friends);
         PlayFriends.setTypeface(alltextTypeface);
 
-        if (!createFriendsList()) {
-
-        }
+        createFriendsList();
 
         AddFriends.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(FriendsMenu.this);
-                builder.setTitle("Friend Name");
+                if (DatabaseOperations.getRemoteLoginStatus()) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(FriendsMenu.this);
+                    builder.setTitle("Friend Name");
 
-                final EditText friendName = new EditText(FriendsMenu.this);
-                friendName.setInputType(InputType.TYPE_CLASS_TEXT);
-                builder.setView(friendName);
+                    final EditText friendName = new EditText(FriendsMenu.this);
+                    friendName.setInputType(InputType.TYPE_CLASS_TEXT);
+                    builder.setView(friendName);
 
-                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        if (DatabaseOperations.addNewFriend(DatabaseOperations.getLocalLoggedInUser(),
-                                                            friendName.getText().toString())) {
-                            RadioGroup buttons = (RadioGroup) findViewById(R.id.friendsList);
-                            addButton(buttons, friendName.getText().toString(),
-                                    DatabaseOperations.getHighScore(friendName.getText().toString()));
-                        } else {
-                            Toast.makeText(getApplicationContext(), "Sorry, we can't find that friend.", Toast.LENGTH_LONG).show();
+                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            if (DatabaseOperations.addNewFriend(DatabaseOperations.getLocalLoggedInUser(),
+                                    friendName.getText().toString())) {
+                                RadioGroup buttons = (RadioGroup) findViewById(R.id.friendsList);
+                                addButton(buttons, friendName.getText().toString(),
+                                        DatabaseOperations.getHighScore(friendName.getText().toString()));
+                            } else {
+                                Toast.makeText(getApplicationContext(), "Sorry, we can't find that friend.", Toast.LENGTH_LONG).show();
+                            }
                         }
-                    }
-                });
+                    });
 
-                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
-                    }
-                });
+                    builder.setNegativeButton("Search", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            String[] tmp = DatabaseOperations.searchUser(friendName.getText().toString());
+                            String names = "";
 
-                AlertDialog alert = builder.create();
-                alert.show();
+                            for (int i = 0; i < tmp.length; i++) {
+                                names = names + tmp[i] + (i == tmp.length - 1 ? "" : ", ");
+                            }
 
-                Button okButton = alert.getButton(DialogInterface.BUTTON_POSITIVE);
-                okButton.setBackgroundColor(Color.GREEN);
-                Button cancelButton = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
-                cancelButton.setBackgroundColor(Color.RED);
+                            if (names.equals("-1")) {
+                                Toast.makeText(getApplicationContext(), "Sorry, we couldn't find any users by that name.", Toast.LENGTH_LONG).show();
+                            } else {
+                                Toast.makeText(getApplicationContext(), "Found users:\n" + names, Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    });
+                    AlertDialog alert = builder.create();
+                    alert.show();
+
+                    Button okButton = alert.getButton(DialogInterface.BUTTON_POSITIVE);
+                    okButton.setBackgroundColor(Color.GREEN);
+                    Button cancelButton = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
+                    cancelButton.setBackgroundColor(Color.BLUE);
+                }
             }
         });
 
     }
 
-    private Boolean createFriendsList() {
+    private void createFriendsList() {
         String username = DatabaseOperations.getLocalLoggedInUser();
 
-        if (username == null) {
-            Toast.makeText(getApplicationContext(), "Hey... you need to login first.", Toast.LENGTH_SHORT).show();
+        if (username == null || !DatabaseOperations.getRemoteLoginStatus()) {
+            Toast.makeText(getApplicationContext(), "Check network connection and login again please.", Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(this, LoginScreen.class);
             startActivity(intent);
-            return false;
+            return;
         }
 
         ArrayList<String> friends = DatabaseOperations.getFriendsList(username);
         if (friends == null) {
             Toast.makeText(getApplicationContext(), "Sorry, you need to add some friends first!", Toast.LENGTH_SHORT).show();
-            return false;
+            return;
         }
 
         RadioGroup buttons = (RadioGroup) findViewById(R.id.friendsList);
@@ -111,9 +121,8 @@ public class FriendsMenu extends AppCompatActivity {
             long high_score = DatabaseOperations.getHighScore(friend);
             addButton(buttons, friend, high_score);
         }
-
-        return true;
     }
+
     public void Acknowledge(View v) {
         Toast t = Toast.makeText(getApplicationContext(), "Still working on this button...", Toast.LENGTH_SHORT);
         t.show();
@@ -132,20 +141,28 @@ public class FriendsMenu extends AppCompatActivity {
         b.setBackgroundColor(Color.WHITE);
         group.addView(b);
     }
-    public void Play(View v) {
-        String friendName = getSelectedFriend();
-        System.out.println("Friend: " + friendName + ".");
 
-        if (friendName == null || DatabaseOperations.getBlockSeed(friendName) == -1) {
-            Toast.makeText(getApplicationContext(), "Sorry, please select a friend.\nPlease make sure that'" + friendName +
-                    "'has played some games first.", Toast.LENGTH_LONG).show();
-            PlayMenu.setType(PlayMenu.gamePlayType.SINGLE_PLAYER);
+    public void Play(View v) {
+        if (DatabaseOperations.getRemoteLoginStatus()) {
+            String friendName = getSelectedFriend();
+            System.out.println("Friend: " + friendName + ".");
+
+            if (friendName == null || DatabaseOperations.getBlockSeed(friendName) == -1) {
+                Toast.makeText(getApplicationContext(), "Sorry, please select a friend.\nPlease make sure that'" + friendName +
+                        "'has played some games first.", Toast.LENGTH_LONG).show();
+                PlayMenu.setType(PlayMenu.gamePlayType.SINGLE_PLAYER);
+            } else {
+                PlayMenu.setType(PlayMenu.gamePlayType.PLAY_WITH_FRIENDS);
+                PlayMenu.setFriendname(friendName);
+            }
+            Intent intent = new Intent(this, PlayMenu.class);
+            startActivity(intent);
         } else {
-            PlayMenu.setType(PlayMenu.gamePlayType.PLAY_WITH_FRIENDS);
-            PlayMenu.setFriendname(friendName);
+            Toast.makeText(getApplicationContext(), "Check network connection and login please...", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(this, LoginScreen.class);
+            startActivity(intent);
+            return;
         }
-        Intent intent = new Intent(this, PlayMenu.class);
-        startActivity(intent);
     }
 
     public String getSelectedFriend() {

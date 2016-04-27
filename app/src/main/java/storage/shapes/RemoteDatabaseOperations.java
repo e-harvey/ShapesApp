@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
 class RemoteDatabaseOperations implements RemoteDbOperations, SharedDbOperations  {
-
     /* Begin constructors */
     RemoteDatabaseOperations() {}
     /* End constructors */
@@ -420,6 +419,65 @@ class RemoteDatabaseOperations implements RemoteDbOperations, SharedDbOperations
 
         try {
             ret = new SendPostRequest().execute(params).get().equals("-1");
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+
+        return ret;
+    }
+
+    public String[] searchUser(String subString) {
+        String[] ret = null;
+        ArrayList<String> params = new ArrayList<String>();
+
+        // Pack the post request
+        params.add(0, "service");
+        params.add(1, "get");
+
+        params.add(2, "action");
+        params.add(3, "searchUser");
+
+        params.add(4, "subString");
+        params.add(5, subString);
+
+        try {
+            ret = new SendPostRequest().execute(params).get().split(",");
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+
+        return ret;
+    }
+
+    public ArrayList<String> getFriendsList(String username) {
+        ArrayList<String> ret = null;
+        ArrayList<String> params = new ArrayList<String>();
+
+        // Pack the post request
+        params.add(0, "service");
+        params.add(1, "get");
+
+        params.add(2, "action");
+        params.add(3, "getFriendsList");
+
+        params.add(4, "username");
+        params.add(5, username);
+
+        params.add(6, "token");
+        params.add(7, DatabaseOperations.getToken(username));
+
+        try {
+            String[] tmp = new SendPostRequest().execute(params).get().split(",");
+            ret = new ArrayList<String>();
+
+            for (int i = 0; i < tmp.length; i++) {
+                ret.add(i, tmp[i]);
+            }
+
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {

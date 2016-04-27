@@ -65,8 +65,8 @@ public class LoginScreen extends AppCompatActivity {
         PlayLocalButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DatabaseOperations.login("default", "dummy");
-                Toast.makeText(getApplicationContext(), "Playing with default user.\nHistory not saved to remote database.", Toast.LENGTH_LONG).show();
+                DatabaseOperations.login("null", "dummy");
+                Toast.makeText(getApplicationContext(), "Playing with default user 'null'.\nHistory not saved to remote database.", Toast.LENGTH_LONG).show();
                 Intent intent = new Intent(getApplicationContext(), MainMenu.class);
                 startActivity(intent);
             }

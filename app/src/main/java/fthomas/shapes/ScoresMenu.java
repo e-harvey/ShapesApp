@@ -33,10 +33,12 @@ public class ScoresMenu extends AppCompatActivity {
         UserScore.setTypeface(alltextTypeface);
         UserScore.setText(String.valueOf(DatabaseOperations.getHighScore(DatabaseOperations.getLocalLoggedInUser())));
 
-        TextView Friends_Scores_Text = (TextView)findViewById(R.id.Friends_Scores_Text);
-        Friends_Scores_Text.setTypeface(alltextTypeface);
-        String friendsList = getFormatedFriendsList();
-        Friends_Scores_Text.setText(friendsList);
+        if (DatabaseOperations.getRemoteLoginStatus()) {
+            TextView Friends_Scores_Text = (TextView) findViewById(R.id.Friends_Scores_Text);
+            Friends_Scores_Text.setTypeface(alltextTypeface);
+            String friendsList = getFormatedFriendsList();
+            Friends_Scores_Text.setText(friendsList);
+        }
     }
 
     private String getFormatedFriendsList() {

@@ -16,6 +16,7 @@ public abstract class DatabaseOperations  {
     static Context context;
     static LocalDatabaseOperations local;
     static RemoteDatabaseOperations remote;
+    private static boolean remoteLoginStatus = false;
 
     public static void DatabaseOperationsInit(Context context) {
         DatabaseOperations.context = context;
@@ -29,6 +30,15 @@ public abstract class DatabaseOperations  {
     }
 
     /* Begin private helpler methods */
+    /* Begin setters */
+    private static void setRemoteLoginStatus(boolean status) {
+        remoteLoginStatus = status;
+    }
+
+    public static boolean getRemoteLoginStatus() {
+        return remoteLoginStatus;
+    }
+    /* End setters */
     /**
      * Determine whether a network connection is available
      * @return true if the network is availabe, otherwise false.
@@ -36,6 +46,7 @@ public abstract class DatabaseOperations  {
     private static boolean isNetworkConnected()
     {
         boolean ret = false;
+
         ConnectivityManager connMgr = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
 
@@ -70,19 +81,42 @@ public abstract class DatabaseOperations  {
      */
     public static boolean login(String username, String password)
     {
-        if (!local.login(username, password)) {
-            return false;
-        }
-
         if (isNetworkConnected()) {
-            if (!remote.login(username, password)) {
+            // Check to see if user exists in remote db but not local db
+            if (remote.login(username, password) && !local.login(username, password)) {
+                // Create user in local db
+                local.addUser(username, password);
+
+                // Now add token to local db
+                remote.login(username, password);
+
+                // Set highscore of user in local db
+                local.setHighScore(username, remote.getHighScore(username));
+
+                ArrayList<String> friends = remote.getFriendsList(username);
+
+                if (friends != null) {
+                    for (int i = 0; i < friends.size(); i++) {
+                        System.out.println("adding: " + friends.get(i));
+                        local.addNewFriend(username, friends.get(i));
+                    }
+                }
+                setRemoteLoginStatus(true);
+            } else if (!remote.login(username, password)) {
                 System.out.println("Play with friends is not available." +
                         "  Please check your credentials.");
+                setRemoteLoginStatus(false);
             } else {
+                setRemoteLoginStatus(true);
                 System.out.println("Successfully contacted the remote database and logged user '" + username + "' in.");
             }
         } else {
+            setRemoteLoginStatus(false);
             System.out.println("Failed to contact remote database.");
+        }
+
+        if (!local.login(username, password)) {
+            return false;
         }
 
         return true;
@@ -110,7 +144,7 @@ public abstract class DatabaseOperations  {
      */
     public static long getHighScore(String username)
     {
-        if (isNetworkConnected() && remote.getLoginStatus(username))
+        if (isNetworkConnected())
             return remote.getHighScore(username);
         else
             return local.getHighScore(username);
@@ -324,6 +358,19 @@ public abstract class DatabaseOperations  {
         }
 
         return false;
+    }
+
+    /**
+     * Search the remote database for the given substring
+     * @param subString the string to search for
+     * @return the list of found userns on success; otherwise null
+     */
+    public static String[] searchUser(String subString) {
+        if (isNetworkConnected()) {
+            return remote.searchUser(subString);
+        }
+        System.out.println("Check network conneciton");
+        return null;
     }
     /* End remote database operations */
 

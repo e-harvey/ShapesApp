@@ -7,4 +7,5 @@ interface RemoteDbOperations {
     boolean getLoginStatus(String username);
     String getTopFriend(String username);
     boolean findUser(String username);
+    String[] searchUser(String subString);
 }

@@ -21,7 +21,7 @@
     <string name="HighScore_Title">High Scores</string>
     <string name="HighScore">Your Highest Score:</string>
     <string name="Placeholder_number">123456</string>
-    <string name="Friends_Scores">Your Friends\' Scores:</string>
+    <string name="Friends_Scores">No friends scores available.</string>
 
     <!-- Friends menu strings-->
     <string name="Friends_title">Friends</string>

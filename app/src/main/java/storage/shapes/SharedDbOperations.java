@@ -1,5 +1,7 @@
 package storage.shapes;
 
+import java.util.ArrayList;
+
 interface SharedDbOperations {
     void logout(String username);
     boolean login(String username, String password);
@@ -10,4 +12,5 @@ interface SharedDbOperations {
     boolean setPassword(String username, String oldPassword, String newPassword);
     boolean addNewFriend(String usernameOwner, String usernameFriend);
     boolean deleteFriend(String usernameOwner, String usernameFriend);
+    ArrayList<String> getFriendsList(String username);
 }

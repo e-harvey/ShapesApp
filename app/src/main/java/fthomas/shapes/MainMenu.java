@@ -49,6 +49,9 @@ public class MainMenu extends AppCompatActivity {
 
         Button playTypeface = (Button)findViewById(R.id.Play);
         playTypeface.setTypeface(alltextTypeface);
+        if (!DatabaseOperations.getRemoteLoginStatus()) {
+            playTypeface.setText("Play offline as: " + DatabaseOperations.getLocalLoggedInUser());
+        }
 
         Button ChallengeTypeFace = (Button)findViewById(R.id.Challenge);
         ChallengeTypeFace.setTypeface(alltextTypeface);
@@ -97,6 +100,12 @@ public class MainMenu extends AppCompatActivity {
     }
 
     public void Challenge_Menu(View view) {
+        if (!DatabaseOperations.getRemoteLoginStatus()) {
+            Toast.makeText(getApplicationContext(), "Check network connection and login again please.", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(this, LoginScreen.class);
+            startActivity(intent);
+            return;
+        }
         if (checkStatus()) {
             PlayMenu.setType(PlayMenu.gamePlayType.DAILY_CHALLENGE);
             Intent intent = new Intent(this, PlayMenu.class);
@@ -106,7 +115,7 @@ public class MainMenu extends AppCompatActivity {
 
     private boolean checkStatus() {
         if (DatabaseOperations.getLocalLoggedInUser() == null) {
-            Toast.makeText(getApplicationContext(), "Hey... you need to login first.\nRerouting to login screen.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "Hey... you need to login first.\nRerouting to login screen.", Toast.LENGTH_LONG).show();
             Intent intent = new Intent(this, LoginScreen.class);
             startActivity(intent);
             return false;
