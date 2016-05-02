@@ -240,6 +240,7 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
             remainingTime = 0;
             gameRunning = false;
             gameThread.setRunning(false);
+	    updateScore();
         }
         Date date = new Date(remainingTime / 1000000);
         DateFormat formatter;
