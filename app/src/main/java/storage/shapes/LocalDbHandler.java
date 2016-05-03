@@ -20,7 +20,7 @@ public class LocalDbHandler extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db)
     {
         sqlCmd = "create table user(" +
-                "username varchar(512), " +
+                "username varchar(15), " +
                 "highscore bigint unsigned, " +
                 "status boolean, " +
                 "token char(60), " +
@@ -31,8 +31,8 @@ public class LocalDbHandler extends SQLiteOpenHelper {
 
 
         sqlCmd = "create table friends(" +
-                "user varchar(512), " +
-                "friend varchar(512), " +
+                "user varchar(15), " +
+                "friend varchar(15), " +
                 "constraint user_friend_unique unique(user,friend))";
 
         // Create the friend table

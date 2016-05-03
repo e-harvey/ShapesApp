@@ -194,6 +194,7 @@ class LocalDatabaseOperations implements LocalDbOperations, SharedDbOperations  
             } catch (SQLiteConstraintException e) {
                 ;
             }
+        System.out.println("Setting high score for " + username + " to " + score + ".");
     }
 
     public long getHighScore(String username)
@@ -207,7 +208,7 @@ class LocalDatabaseOperations implements LocalDbOperations, SharedDbOperations  
             cursor.moveToNext();
             return Long.valueOf(cursor.getString(0));
         } else {
-            return 0;
+            return -1;
         }
 
     }

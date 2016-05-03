@@ -27,6 +27,9 @@ public abstract class DatabaseOperations  {
         if (remote == null){
             remote = new RemoteDatabaseOperations();
         }
+
+        if (local.getLocalLoggedInUser() != null)
+            remoteLoginStatus = remote.getLoginStatus(local.getLocalLoggedInUser());
     }
 
     /* Begin private helpler methods */
@@ -144,11 +147,12 @@ public abstract class DatabaseOperations  {
      */
     public static long getHighScore(String username)
     {
-        if (isNetworkConnected())
-            return remote.getHighScore(username);
-        else
-            return local.getHighScore(username);
+        long ret = local.getHighScore(username);
 
+        if (ret == -1 && isNetworkConnected())
+            return remote.getHighScore(username);
+
+        return ret;
     }
 
     /**
