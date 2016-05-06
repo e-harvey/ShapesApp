@@ -2,9 +2,7 @@ package gamelogic;
 
 import storage.shapes.DatabaseOperations;
 
-/**
- * Created by eharvey on 4/20/16.
- */
+
 public class HighScoreThread extends Thread {
     private GameWindow gameWindowHandle;
     private boolean running;

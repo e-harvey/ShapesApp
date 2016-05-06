@@ -3,9 +3,6 @@ package gamelogic;
 import android.graphics.Canvas;
 import android.view.SurfaceHolder;
 
-/**
- * Created by Ben on 4/14/2016.
- */
 public class GameThread extends Thread {
 
     private int FPS = 30;

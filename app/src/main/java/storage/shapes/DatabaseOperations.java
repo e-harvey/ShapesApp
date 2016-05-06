@@ -9,22 +9,25 @@ import java.util.ArrayList;
 
 import static org.junit.Assert.assertNotEquals;
 
-/**
- * Created by Fritz on 4/7/2016.
- */
 public abstract class DatabaseOperations  {
     static Context context;
     static LocalDatabaseOperations local;
     static RemoteDatabaseOperations remote;
     private static boolean remoteLoginStatus = false;
 
+    /**
+     * This method is responsible for initializing the local and remote database
+     * objects.  If those objects have already been created then there is no need
+     * to created.
+     * @param context the global information about the application's environment.
+     */
     public static void DatabaseOperationsInit(Context context) {
         DatabaseOperations.context = context;
 
-        if (local == null ) {
+        if (local == null) {
             local = new LocalDatabaseOperations(context);
         }
-        if (remote == null){
+        if (remote == null) {
             remote = new RemoteDatabaseOperations();
         }
 

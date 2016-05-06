@@ -14,7 +14,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 
-
 class LocalDatabaseOperations implements LocalDbOperations, SharedDbOperations  {
     private LocalDbHandler localDbHandler;
     private SQLiteDatabase sqLiteDatabase;

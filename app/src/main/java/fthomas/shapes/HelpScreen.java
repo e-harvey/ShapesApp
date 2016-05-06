@@ -24,8 +24,8 @@ public class HelpScreen extends AppCompatActivity {
 
         Typeface alltextTypeface = Typeface.createFromAsset(getAssets(), "Beeb Mode One.ttf");
 
-        TextView instruct2 = (TextView)findViewById(R.id.instruct2);
-        instruct2.setTypeface(alltextTypeface);
+        /*TextView instruct2 = (TextView)findViewById(R.id.instruct2);
+        instruct2.setTypeface(alltextTypeface);*/
 
         // TODO this doesn't work on some API versions
         Uri uri = Uri.parse("https://shapes.evanharvey.net/demo.mp4"); //Declare your url here.

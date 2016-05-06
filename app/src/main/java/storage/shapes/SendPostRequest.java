@@ -28,7 +28,7 @@ public class SendPostRequest extends AsyncTask<ArrayList<String>, Void, String> 
      * This method unpacks the params which is of the form [field1,val1,field2,val2,...]
      * and then sends the post request to the given url.
      *
-     * @return data: upon sucessfully connecting to the database.
+     * @return data: upon successfully connecting to the database.
      *           -1: upon failing to connect to the database.
      */
     @Override
