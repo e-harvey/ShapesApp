@@ -15,6 +15,11 @@ import storage.shapes.DatabaseOperations;
  * Created by marci_home on 4/16/16.
  */
 public class SettingsScreen extends AppCompatActivity {
+
+    /**
+     * Method called on the creation of the window
+     * @param savedInstance - The savedInstance to pass into this method
+     */
     public void onCreate(Bundle savedInstance) {
         super.onCreate(savedInstance);
         DatabaseOperations.DatabaseOperationsInit(this.getApplicationContext());
@@ -68,6 +73,10 @@ public class SettingsScreen extends AppCompatActivity {
 
     }
 
+    /**
+     * Switches the screen to show the main menu
+     * @param v the view that calls the function
+     */
     public void MainMenu_Screen(View v) {
         Intent intent = new Intent(this, MainMenu.class);
         startActivity(intent);

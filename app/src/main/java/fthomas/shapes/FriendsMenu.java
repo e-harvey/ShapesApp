@@ -28,6 +28,10 @@ import storage.shapes.DatabaseOperations;
  */
 public class FriendsMenu extends AppCompatActivity {
 
+    /**
+     * Method called on the creation of the window
+     * @param savedInstance - The savedInstance to pass into this method
+     */
     public void onCreate(Bundle savedInstance) {
         super.onCreate(savedInstance);
         setContentView(R.layout.activity_friends);
@@ -99,6 +103,9 @@ public class FriendsMenu extends AppCompatActivity {
 
     }
 
+    /**
+     * creates and populates the friends list to be displayed in the system
+     */
     private void createFriendsList() {
         String username = DatabaseOperations.getLocalLoggedInUser();
 
@@ -123,11 +130,12 @@ public class FriendsMenu extends AppCompatActivity {
         }
     }
 
-    public void Acknowledge(View v) {
-        Toast t = Toast.makeText(getApplicationContext(), "Still working on this button...", Toast.LENGTH_SHORT);
-        t.show();
-    }
-
+    /**
+     * Adds a new radio button to the radio group
+     * @param group the RadioGroup to add the new button to
+     * @param name the name of the player
+     * @param score the score of the player
+     */
     private void addButton(RadioGroup group, String name, long score) {
         RadioButton b = new RadioButton(this);
         b.setTextColor(Color.BLACK);
@@ -142,6 +150,10 @@ public class FriendsMenu extends AppCompatActivity {
         group.addView(b);
     }
 
+    /**
+     * Switches the screen to the game menu to start playing
+     * @param v the View that calls the methods
+     */
     public void Play(View v) {
         if (DatabaseOperations.getRemoteLoginStatus()) {
             String friendName = getSelectedFriend();
@@ -165,6 +177,10 @@ public class FriendsMenu extends AppCompatActivity {
         }
     }
 
+    /**
+     * get's the selected friend from the radiogroup,
+     * @return The string name of the friend that is selected, or null if no friend is selected
+     */
     public String getSelectedFriend() {
         RadioGroup r = (RadioGroup) findViewById(R.id.friendsList);
         RadioButton b = (RadioButton) findViewById(r.getCheckedRadioButtonId());

@@ -26,7 +26,10 @@ import storage.shapes.DatabaseOperations;
 
 public class MainMenu extends AppCompatActivity {
 
-    @Override
+    /**
+     * Method called on the creation of the window
+     * @param savedInstanceState The savedInstance to pass into this method
+     */
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         DatabaseOperations.DatabaseOperationsInit(this.getApplicationContext());

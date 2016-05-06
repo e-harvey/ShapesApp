@@ -16,6 +16,10 @@ public class PlayMenu extends Activity {
     public static gamePlayType type;
     public static String friendname;
 
+    /**
+     * Method called on the creation of the window
+     * @param savedInstance The savedInstance to pass into this method
+     */
     @Override
     public void onCreate(Bundle savedInstance) {
         super.onCreate(savedInstance);

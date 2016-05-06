@@ -18,6 +18,11 @@ import java.net.URL;
  */
 
 public class HelpScreen extends AppCompatActivity {
+
+    /**
+     * Method called on the creation of the window
+     * @param savedInstance - The savedInstance to pass into this method
+     */
     public void onCreate(Bundle savedInstance) {
         super.onCreate(savedInstance);
         setContentView(R.layout.activity_help);

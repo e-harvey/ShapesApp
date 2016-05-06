@@ -21,9 +21,13 @@ import storage.shapes.DatabaseOperations;
  *  mmcbride 03/21/08
  */
 public class LoginScreen extends AppCompatActivity {
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+
+    /**
+     * Method called on the creation of the window
+     * @param savedInstance - The savedInstance to pass into this method
+     */
+    public void onCreate(Bundle savedInstance) {
+        super.onCreate(savedInstance);
         DatabaseOperations.DatabaseOperationsInit(this.getApplicationContext());
         setContentView(R.layout.activity_login_screen);
 

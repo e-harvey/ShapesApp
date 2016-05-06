@@ -16,6 +16,11 @@ import storage.shapes.DatabaseOperations;
  * Created by FThom_000 on 3/20/2016.
  */
 public class ScoresMenu extends AppCompatActivity {
+
+    /**
+     * Method called on the creation of the window
+     * @param savedInstance - The savedInstance to pass into this method
+     */
     public void onCreate(Bundle savedInstance) {
         super.onCreate(savedInstance);
         setContentView(R.layout.activity_scores);
@@ -41,6 +46,10 @@ public class ScoresMenu extends AppCompatActivity {
         }
     }
 
+    /**
+     * Returns a string containing the friends and scores separated by newlines
+     * @return A formatted string
+     */
     private String getFormatedFriendsList() {
         String list = "";
 
