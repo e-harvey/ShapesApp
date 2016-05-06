@@ -14,9 +14,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 
-/**
- * Created by Fritz on 4/6/2016.
- */
+
 class LocalDatabaseOperations implements LocalDbOperations, SharedDbOperations  {
     private LocalDbHandler localDbHandler;
     private SQLiteDatabase sqLiteDatabase;
@@ -26,11 +24,18 @@ class LocalDatabaseOperations implements LocalDbOperations, SharedDbOperations  
     /* Begin constructors */
     LocalDatabaseOperations(Context context) {
         localDbHandler = new LocalDbHandler(context, "shapes", 1);
-        sqLiteDatabase = localDbHandler.getWritableDatabase();
+        sqLiteDatabase = localDbHandler.getWritableDatabase(); // users database helper class to manage database
     }
     /* End constructors */
 
     /* Begin local database operations */
+
+    /**
+     * Return the list of username of friends for a user.
+     *
+     * @param username the user's username
+     * @return ArrayList<String> of friends
+     */
     public ArrayList<String> getFriendsList(String username)
     {
         String col[] = {"friend"};
@@ -54,6 +59,12 @@ class LocalDatabaseOperations implements LocalDbOperations, SharedDbOperations  
         }
     }
 
+
+    /**
+     * Returns the name of the username currently logged in, or the user logged in from previous session.
+     *
+     * @return String of username.
+     */
     public String getLocalLoggedInUser()
     {
         String col[] = {"username, status"};
@@ -91,6 +102,12 @@ class LocalDatabaseOperations implements LocalDbOperations, SharedDbOperations  
         return true;
     }
 
+    /**
+     * Get the token for the given username.
+     *
+     * @param username the user's username
+     * @return String of token.
+     */
     public String getToken(String username)
     {
         String col[] = {"token"};
@@ -105,8 +122,15 @@ class LocalDatabaseOperations implements LocalDbOperations, SharedDbOperations  
 
         return null;
     }
-    /* End local database operations */
 
+
+    /**
+     * Adds username of friend to database.
+     *
+     * @param usernameOwner the user's username
+     * @param  usernameFriend the friend's username
+     * @return true if the friend was added; otherwise false.
+     */
     public boolean addNewFriend(String usernameOwner, String usernameFriend)
     {
         sqlCmd = "insert into friends " +
@@ -122,6 +146,13 @@ class LocalDatabaseOperations implements LocalDbOperations, SharedDbOperations  
         return true;
     }
 
+    /**
+     * Set the token for the given username.
+     *
+     * @param usernameOwner the user's username
+     * @param usernameFriend of friend's username
+     * @return true if friend was removed; otherwise false.
+     */
     public boolean deleteFriend(String usernameOwner, String usernameFriend)
     {
         sqlCmd = "delete from friends " +
@@ -138,7 +169,12 @@ class LocalDatabaseOperations implements LocalDbOperations, SharedDbOperations  
         return true;
     }
 
-    /* Begin shared database operations */
+    /**
+     * Logs user out of local database
+     *
+     * @param username the user's username
+     * @return void
+     */
     public void logout(String username)
     {
         sqlCmd = "update user" +
@@ -152,6 +188,13 @@ class LocalDatabaseOperations implements LocalDbOperations, SharedDbOperations  
         }
     }
 
+    /**
+     * Logs user into local database
+     *
+     * @param username the user's username
+     * @param password the user's password
+     * @return true if success; false if not
+     */
     public boolean login(String username, String password)
     {
         String col[] = {"username"};
@@ -183,6 +226,13 @@ class LocalDatabaseOperations implements LocalDbOperations, SharedDbOperations  
         return true;
     }
 
+    /**
+     * Set high score into local database
+     *
+     * @param username the user's username
+     * @param score from gameplay
+     * @return void
+     */
     public void setHighScore(String username, long score)
     {
         sqlCmd = "update user " +
@@ -197,6 +247,12 @@ class LocalDatabaseOperations implements LocalDbOperations, SharedDbOperations  
         System.out.println("Setting high score for " + username + " to " + score + ".");
     }
 
+    /**
+     * Returns high score for specified user
+     *
+     * @param username the user's username
+     * @return long format score
+     */
     public long getHighScore(String username)
     {
         String col[] = {"highscore"};
@@ -213,6 +269,13 @@ class LocalDatabaseOperations implements LocalDbOperations, SharedDbOperations  
 
     }
 
+    /**
+     * Adds username to local database
+     *
+     * @param username the user's username
+     * @param password the user's password
+     * @return true if successful; false if not
+     */
     public boolean addUser(String username, String password)
     {
         sqlCmd = "insert into user " +
@@ -229,6 +292,13 @@ class LocalDatabaseOperations implements LocalDbOperations, SharedDbOperations  
         return true;
     }
 
+    /**
+     * Removes user completely from local database
+     *
+     * @param username the user's username
+     * @param password the user's password
+     * @return boolean true if succesful; false if not
+     */
     public boolean deleteUser(String username, String password)
     {
         String col[] = {"username"};
@@ -261,9 +331,17 @@ class LocalDatabaseOperations implements LocalDbOperations, SharedDbOperations  
         }
     }
 
+    /**
+     * Sets new password for a user
+     *
+     * @param username the user's username
+     * @param oldPassword the previous password the user wishes to change
+     * @param oldPassword the new password the user wishes to enter
+     * @return boolean true if successful; false if not
+     */
     public boolean setPassword(String username, String oldPassword, String newPassword)
     {
         return true;
     }
-    /* End shared database operations */
+    /* End local database operations */
 }

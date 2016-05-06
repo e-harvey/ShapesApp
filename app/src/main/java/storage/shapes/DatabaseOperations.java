@@ -43,8 +43,7 @@ public abstract class DatabaseOperations  {
     }
     /* End setters */
     /**
-     * Determine whether a network connection is available
-     * @return true if the network is availabe, otherwise false.
+     gets login status of user in remote database
      */
     private static boolean isNetworkConnected()
     {
@@ -318,7 +317,7 @@ public abstract class DatabaseOperations  {
     }
 
     /**
-     * Set the block seed for the given user.
+     * Returns the block seed for the given user.
      *
      * @param username the username of the user.
      * @param seed     the value of the new seed.
@@ -331,7 +330,7 @@ public abstract class DatabaseOperations  {
     }
 
     /**
-     * Get the username and score of the friend with the highest score.
+     * Set the username and score of the friend with the highest score.
      *
      * @param username the local user's username
      * @return name,score of the top friend on success otherwise null
@@ -412,7 +411,7 @@ public abstract class DatabaseOperations  {
     }
 
     /**
-     * Get the token for the given username
+     * Set the token for the given username
      * @param username the user's username
      * @return the token on success, otherwise null
      */

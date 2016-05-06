@@ -4,9 +4,7 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-/**
- * Created by Owner on 4/6/2016.
- */
+
 public class LocalDbHandler extends SQLiteOpenHelper {
 
     private String sqlCmd;
@@ -16,7 +14,14 @@ public class LocalDbHandler extends SQLiteOpenHelper {
         super(context, databaseName, null, databaseVersion);
     }
 
+
     @Override
+    /**
+     * Creates database or table is not already present
+     *
+     * @param SQLiteDatabase local database
+     * @return void
+     */
     public void onCreate(SQLiteDatabase db)
     {
         sqlCmd = "create table user(" +
@@ -46,6 +51,15 @@ public class LocalDbHandler extends SQLiteOpenHelper {
     }
 
     @Override
+    /**
+     * Upgrades tables
+     *
+     * @param SQLiteDatabase local database
+     * @param oldVersion previous version number
+     * @param newVersion new version number
+
+     * @return void
+     */
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion)
     {
 
