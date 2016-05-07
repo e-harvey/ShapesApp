@@ -1,10 +1,8 @@
-package fthomas.shapes;
+package gameinterface.shapes;
 
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.support.v7.app.AppCompatActivity;
-import android.R.layout;
 import android.widget.TextView;
 
 import java.util.ArrayList;

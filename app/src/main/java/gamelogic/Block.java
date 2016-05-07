@@ -4,8 +4,6 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 
-import fthomas.shapes.R;
-
 /**
  * Created by Ben on 4/14/2016.
  */

@@ -57,9 +57,6 @@ public abstract class DatabaseOperations  {
 
         ret = (networkInfo != null && networkInfo.isConnected());
 
-        if (!ret)
-            //System.out.println("Sorry, the network is not connected.");
-
         return ret;
     }
     /* End private helper methods */
@@ -109,7 +106,7 @@ public abstract class DatabaseOperations  {
                 setRemoteLoginStatus(true);
             } else if (!remote.login(username, password)) {
                 //System.out.println("Play with friends is not available." +
-                        "  Please check your credentials.");
+                        //"  Please check your credentials.");
                 setRemoteLoginStatus(false);
             } else {
                 setRemoteLoginStatus(true);

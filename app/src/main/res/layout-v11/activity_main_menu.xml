@@ -7,7 +7,7 @@
     android:fitsSystemWindows="true"
     android:background="@color/Background"
     android:textColor="@color/Text"
-    tools:context="fthomas.hello_world.MyActivity">
+    tools:context="gameinterface.hello_world.MyActivity">
 
     <TextView
         android:layout_width="wrap_content"

@@ -1,9 +1,8 @@
-package fthomas.shapes;
+package gameinterface.shapes;
 
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.WindowManager;
-import android.widget.Toast;
 
 import gamelogic.GameWindow;
 import storage.shapes.DatabaseOperations;

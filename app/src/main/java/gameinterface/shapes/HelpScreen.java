@@ -1,16 +1,11 @@
-package fthomas.shapes;
+package gameinterface.shapes;
 
 import android.graphics.Typeface;
-import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.MediaController;
-import android.widget.TextView;
 import android.widget.VideoView;
-
-import java.io.IOException;
-import java.net.URL;
 
 
 /**

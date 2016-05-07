@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="fthomas.shapes">
+    package="gameinterface.shapes">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -8,6 +8,7 @@
 
     <application
         android:allowBackup="true"
+        android:debuggable="false"
         android:icon="@drawable/main_icon"
         android:largeHeap="true"
         android:label="@string/app_name"
@@ -16,7 +17,7 @@
         android:scaleType="fitCenter"
         android:screenOrientation="portrait">
         <activity
-            android:name=".LoginScreen"
+            android:name="gameinterface.shapes.LoginScreen"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar"
             android:screenOrientation="portrait">
@@ -26,44 +27,44 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".MainMenu"
+            android:name="gameinterface.shapes.MainMenu"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar"
-            android:parentActivityName=".LoginScreen"
+            android:parentActivityName="gameinterface.shapes.LoginScreen"
             android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="fthomas.shapes.MainMenu" />
+                android:value="gameinterface.shapes.MainMenu" />
         </activity>
         <activity
-            android:name=".PlayMenu"
+            android:name="gameinterface.shapes.PlayMenu"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar"
-            android:parentActivityName=".MainMenu"
+            android:parentActivityName="gameinterface.shapes.MainMenu"
             android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="fthomas.shapes.MainMenu" />
+                android:value="gameinterface.shapes.MainMenu" />
         </activity>
         <activity
-            android:name=".FriendsMenu"
+            android:name="gameinterface.shapes.FriendsMenu"
             android:label="@string/app_name"
-            android:parentActivityName=".MainMenu"
+            android:parentActivityName="gameinterface.shapes.MainMenu"
             android:theme="@style/AppTheme.NoActionBar"
             android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="fthomas.shapes.MainMenu" />
+                android:value="gameinterface.shapes.MainMenu" />
         </activity>
         <activity
-            android:name=".ScoresMenu"
+            android:name="gameinterface.shapes.ScoresMenu"
             android:label="@string/app_name"
-            android:parentActivityName=".MainMenu"
+            android:parentActivityName="gameinterface.shapes.MainMenu"
             android:theme="@style/AppTheme.NoActionBar"
             android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="fthomas.shapes.MainMenu" />
+                android:value="gameinterface.shapes.MainMenu" />
         </activity>
         <activity
             android:name="storage.shapes.MainActivity"
@@ -71,23 +72,23 @@
             android:theme="@style/AppTheme.NoActionBar"
             android:screenOrientation="portrait">
         </activity>
-        <activity android:name=".HelpScreen"
+        <activity android:name="gameinterface.shapes.HelpScreen"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar"
-            android:parentActivityName=".MainMenu"
+            android:parentActivityName="gameinterface.shapes.MainMenu"
             android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="fthomas.shapes.MainMenu"/>
+                android:value="gameinterface.shapes.MainMenu"/>
         </activity>
-        <activity android:name=".SettingsScreen"
+        <activity android:name="gameinterface.shapes.SettingsScreen"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar"
-            android:parentActivityName=".MainMenu"
+            android:parentActivityName="gameinterface.shapes.MainMenu"
             android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="fthomas.shapes.MainMenu"/>
+                android:value="gameinterface.shapes.MainMenu"/>
         </activity>
     </application>
 </manifest>

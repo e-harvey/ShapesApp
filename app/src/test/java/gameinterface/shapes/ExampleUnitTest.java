@@ -1,4 +1,4 @@
-package fthomas.shapes;
+package gameinterface.shapes;
 
 import org.junit.Test;
 
