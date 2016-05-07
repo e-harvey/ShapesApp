@@ -484,7 +484,7 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
                 paint.setStyle(Paint.Style.FILL);
                 canvas.drawRect(0, gridHeight - (blockWidth / 2), gridWidth, windowHeight, paint);
 
-                float textSize = ((windowHeight - gridHeight));
+                float textSize = getResources().getDimensionPixelSize(R.dimen.FontSize);
                 paint = new Paint();
                 paint.setTypeface(textTypeface);
                 paint.setTextSize(textSize);
@@ -498,13 +498,13 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
                 paint.setTypeface(textTypeface);
                 horizLocation = blockWidth;
                 paint.setTextAlign(Paint.Align.LEFT);
-                float timerSize = ((windowHeight - gridHeight));
+                float timerSize = getResources().getDimensionPixelSize(R.dimen.FontSize);
                 paint.setTextSize(timerSize);
                 canvas.drawText(timeString, horizLocation, vertLocation, paint);
 
                 // Draw friend's score
                 //vertAlign += timerSize;
-                //textSize = (int) ((windowHeight - gridHeight));
+                //textSize = (int) getResources().getDimensionPixelSize(R.dimen.FontSize);
                 //vertAlign += textSize;
                 //paint = new Paint();
                 //paint.setTypeface(textTypeface);
@@ -525,7 +525,7 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
                 paint.setStyle(Paint.Style.FILL);
                 canvas.drawRect(0, gridHeight - (blockWidth / 2), gridWidth, windowHeight, paint);
 
-                float textSize = ((windowHeight - gridHeight));
+                float textSize = getResources().getDimensionPixelSize(R.dimen.FontSize);
                 paint = new Paint();
                 paint.setTypeface(textTypeface);
                 paint.setTextSize(textSize);
@@ -539,7 +539,7 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
                 paint.setTypeface(textTypeface);
                 horizLocation = blockWidth;
                 paint.setTextAlign(Paint.Align.LEFT);
-                float timerSize = ((windowHeight - gridHeight));
+                float timerSize = getResources().getDimensionPixelSize(R.dimen.FontSize);
                 paint.setTextSize(timerSize);
                 canvas.drawText(timeString, horizLocation, vertLocation, paint);
                 }

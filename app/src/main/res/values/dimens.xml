@@ -12,4 +12,7 @@
     <dimen name="icon_width">100dp</dimen>
     <dimen name="icon_height">100dp</dimen>
 
+    <!-- Game play font size-->
+    <dimen name="FontSize">20sp</dimen>
+
 </resources>
