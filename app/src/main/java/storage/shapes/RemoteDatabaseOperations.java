@@ -186,7 +186,7 @@ class RemoteDatabaseOperations implements RemoteDbOperations, SharedDbOperations
 
         try {
             String tmp = new SendPostRequest().execute(params).get();
-            System.out.println("remote addUser data: " + tmp);
+            //System.out.println("remote addUser data: " + tmp);
             ret = tmp.equals("-1");
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -194,7 +194,7 @@ class RemoteDatabaseOperations implements RemoteDbOperations, SharedDbOperations
             e.printStackTrace();
         }
 
-        System.out.println("remote addUser return: " + ret);
+        //System.out.println("remote addUser return: " + ret);
 
         return !ret;
     }

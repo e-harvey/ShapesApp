@@ -58,7 +58,7 @@ public abstract class DatabaseOperations  {
         ret = (networkInfo != null && networkInfo.isConnected());
 
         if (!ret)
-            System.out.println("Sorry, the network is not connected.");
+            //System.out.println("Sorry, the network is not connected.");
 
         return ret;
     }
@@ -102,22 +102,22 @@ public abstract class DatabaseOperations  {
 
                 if (friends != null) {
                     for (int i = 0; i < friends.size(); i++) {
-                        System.out.println("adding: " + friends.get(i));
+                        //System.out.println("adding: " + friends.get(i));
                         local.addNewFriend(username, friends.get(i));
                     }
                 }
                 setRemoteLoginStatus(true);
             } else if (!remote.login(username, password)) {
-                System.out.println("Play with friends is not available." +
+                //System.out.println("Play with friends is not available." +
                         "  Please check your credentials.");
                 setRemoteLoginStatus(false);
             } else {
                 setRemoteLoginStatus(true);
-                System.out.println("Successfully contacted the remote database and logged user '" + username + "' in.");
+                //System.out.println("Successfully contacted the remote database and logged user '" + username + "' in.");
             }
         } else {
             setRemoteLoginStatus(false);
-            System.out.println("Failed to contact remote database.");
+            //System.out.println("Failed to contact remote database.");
         }
 
         if (!local.login(username, password)) {
@@ -179,26 +179,26 @@ public abstract class DatabaseOperations  {
 
         // Ensure username only contains valid characters
         if (username.contains("\\")) {
-            System.out.println("usernames may not contain \"\\\"");
+            //System.out.println("usernames may not contain \"\\\"");
             return ret;
         }
         if (username.contains("'")) {
-            System.out.println("usernames may not contain \"'\"");
+            //System.out.println("usernames may not contain \"'\"");
             return ret;
         }
 
         // Ensure someone doesn't user the local user
         if (username.equals("default")) {
-            System.out.println("That username is taken.");
+            //System.out.println("That username is taken.");
             return ret;
         }
 
         if (isNetworkConnected() && remote.addUser(username, password)) {
-            System.out.println("wtf");
+            //System.out.println("wtf");
             ret = local.addUser(username, password);
-            System.out.println("local addUser returned: " + ret);
+            //System.out.println("local addUser returned: " + ret);
             if (!ret) {
-                System.out.println("user '" + username + "' could not be added to the database. Check network connection.");
+                //System.out.println("user '" + username + "' could not be added to the database. Check network connection.");
                 while(!remote.deleteUser(username, password));
             }
         }
@@ -252,23 +252,23 @@ public abstract class DatabaseOperations  {
     public static boolean addNewFriend(String usernameOwner, String usernameFriend) {
         if (isNetworkConnected()) {
             if (!remote.findUser(usernameFriend)) {
-                System.out.println("Sorry, we can't find that friend." + usernameFriend + ".");
+                //System.out.println("Sorry, we can't find that friend." + usernameFriend + ".");
                 return false;
             }
 
             if (!local.addNewFriend(usernameOwner, usernameFriend)) {
-                System.out.println("Sorry, we were unable to add your friend to the local database.");
+                //System.out.println("Sorry, we were unable to add your friend to the local database.");
                 return false;
             }
 
             if (remote.addNewFriend(usernameOwner, usernameFriend)) {
                 return true;
             } else {
-                System.out.println("Sorry, we were unable to add your friend to the remote database.");
+                //System.out.println("Sorry, we were unable to add your friend to the remote database.");
                 local.deleteFriend(usernameOwner, usernameFriend);
             }
         } else {
-            System.out.println("Sorry, you need to connect to a network to use this feature.");
+            //System.out.println("Sorry, you need to connect to a network to use this feature.");
         }
 
         return false;
@@ -375,7 +375,7 @@ public abstract class DatabaseOperations  {
         if (isNetworkConnected()) {
             return remote.searchUser(subString);
         }
-        System.out.println("Check network conneciton");
+        //System.out.println("Check network conneciton");
         return null;
     }
     /* End remote database operations */

@@ -157,7 +157,7 @@ public class FriendsMenu extends AppCompatActivity {
     public void Play(View v) {
         if (DatabaseOperations.getRemoteLoginStatus()) {
             String friendName = getSelectedFriend();
-            System.out.println("Friend: " + friendName + ".");
+            //System.out.println("Friend: " + friendName + ".");
 
             if (friendName == null || DatabaseOperations.getBlockSeed(friendName) == -1) {
                 Toast.makeText(getApplicationContext(), "Sorry, please select a friend.\nPlease make sure that'" + friendName +

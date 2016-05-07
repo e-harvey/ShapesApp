@@ -171,7 +171,7 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
             backgroundMusic.setLooping(true);
             backgroundMusic.start();
         }
-        System.out.println(state.toString());
+        //System.out.println(state.toString());
     }
 
     /**
@@ -188,7 +188,7 @@ public class GameWindow extends SurfaceView implements SurfaceHolder.Callback
                 int x = (int) (event.getX() / blockWidth);
                 int y = (int) (event.getY() / blockWidth);
                 if (y < YBlocks) { //stop overflow at bottom of screen
-                    System.out.println("press at " + x + "," + y);
+                    //System.out.println("press at " + x + "," + y);
                     if (grid[x][y].isActive()) {
                         grid[x][y].rotate();
                         grid[x][y].setChanged(true);

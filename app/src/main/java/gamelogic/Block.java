@@ -86,7 +86,7 @@ public class Block
                 activeSides = new boolean[]{true, true, true, true};
                 break;
             default:
-                System.out.println("Block(): bad type given");
+                //System.out.println("Block(): bad type given");
                 break;
         }
     }

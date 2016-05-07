@@ -45,7 +45,7 @@ class LocalDatabaseOperations implements LocalDbOperations, SharedDbOperations  
 
         cursor = sqLiteDatabase.query("friends", col, "user = ?", selArgs, null, null, null);
 
-        System.out.println("count: " + cursor.getCount());
+        //System.out.println("count: " + cursor.getCount());
         if (cursor.getCount() > 0) {
             cursor.moveToFirst();
             do {
@@ -243,7 +243,7 @@ class LocalDatabaseOperations implements LocalDbOperations, SharedDbOperations  
             } catch (SQLiteConstraintException e) {
                 ;
             }
-        System.out.println("Setting high score for " + username + " to " + score + ".");
+        //System.out.println("Setting high score for " + username + " to " + score + ".");
     }
 
     /**
