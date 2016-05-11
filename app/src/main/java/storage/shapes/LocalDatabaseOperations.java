@@ -326,6 +326,14 @@ class LocalDatabaseOperations implements LocalDbOperations, SharedDbOperations  
                 ;
             }
 
+            sqlCmd = "delete from friends " +
+                    "where friend = '" + username + "'";
+
+            try {
+                sqLiteDatabase.execSQL(sqlCmd);
+            } catch (SQLiteConstraintException e) {
+                ;
+            }
             return true;
         }
     }
